@@ -1,0 +1,17 @@
+[
+  {
+    "task_id": "gaia_t1",
+    "question": "What is the capital of France?",
+    "ground_truth_answer": "Paris",
+    "difficulty": "easy",
+    "task_category": "geography",
+    "metadata": {"source": "wiki"}
+  },
+  {
+    "task_id": "gaia_t2",
+    "question": "Who wrote Hamlet?",
+    "ground_truth_answer": "William Shakespeare",
+    "difficulty": "medium",
+    "task_category": "literature"
+  }
+]

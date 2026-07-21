@@ -1,0 +1,22 @@
+{
+  "experiment_name": "pilot_validation",
+  "benchmarks": [
+    {
+      "name": "AgentBoard",
+      "dataset_path": "data/agentboard_sample.json"
+    }
+  ],
+  "agents": [
+    {
+      "name": "mock"
+    },
+    {
+      "name": "mock_agent"
+    }
+  ],
+  "seeds": [42],
+  "repetitions": 1,
+  "parallel": false,
+  "max_workers": 2,
+  "output_dir": "results/pilot_validation"
+}

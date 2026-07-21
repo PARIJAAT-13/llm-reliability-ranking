@@ -1,0 +1,61 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "llm-reliability-ranking"
+version = "0.1.0"
+description = "Research framework for comparing success-based and reliability-based LLM agent rankings"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "pydantic>=2.0",
+    "scipy>=1.10.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+]
+visualization = [
+    "matplotlib>=3.7.0",
+    "seaborn>=0.12.0",
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
+    "openpyxl>=3.1.0",
+    "jinja2>=3.1.0",
+]
+# Provider SDKs — install only the providers you intend to use
+openai = [
+    "openai>=1.0",
+]
+anthropic = [
+    "anthropic>=0.25.0",
+]
+google = [
+    "google-generativeai>=0.5.0",
+]
+# DeepSeek and Qwen use the OpenAI-compatible API via the openai SDK
+deepseek = [
+    "openai>=1.0",
+]
+qwen = [
+    "openai>=1.0",
+]
+llama = [
+    "huggingface_hub>=0.20.0",
+]
+# Install all provider SDKs at once
+providers = [
+    "openai>=1.0",
+    "anthropic>=0.25.0",
+    "google-generativeai>=0.5.0",
+    "huggingface_hub>=0.20.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

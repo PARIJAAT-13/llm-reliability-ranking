@@ -1,0 +1,51 @@
+{
+  "name": "full_llm_reliability_ranking_study",
+  "output_dir": "results/full_study",
+  "models": [
+    "openai:gpt-4o",
+    "anthropic:claude-3-5-sonnet",
+    "google:gemini-1.5-pro",
+    "deepseek:deepseek-chat",
+    "qwen:qwen-2.5-72b",
+    "llama:llama-3.3-70b"
+  ],
+  "benchmarks": [
+    "AgentBoard",
+    "GAIA",
+    "SWE-bench Lite"
+  ],
+  "seeds": [42, 100, 2026],
+  "repetitions": 3,
+  "perturbations": [
+    "whitespace",
+    "typo",
+    "rephrase",
+    "wrapper",
+    "punctuation"
+  ],
+  "fault_injection": true,
+  "fault_types": [
+    "timeout",
+    "rate_limit",
+    "network",
+    "context_truncation"
+  ],
+  "reliability_weights": {
+    "consistency": 0.4,
+    "robustness": 0.3,
+    "fault_tolerance": 0.3
+  },
+  "visualization": {
+    "output_dir": "paper/figures",
+    "formats": ["png", "svg", "pdf"],
+    "dpi": 300
+  },
+  "statistical": {
+    "confidence_level": 0.95,
+    "bootstrap_iterations": 1000,
+    "compute_divergence": true
+  },
+  "parallel": false,
+  "max_workers": 4,
+  "matrix_mode": "per_pair"
+}

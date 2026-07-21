@@ -1,0 +1,23 @@
+{
+  "experiment_name": "demo_full_reliability_study",
+  "benchmarks": [
+    {
+      "name": "mock",
+      "dataset_path": "data/mock.json"
+    }
+  ],
+  "agents": [
+    { "name": "agent_gpt4o" },
+    { "name": "agent_claude35" },
+    { "name": "agent_gemini15" },
+    { "name": "agent_deepseek" },
+    { "name": "agent_qwen25" },
+    { "name": "agent_llama33" }
+  ],
+  "seeds": [42, 100, 2026],
+  "repetitions": 3,
+  "parallel": false,
+  "max_workers": 4,
+  "output_dir": "results/demo_full_study",
+  "llm": "mock"
+}

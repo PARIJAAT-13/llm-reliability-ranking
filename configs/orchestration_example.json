@@ -1,0 +1,27 @@
+{
+  "name": "reliability_paper_benchmark_matrix",
+  "output_dir": "results",
+  "models": [
+    "MockAgent",
+    "GPT-4.1",
+    "Claude",
+    "Gemini"
+  ],
+  "benchmarks": [
+    "MockBenchmark",
+    "AgentBoard"
+  ],
+  "seeds": [
+    1,
+    2,
+    3
+  ],
+  "repetitions": 5,
+  "perturbations": [
+    "typo"
+  ],
+  "fault_injection": false,
+  "parallel": false,
+  "max_workers": 4,
+  "matrix_mode": "per_pair"
+}

@@ -1,0 +1,17 @@
+[
+  {
+    "task_id": "ab_task_001",
+    "prompt": "Navigate to github.com and search for reliability",
+    "expected_output": "success_search",
+    "difficulty": "easy",
+    "category": "web_navigation",
+    "metadata": {"source": "github"}
+  },
+  {
+    "task_id": "ab_task_002",
+    "prompt": "Create a file named test.txt",
+    "expected_output": "file_created",
+    "difficulty": "medium",
+    "category": "os_interaction"
+  }
+]
