@@ -32,6 +32,7 @@ a safe workaround; this adapter applies that floor automatically.
 from __future__ import annotations
 
 import logging
+import os
 import time
 from typing import Any
 
@@ -74,7 +75,8 @@ class _LlamaAdapter(BaseLLMAdapter):
         self._client = None
         self._model = config.metadata.get("model", config.llm) or DEFAULT_MODEL
         # Accept short names like "llama-3.3-70b" and expand to full HF path
-       
+        if self._model and "/" not in self._model and not self._model.startswith("meta-llama"):
+            self._model = DEFAULT_MODEL
         raw_temp = float(config.metadata.get("temperature", DEFAULT_TEMPERATURE))
         # Apply minimum temperature floor for HF serverless compatibility
         self._temperature = max(raw_temp, _MIN_TEMPERATURE)
@@ -83,18 +85,28 @@ class _LlamaAdapter(BaseLLMAdapter):
 
     def initialize(self) -> None:
         try:
-            from openai import OpenAI  # noqa: PLC0415
+            from huggingface_hub import InferenceClient  # noqa: PLC0415
         except ImportError as exc:
             raise ImportError(
-    "The 'openai' package is required for LlamaAgent. "
-    "Install with: pip install openai"
-) from exc
+                "The 'huggingface_hub' package is required for LlamaAgent. "
+                "Install with: pip install huggingface_hub>=0.20.0"
+            ) from exc
 
-        self._client = OpenAI(
-    base_url="http://127.0.0.1:11434/v1",
-    api_key="ollama",
-)
-    
+        token = os.environ.get("HF_TOKEN")
+        if not token:
+            raise AuthenticationError(
+                "HF_TOKEN environment variable is not set. "
+                "Generate one at https://huggingface.co/settings/tokens"
+            )
+
+        base_url = os.environ.get("LLAMA_BASE_URL")
+        kwargs: dict[str, Any] = {"token": token}
+        if base_url:
+            kwargs["base_url"] = base_url
+            # Use model=None for custom endpoint URLs (endpoint is the router)
+            self._client = InferenceClient(**kwargs)
+        else:
+            self._client = InferenceClient(model=self._model, **kwargs)
 
         logger.info(
             "Llama client initialised (model=%s, temperature=%.4f, max_tokens=%d).",
@@ -113,7 +125,7 @@ class _LlamaAdapter(BaseLLMAdapter):
 
         t0 = time.perf_counter()
         try:
-            response = self._client.chat.completions.create(
+            response = self._client.chat_completion(
                 messages=messages,
                 model=self._model,
                 temperature=max(request.temperature, _MIN_TEMPERATURE),
@@ -127,7 +139,7 @@ class _LlamaAdapter(BaseLLMAdapter):
                 raise RateLimitError(f"Rate limit exceeded: {exc}") from exc
             if "connection" in exc_str or "timeout" in exc_str:
                 raise ProviderConnectionError(f"Network error: {exc}") from exc
-            raise ProviderError(f"Ollama API error: {exc}") from exc
+            raise ProviderError(f"HuggingFace API error: {exc}") from exc
 
         latency_ms = (time.perf_counter() - t0) * 1000.0
 
@@ -135,7 +147,7 @@ class _LlamaAdapter(BaseLLMAdapter):
         if choice is None:
             raise ResponseValidationError(f"Llama HF API returned no choices. Response: {response}")
 
-        text = choice.message.content
+        text = getattr(choice.message, "content", None)
         if not text or not text.strip():
             raise ResponseValidationError("Llama HF API returned empty content.")
 
@@ -169,14 +181,12 @@ class _LlamaAdapter(BaseLLMAdapter):
             return False
         try:
             # Minimal inference call with a tiny prompt to verify connectivity
-            self._client.chat.completions.create(
-    model=self._model,
-    messages=[
-        {"role": "user", "content": "ping"}
-    ],
-    max_tokens=5,
-    temperature=_MIN_TEMPERATURE,
-)
+            self._client.chat_completion(
+                messages=[{"role": "user", "content": "ping"}],
+                model=self._model,
+                max_tokens=5,
+                temperature=_MIN_TEMPERATURE,
+            )
             return True
         except Exception as exc:  # noqa: BLE001
             logger.warning("Llama health check failed: %s", exc)

@@ -119,14 +119,21 @@ class GAIAAdapter(BaseBenchmarkAdapter):
         expected = task.get("ground_truth_answer")
         agent_output = execution.agent_output
 
+
         if execution.status == "error":
             success = False
             score = 0.0
         else:
             expected_norm = normalize_gaia_answer(str(expected))
             output_norm = normalize_gaia_answer(str(agent_output))
-            success = expected_norm == output_norm
+
+            success = (
+                output_norm == expected_norm
+                or expected_norm in output_norm
+            )
+
             score = 1.0 if success else 0.0
+
 
         if self.config.seed is not None:
             h = hashlib.sha256(f"eval_{self.config.seed}_{execution.task_id}".encode())

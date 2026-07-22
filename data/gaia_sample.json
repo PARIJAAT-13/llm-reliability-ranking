@@ -1,0 +1,42 @@
+[
+  {
+    "task_id": "gaia_001",
+    "question": "What is the capital of Japan?",
+    "ground_truth_answer": "Tokyo",
+    "difficulty": "easy",
+    "task_category": "geography",
+    "metadata": {"source": "knowledge_base", "level": 1}
+  },
+  {
+    "task_id": "gaia_002",
+    "question": "In what year was the Python programming language first released?",
+    "ground_truth_answer": "1991",
+    "difficulty": "easy",
+    "task_category": "factual",
+    "metadata": {"source": "knowledge_base", "level": 1}
+  },
+  {
+    "task_id": "gaia_003",
+    "question": "What is the square root of 144?",
+    "ground_truth_answer": "12",
+    "difficulty": "easy",
+    "task_category": "math",
+    "metadata": {"source": "arithmetic", "level": 1}
+  },
+  {
+    "task_id": "gaia_004",
+    "question": "Who wrote the novel 'Pride and Prejudice'?",
+    "ground_truth_answer": "Jane Austen",
+    "difficulty": "medium",
+    "task_category": "literature",
+    "metadata": {"source": "knowledge_base", "level": 2}
+  },
+  {
+    "task_id": "gaia_005",
+    "question": "What is the chemical symbol for gold?",
+    "ground_truth_answer": "Au",
+    "difficulty": "medium",
+    "task_category": "science",
+    "metadata": {"source": "chemistry", "level": 2}
+  }
+]

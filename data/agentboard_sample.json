@@ -1,0 +1,42 @@
+[
+  {
+    "task_id": "ab_001",
+    "prompt": "What is the capital of France?",
+    "expected_output": "Paris",
+    "difficulty": "easy",
+    "category": "knowledge",
+    "metadata": {"source": "geography", "topic": "capitals"}
+  },
+  {
+    "task_id": "ab_002",
+    "prompt": "What is 17 multiplied by 23?",
+    "expected_output": "391",
+    "difficulty": "easy",
+    "category": "arithmetic",
+    "metadata": {"source": "math"}
+  },
+  {
+    "task_id": "ab_003",
+    "prompt": "Name three programming languages designed primarily for data science.",
+    "expected_output": "Python, R, Julia",
+    "difficulty": "medium",
+    "category": "knowledge",
+    "metadata": {"source": "programming", "topic": "data science"}
+  },
+  {
+    "task_id": "ab_004",
+    "prompt": "Explain in one sentence what a transformer architecture is in deep learning.",
+    "expected_output": "A transformer is a neural network architecture that uses self-attention mechanisms to process sequential data in parallel.",
+    "difficulty": "medium",
+    "category": "explanation",
+    "metadata": {"source": "ml", "topic": "transformers"}
+  },
+  {
+    "task_id": "ab_005",
+    "prompt": "Write a Python function that computes the factorial of n recursively.",
+    "expected_output": "def factorial(n):\n    if n <= 1:\n        return 1\n    return n * factorial(n - 1)",
+    "difficulty": "hard",
+    "category": "coding",
+    "metadata": {"source": "programming", "topic": "recursion"}
+  }
+]

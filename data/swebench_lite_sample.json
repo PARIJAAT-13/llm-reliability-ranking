@@ -1,0 +1,29 @@
+[
+  {
+    "task_id": "swelite_001",
+    "repository": "django/django",
+    "problem_statement": "Fix a bug where the ORM QuerySet.filter() fails silently when passed an invalid field name. It should raise FieldError instead.",
+    "patch": "diff --git a/django/db/models/sql/query.py b/django/db/models/sql/query.py\nindex abc123..def456 100644\n--- a/django/db/models/sql/query.py\n+++ b/django/db/models/sql/query.py\n@@ -100,6 +100,9 @@ class Query:\n     def add_filter(self, filter_clause):\n+        if filter_clause[0] not in self.get_meta().fields_map:\n+            raise FieldError(f'Invalid field name: {filter_clause[0]}')\n         self.where.add(filter_clause, AND)\n",
+    "expected_outcome": "FieldError raised for invalid field names in filter()",
+    "difficulty": "medium",
+    "metadata": {"issue_number": "12345", "repo": "django/django"}
+  },
+  {
+    "task_id": "swelite_002",
+    "repository": "requests/requests",
+    "problem_statement": "The requests library does not correctly handle redirect loops. It should raise TooManyRedirects after 30 redirects rather than looping indefinitely.",
+    "patch": "diff --git a/requests/sessions.py b/requests/sessions.py\nindex 111111..222222 100644\n--- a/requests/sessions.py\n+++ b/requests/sessions.py\n@@ -60,4 +60,7 @@ class Session:\n     def resolve_redirects(self, resp, req):\n         i = 0\n         while resp.is_redirect:\n+            if i >= self.max_redirects:\n+                raise TooManyRedirects('Exceeded {} redirects.'.format(self.max_redirects))\n             i += 1\n",
+    "expected_outcome": "TooManyRedirects raised after max_redirects threshold",
+    "difficulty": "medium",
+    "metadata": {"issue_number": "6789", "repo": "requests/requests"}
+  },
+  {
+    "task_id": "swelite_003",
+    "repository": "numpy/numpy",
+    "problem_statement": "np.mean() should return a scalar (not an array) when applied to a 1-D array with no axis argument. Currently it incorrectly returns a 0-D array in some edge cases.",
+    "patch": "diff --git a/numpy/core/fromnumeric.py b/numpy/core/fromnumeric.py\nindex aabbcc..ddeeff 100644\n--- a/numpy/core/fromnumeric.py\n+++ b/numpy/core/fromnumeric.py\n@@ -75,3 +75,4 @@ def mean(a, axis=None):\n     result = _methods._mean(a, axis=axis, dtype=dtype, out=out)\n+    if result.ndim == 0:\n+        return result.item()\n     return result\n",
+    "expected_outcome": "np.mean on 1-D array with no axis returns Python scalar",
+    "difficulty": "hard",
+    "metadata": {"issue_number": "99001", "repo": "numpy/numpy"}
+  }
+]
