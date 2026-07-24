@@ -119,3 +119,14 @@ If you use this framework or empirical benchmark dataset in your research, pleas
 ## 📄 License
 
 Distributed under the **MIT License**. See [LICENSE](LICENSE) for details.
+
+## Authors
+
+- Parijaat Srivastava
+- Pooja Mourya
+
+---
+
+Developed as part of the research project
+
+**LLM Reliability Ranking Framework: Benchmarking Local Open-Weights Language Models Under Hardware Memory Constraints**

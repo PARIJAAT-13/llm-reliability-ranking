@@ -1,19 +1,16 @@
 cff-version: 1.2.0
-message: "If you use this software or empirical dataset, please cite it as below."
+title: "LLM Reliability Ranking Framework"
+message: "If you use this software, please cite this repository."
+
 authors:
-  - family-names: "Parijaat"
+  - family-names: "Srivastava"
     given-names: "Parijaat"
-    affiliation: "Google DeepMind Antigravity Team"
-title: "LLM Reliability Ranking Framework: Evaluating Local Language Models Under Memory Constraints"
-version: 1.0.0
-date-released: 2026-07-24
-url: "https://github.com/parijaat/llm-reliability-ranking"
-repository-code: "https://github.com/parijaat/llm-reliability-ranking"
-keywords:
-  - "large language models"
-  - "reliability"
-  - "benchmarking"
-  - "ollama"
-  - "memory constraints"
-  - "gaia benchmark"
-license: MIT
+
+  - family-names: "Mourya"
+    given-names: "Pooja"
+
+repository-code: "https://github.com/PARIJAAT-13/llm-reliability-ranking"
+
+license: "MIT"
+
+version: "1.0.0"
