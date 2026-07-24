@@ -130,3 +130,8 @@ Distributed under the **MIT License**. See [LICENSE](LICENSE) for details.
 Developed as part of the research project
 
 **LLM Reliability Ranking Framework: Benchmarking Local Open-Weights Language Models Under Hardware Memory Constraints**
+
+## Contributors
+
+- Parijaat Srivastava
+- Pooja Mourya
