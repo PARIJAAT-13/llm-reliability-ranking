@@ -1,4 +1,4 @@
-FROM python:3.11-slim AS builder
+FROM python:3.14-slim AS builder
 
 WORKDIR /app
 
@@ -11,7 +11,7 @@ COPY src/ src/
 RUN pip install --no-cache-dir build && python -m build --wheel
 RUN pip install --no-cache-dir dist/*.whl --target /install
 
-FROM python:3.11-slim
+FROM python:3.14-slim
 
 WORKDIR /app
 
