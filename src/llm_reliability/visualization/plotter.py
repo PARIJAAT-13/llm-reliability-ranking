@@ -36,9 +36,9 @@ import pathlib
 from typing import Any
 
 from llm_reliability.visualization.styles import (
-    FIG_WIDTH_SINGLE,
-    FIG_HEIGHT_DEFAULT,
     DPI_PRINT,
+    FIG_HEIGHT_DEFAULT,
+    FIG_WIDTH_SINGLE,
     apply_publication_style,
 )
 
@@ -192,6 +192,7 @@ class BasePlotter(abc.ABC):
 
         if close:
             import matplotlib.pyplot as plt
+
             plt.close(fig)
 
         return dest
@@ -232,6 +233,7 @@ class BasePlotter(abc.ABC):
         """Close every open matplotlib figure (useful after batch runs)."""
         try:
             import matplotlib.pyplot as plt
+
             plt.close("all")
         except ImportError:
             pass

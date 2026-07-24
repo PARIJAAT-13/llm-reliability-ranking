@@ -11,10 +11,10 @@ from llm_reliability.benchmarks import BenchmarkPlugin
 from llm_reliability.benchmarks.adapters.base_adapter import BaseBenchmarkAdapter
 from llm_reliability.benchmarks.adapters.registry import BenchmarkRegistry
 
-
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture(autouse=True)
 def reset_discovery_state():
@@ -30,11 +30,14 @@ def reset_discovery_state():
 # Helpers: a minimal concrete adapter for testing
 # ---------------------------------------------------------------------------
 
+
 class MiniAdapter(BaseBenchmarkAdapter):
     def _load_tasks(self):
         self._tasks = {"t1": {"id": "t1"}}
+
     def run(self, agent, task):
         pass
+
     def evaluate(self, execution):
         pass
 
@@ -42,8 +45,10 @@ class MiniAdapter(BaseBenchmarkAdapter):
 class OtherMiniAdapter(BaseBenchmarkAdapter):
     def _load_tasks(self):
         self._tasks = {"t2": {"id": "t2"}}
+
     def run(self, agent, task):
         pass
+
     def evaluate(self, execution):
         pass
 
@@ -51,6 +56,7 @@ class OtherMiniAdapter(BaseBenchmarkAdapter):
 # ---------------------------------------------------------------------------
 # Plugin interface
 # ---------------------------------------------------------------------------
+
 
 class TestBenchmarkPlugin:
     def test_plugin_is_abstract(self):
@@ -71,6 +77,7 @@ class TestBenchmarkPlugin:
 # Decorator registration
 # ---------------------------------------------------------------------------
 
+
 class TestDecoratorRegistration:
 
     def test_decorator_registers_adapter(self):
@@ -80,8 +87,10 @@ class TestDecoratorRegistration:
         class DecoratedBench(BaseBenchmarkAdapter):
             def _load_tasks(self):
                 self._tasks = {}
+
             def run(self, agent, task):
                 pass
+
             def evaluate(self, execution):
                 pass
 
@@ -102,6 +111,7 @@ class TestDecoratorRegistration:
 # Duplicate registration
 # ---------------------------------------------------------------------------
 
+
 class TestDuplicateRegistration:
 
     def test_duplicate_name_raises(self):
@@ -120,8 +130,10 @@ class TestDuplicateRegistration:
             class _Dup(BaseBenchmarkAdapter):
                 def _load_tasks(self):
                     pass
+
                 def run(self, agent, task):
                     pass
+
                 def evaluate(self, execution):
                     pass
 
@@ -129,6 +141,7 @@ class TestDuplicateRegistration:
 # ---------------------------------------------------------------------------
 # Discovery
 # ---------------------------------------------------------------------------
+
 
 class TestDiscovery:
 
@@ -204,6 +217,7 @@ BenchmarkRegistry.register("DiscoveredBench", DiscoveredBench)
 # Loading multiple plugins
 # ---------------------------------------------------------------------------
 
+
 class TestMultiplePlugins:
 
     def test_multiple_adapters_loaded(self):
@@ -217,6 +231,7 @@ class TestMultiplePlugins:
 # ---------------------------------------------------------------------------
 # Backward compatibility
 # ---------------------------------------------------------------------------
+
 
 class TestBackwardCompatibility:
 
@@ -241,7 +256,10 @@ class TestBackwardCompatibility:
 
     def test_existing_api_get_works(self):
         adapter = BenchmarkRegistry.get("AgentBoard")
-        from llm_reliability.benchmarks.adapters.agentboard_adapter import AgentBoardAdapter
+        from llm_reliability.benchmarks.adapters.agentboard_adapter import (
+            AgentBoardAdapter,
+        )
+
         assert adapter is AgentBoardAdapter
 
     def test_existing_api_list_works(self):
@@ -256,6 +274,7 @@ class TestBackwardCompatibility:
             ARCAdapter,
             GAIAAdapter,
         )
+
         assert issubclass(AgentBoardAdapter, BaseBenchmarkAdapter)
         assert issubclass(ARCAdapter, BaseBenchmarkAdapter)
         assert issubclass(GAIAAdapter, BaseBenchmarkAdapter)

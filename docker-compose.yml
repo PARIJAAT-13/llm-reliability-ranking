@@ -1,10 +1,9 @@
-version: "3.9"
-
 services:
   llm-reliability:
     build: .
     image: llm-reliability-ranking:latest
     container_name: llm-reliability
+    restart: unless-stopped
     entrypoint: ["python", "-m", "llm_reliability"]
     volumes:
       - ./results:/app/results
@@ -12,4 +11,11 @@ services:
       - ./.cache:/app/.cache
     environment:
       - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
     command: ["--help"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import llm_reliability; print('OK')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s

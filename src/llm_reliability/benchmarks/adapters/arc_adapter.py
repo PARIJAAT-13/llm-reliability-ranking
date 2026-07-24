@@ -51,7 +51,7 @@ class ARCAdapter(BaseBenchmarkAdapter):
 
         if path_obj.exists() and path_obj.is_file():
             try:
-                with open(path_obj, "r", encoding="utf-8") as f:
+                with open(path_obj, encoding="utf-8") as f:
                     data = json.load(f)
             except Exception as e:
                 logger.error("Failed to load dataset from %s: %s", dataset_path, e)
@@ -65,10 +65,19 @@ class ARCAdapter(BaseBenchmarkAdapter):
                 tid = item.get("task_id", item.get("id", f"arc_{len(self._tasks)}"))
                 question = item.get("question", item.get("prompt", ""))
                 choices = item.get("choices", item.get("options", []))
-                gt = str(item.get("answerKey", item.get("ground_truth_answer", "A"))).strip().upper()
+                gt = (
+                    str(item.get("answerKey", item.get("ground_truth_answer", "A"))).strip().upper()
+                )
                 if gt in ("1", "2", "3", "4"):
                     gt = chr(65 + int(gt) - 1)
-                prompt = f"Question: {question}\nOptions:\n" + "\n".join(f"{chr(65+i)}. {c if isinstance(c, str) else c.get('text', '')}" for i, c in enumerate(choices)) + "\nAnswer:"
+                prompt = (
+                    f"Question: {question}\nOptions:\n"
+                    + "\n".join(
+                        f"{chr(65+i)}. {c if isinstance(c, str) else c.get('text', '')}"
+                        for i, c in enumerate(choices)
+                    )
+                    + "\nAnswer:"
+                )
                 self._tasks[tid] = {
                     "task_id": tid,
                     "question": question,

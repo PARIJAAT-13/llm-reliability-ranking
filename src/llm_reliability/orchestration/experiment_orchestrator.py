@@ -36,9 +36,10 @@ import argparse
 import json
 import logging
 import time
+from collections.abc import Callable
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 from llm_reliability.agents.agent_factory import AgentFactory
 from llm_reliability.benchmarks.adapters.registry import BenchmarkRegistry
@@ -209,6 +210,17 @@ class ExperimentOrchestrator:
                             spec.experiment_name,
                             spec.experiment_id,
                         )
+                        started = status_data.get("started_at")
+                        completed = status_data.get("completed_at")
+                        if started and completed:
+                            try:
+                                s = datetime.fromisoformat(started)
+                                e = datetime.fromisoformat(completed)
+                                runtime = (e - s).total_seconds()
+                            except Exception:
+                                runtime = 0.0
+                        else:
+                            runtime = 0.0
                         completed_experiments.append(
                             {
                                 "experiment_id": spec.experiment_id,
@@ -216,7 +228,7 @@ class ExperimentOrchestrator:
                                 "benchmark": benchmarks_str,
                                 "agent": agents_str,
                                 "status": "completed (cached)",
-                                "runtime_seconds": status_data.get("completed_runs", 0),
+                                "runtime_seconds": runtime,
                             }
                         )
                         continue
@@ -307,9 +319,7 @@ class ExperimentOrchestrator:
 
         batch_elapsed = time.time() - batch_start_time
         avg_runtime = (
-            sum(completed_runtimes) / len(completed_runtimes)
-            if completed_runtimes
-            else 0.0
+            sum(completed_runtimes) / len(completed_runtimes) if completed_runtimes else 0.0
         )
 
         master_summary = {
@@ -382,7 +392,9 @@ class ExperimentOrchestrator:
             parsed = json.loads(content)
 
         if not isinstance(parsed, dict):
-            raise ValueError(f"Configuration root must be a dictionary, got {type(parsed).__name__}.")
+            raise ValueError(
+                f"Configuration root must be a dictionary, got {type(parsed).__name__}."
+            )
 
         return parsed
 
@@ -435,9 +447,13 @@ class ExperimentOrchestrator:
                 bench_specs.append(BenchmarkSpec(name=b, dataset_path=path))
             elif isinstance(b, dict):
                 b_name = b["name"]
-                b_path = b.get("dataset_path", DEFAULT_DATASET_PATHS.get(b_name, f"data/{b_name.lower()}.json"))
+                b_path = b.get(
+                    "dataset_path", DEFAULT_DATASET_PATHS.get(b_name, f"data/{b_name.lower()}.json")
+                )
                 b_meta = b.get("adapter_metadata", {})
-                bench_specs.append(BenchmarkSpec(name=b_name, dataset_path=b_path, adapter_metadata=b_meta))
+                bench_specs.append(
+                    BenchmarkSpec(name=b_name, dataset_path=b_path, adapter_metadata=b_meta)
+                )
 
         # Parse models / agents
         raw_models = definition.get("models") or definition.get("agents") or ["MockAgent"]
@@ -471,7 +487,10 @@ class ExperimentOrchestrator:
             else:
                 raise ValueError(f"Invalid model entry in configuration: {m!r}")
 
-            model_key = (aspec.name, str(aspec.agent_metadata.get("model") or aspec.metadata.get("model") or ""))
+            model_key = (
+                aspec.name,
+                str(aspec.agent_metadata.get("model") or aspec.metadata.get("model") or ""),
+            )
             if model_key in seen_models:
                 logger.warning("Duplicate model specification detected in config: %s", model_key)
             seen_models.add(model_key)
@@ -505,7 +524,9 @@ class ExperimentOrchestrator:
             for bspec in bench_specs:
                 for aspec in agent_specs:
                     for seed in seeds:
-                        name_slug = cls._slugify(f"{base_name}_{bspec.name}_{aspec.name}_seed{seed}")
+                        name_slug = cls._slugify(
+                            f"{base_name}_{bspec.name}_{aspec.name}_seed{seed}"
+                        )
                         spec_id = str(uuid.uuid5(uuid.NAMESPACE_DNS, name_slug))
                         spec = ExperimentSpec(
                             experiment_id=spec_id,
@@ -572,39 +593,68 @@ class ExperimentOrchestrator:
 
         registered_benchmarks = [b.lower() for b in BenchmarkRegistry.list()]
         # Add default aliases
-        registered_benchmarks.extend(["mockbenchmark", "mock", "agentboard", "gaia", "swebenchlite", "swe-bench lite"])
+        registered_benchmarks.extend(
+            ["mockbenchmark", "mock", "agentboard", "gaia", "swebenchlite", "swe-bench lite"]
+        )
 
         for spec in specs:
             # Benchmark validation
             for bspec in spec.benchmarks:
                 if not bspec.name:
                     errors.append("Benchmark name cannot be empty.")
-                elif self._benchmark_factory is None and bspec.name.lower() not in registered_benchmarks:
-                    errors.append(f"Benchmark '{bspec.name}' is not registered in BenchmarkRegistry.")
+                elif (
+                    self._benchmark_factory is None
+                    and bspec.name.lower() not in registered_benchmarks
+                ):
+                    errors.append(
+                        f"Benchmark '{bspec.name}' is not registered in BenchmarkRegistry."
+                    )
 
                 if bspec.dataset_path and self._benchmark_factory is None:
                     p = Path(bspec.dataset_path)
                     if not p.exists() and bspec.name.lower() not in ("mockbenchmark", "mock"):
-                        errors.append(f"Dataset file does not exist for benchmark '{bspec.name}': {bspec.dataset_path}")
+                        errors.append(
+                            f"Dataset file does not exist for benchmark '{bspec.name}': {bspec.dataset_path}"
+                        )
 
             # Agent / provider validation
-            from llm_reliability.agents.agent_factory import _resolve
-            is_default_factory = self._agent_factory is None or self._agent_factory == self._default_agent_factory
+            is_default_factory = (
+                self._agent_factory is None or self._agent_factory == self._default_agent_factory
+            )
             for aspec in spec.agents:
-                if is_default_factory and not AgentFactory.is_mock(aspec.name) and _resolve(aspec.name) is None:
-                    errors.append(f"Unsupported agent provider '{aspec.name}'. Available prefixes: {AgentFactory.available_names()}")
+                if (
+                    is_default_factory
+                    and not AgentFactory.is_mock(aspec.name)
+                    and AgentFactory.resolve(aspec.name) is None
+                ):
+                    errors.append(
+                        f"Unsupported agent provider '{aspec.name}'. Available prefixes: {AgentFactory.available_names()}"
+                    )
 
                 # Check Ollama specifics
-                if aspec.name.lower() == "ollama" or (isinstance(aspec.name, str) and aspec.name.lower().startswith("ollama:")):
-                    model = aspec.agent_metadata.get("model") or aspec.metadata.get("model") or (aspec.name.split(":", 1)[1] if ":" in aspec.name else "llama3.1:8b")
-                    base_url = aspec.agent_metadata.get("base_url") or aspec.metadata.get("base_url") or "http://127.0.0.1:11434"
+                if aspec.name.lower() == "ollama" or (
+                    isinstance(aspec.name, str) and aspec.name.lower().startswith("ollama:")
+                ):
+                    model = (
+                        aspec.agent_metadata.get("model")
+                        or aspec.metadata.get("model")
+                        or (aspec.name.split(":", 1)[1] if ":" in aspec.name else "llama3.1:8b")
+                    )
+                    base_url = (
+                        aspec.agent_metadata.get("base_url")
+                        or aspec.metadata.get("base_url")
+                        or "http://127.0.0.1:11434"
+                    )
                     ollama_models_to_check.setdefault(base_url, set()).add(model)
 
         if check_ollama_server and ollama_models_to_check:
             from llm_reliability.agents.utils.ollama_utils import (
                 check_ollama_server as _check_ollama,
+            )
+            from llm_reliability.agents.utils.ollama_utils import (
                 validate_models_exist as _validate_models,
             )
+
             for base_url, models in ollama_models_to_check.items():
                 ok, msg = _check_ollama(base_url)
                 if not ok:
@@ -616,7 +666,9 @@ class ExperimentOrchestrator:
 
         if errors:
             err_summary = "\n".join(f"  • {e}" for e in errors)
-            raise ValueError(f"Pre-flight configuration validation failed with {len(errors)} error(s):\n{err_summary}")
+            raise ValueError(
+                f"Pre-flight configuration validation failed with {len(errors)} error(s):\n{err_summary}"
+            )
 
     # ------------------------------------------------------------------
     # Internal Helpers
@@ -686,13 +738,15 @@ class ExperimentOrchestrator:
             )
 
         if master_summary["failed_experiments"]:
-            md_lines.extend([
-                "",
-                "## Failed Experiments",
-                "",
-                "| ID | Name | Benchmark | Agent | Error |",
-                "|---|---|---|---|---|",
-            ])
+            md_lines.extend(
+                [
+                    "",
+                    "## Failed Experiments",
+                    "",
+                    "| ID | Name | Benchmark | Agent | Error |",
+                    "|---|---|---|---|---|",
+                ]
+            )
             for item in master_summary["failed_experiments"]:
                 err_msg = item.get("error") or str(item.get("errors"))
                 md_lines.append(
@@ -722,6 +776,7 @@ class ExperimentOrchestrator:
 # ---------------------------------------------------------------------------
 # CLI Entry Point
 # ---------------------------------------------------------------------------
+
 
 def main() -> None:
     """CLI entry point for running the Experiment Orchestrator."""
@@ -764,7 +819,9 @@ def main() -> None:
     result = orchestrator.run_from_file(args.config, resume=not args.no_resume)
 
     print("\nOrchestration Run Complete.")
-    print(f"Total: {result['total_experiments']}, Completed: {result['completed_count']}, Failed: {result['failed_count']}")
+    print(
+        f"Total: {result['total_experiments']}, Completed: {result['completed_count']}, Failed: {result['failed_count']}"
+    )
     print(f"Master Summary written to: {args.output_dir}")
 
 

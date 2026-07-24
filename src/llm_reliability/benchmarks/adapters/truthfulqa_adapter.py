@@ -49,7 +49,7 @@ class TruthfulQAAdapter(BaseBenchmarkAdapter):
 
         if path_obj.exists() and path_obj.is_file():
             try:
-                with open(path_obj, "r", encoding="utf-8") as f:
+                with open(path_obj, encoding="utf-8") as f:
                     data = json.load(f)
             except Exception as e:
                 logger.error("Failed to load dataset from %s: %s", dataset_path, e)
@@ -62,7 +62,7 @@ class TruthfulQAAdapter(BaseBenchmarkAdapter):
             for item in data:
                 tid = item.get("task_id", f"truthfulqa_{len(self._tasks)}")
                 question = item.get("question", "")
-                choices = item.get("mc1_targets", item.get("choices", []))
+                item.get("mc1_targets", item.get("choices", []))
                 correct = item.get("correct_answer", item.get("ground_truth_answer", "A"))
                 self._tasks[tid] = {
                     "task_id": tid,
@@ -132,7 +132,9 @@ class TruthfulQAAdapter(BaseBenchmarkAdapter):
             score = 0.0
         else:
             output_lower = str(agent_output).lower().strip()
-            success = expected in output_lower or any(word in output_lower for word in expected.split()[:3])
+            success = expected in output_lower or any(
+                word in output_lower for word in expected.split()[:3]
+            )
             score = 1.0 if success else 0.0
 
         evaluated_at = datetime.now(timezone.utc).isoformat()

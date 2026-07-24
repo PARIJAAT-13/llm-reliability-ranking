@@ -2,8 +2,10 @@
 
 import json
 from datetime import datetime, timezone
+
 import pytest
 from pydantic import ValidationError
+
 from records.ranking_record import RankingRecord
 
 
@@ -19,7 +21,7 @@ def test_ranking_record_instantiation() -> None:
         rankings={"agent-bob": 1, "agent-alice": 2},
         scores={"agent-bob": 0.92, "agent-alice": 0.85},
         created_at=created,
-        metadata={"run": "pilot"}
+        metadata={"run": "pilot"},
     )
     assert record.ranking_id == "rank-123"
     assert record.benchmark == "gsm8k"
@@ -44,7 +46,7 @@ def test_ranking_record_immutability() -> None:
         rankings={"agent-bob": 1},
         scores={"agent-bob": 0.92},
         created_at=created,
-        metadata={}
+        metadata={},
     )
     with pytest.raises(ValidationError):
         record.ranking_name = "Success Ranking"  # type: ignore[misc]
@@ -67,14 +69,14 @@ def test_ranking_record_rejects_unknown_fields() -> None:
             scores={"agent-bob": 0.92},
             created_at=created,
             metadata={},
-            extra_field="invalid"  # type: ignore[call-arg]
+            extra_field="invalid",  # type: ignore[call-arg]
         )
 
 
 def test_ranking_record_empty_fields_validation() -> None:
     """Test that empty values for name, method, metric_ids, rankings, and scores fail."""
     created = datetime(2026, 7, 21, 12, 0, 0, tzinfo=timezone.utc)
-    
+
     # Empty ranking_name
     with pytest.raises(ValidationError):
         RankingRecord(
@@ -183,7 +185,7 @@ def test_ranking_record_deterministic_hash() -> None:
         rankings={"agent-bob": 1, "agent-alice": 2},
         scores={"agent-bob": 0.92, "agent-alice": 0.85},
         created_at=created,
-        metadata={"a": 1, "b": 2}
+        metadata={"a": 1, "b": 2},
     )
     # Different order in metadata dict should not affect hash since canonical JSON sorts keys
     record2 = RankingRecord(
@@ -195,7 +197,7 @@ def test_ranking_record_deterministic_hash() -> None:
         rankings={"agent-alice": 2, "agent-bob": 1},  # reversed dict keys
         scores={"agent-alice": 0.85, "agent-bob": 0.92},
         created_at=created,
-        metadata={"b": 2, "a": 1}
+        metadata={"b": 2, "a": 1},
     )
     assert record1.sha256() == record2.sha256()
 
@@ -209,7 +211,7 @@ def test_ranking_record_deterministic_hash() -> None:
         rankings={"agent-bob": 1, "agent-alice": 2},
         scores={"agent-bob": 0.93, "agent-alice": 0.85},  # modified score
         created_at=created,
-        metadata={"a": 1, "b": 2}
+        metadata={"a": 1, "b": 2},
     )
     assert record1.sha256() != record3.sha256()
 
@@ -226,14 +228,14 @@ def test_ranking_record_round_trip() -> None:
         rankings={"agent-bob": 1},
         scores={"agent-bob": 0.92},
         created_at=created,
-        metadata={"info": {"nested": "value"}}
+        metadata={"info": {"nested": "value"}},
     )
-    
+
     # Dict serialization
     dumped_dict = record.canonical_dict()
     assert isinstance(dumped_dict, dict)
     assert isinstance(dumped_dict["created_at"], str)
-    
+
     # Deserialization from dict
     restored_from_dict = RankingRecord.model_validate(dumped_dict)
     assert record == restored_from_dict
@@ -241,7 +243,7 @@ def test_ranking_record_round_trip() -> None:
     # JSON serialization
     json_str = record.canonical_json()
     assert isinstance(json_str, str)
-    
+
     # Deserialization from JSON
     restored_from_json = RankingRecord.from_canonical_json(json_str)
     assert record == restored_from_json
@@ -260,10 +262,10 @@ def test_ranking_record_canonical_json() -> None:
         rankings={"agent-bob": 1},
         scores={"agent-bob": 0.92},
         created_at=created,
-        metadata={"b": 2, "a": 1}
+        metadata={"b": 2, "a": 1},
     )
     json_str = record.canonical_json()
-    
+
     # Compact format: no spaces in separators
     assert ", " not in json_str
     assert ": " not in json_str

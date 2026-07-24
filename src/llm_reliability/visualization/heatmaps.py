@@ -34,9 +34,9 @@ from typing import Any
 from llm_reliability.visualization.plotter import BasePlotter
 from llm_reliability.visualization.styles import (
     CMAP_DIVERGING,
+    FIG_WIDTH_DOUBLE,
     FONT_SIZE_ANNOTATION,
     FONT_SIZE_TITLE,
-    FIG_WIDTH_DOUBLE,
 )
 
 
@@ -97,7 +97,11 @@ class HeatmapPlotter(BasePlotter):
             _seaborn_available = False
 
         if figsize is None:
-            n = len(labels) if labels else (matrix.shape[0] if hasattr(matrix, "shape") else len(matrix))
+            n = (
+                len(labels)
+                if labels
+                else (matrix.shape[0] if hasattr(matrix, "shape") else len(matrix))
+            )
             side = max(FIG_WIDTH_DOUBLE * 0.5, min(FIG_WIDTH_DOUBLE, n * 0.6))
             figsize = (side, side * 0.85)
 
@@ -105,6 +109,7 @@ class HeatmapPlotter(BasePlotter):
 
         try:
             import pandas as pd
+
             if not isinstance(matrix, pd.DataFrame):
                 arr = np.array(matrix, dtype=float)
                 df = pd.DataFrame(arr, index=labels, columns=labels)
@@ -112,11 +117,13 @@ class HeatmapPlotter(BasePlotter):
                 df = matrix
         except ImportError:
             import numpy as np
+
             arr = np.array(matrix, dtype=float)
             df = arr
 
         if _seaborn_available:
             import seaborn as sns
+
             sns.heatmap(
                 df,
                 ax=ax,
@@ -138,8 +145,11 @@ class HeatmapPlotter(BasePlotter):
             for i in range(arr_np.shape[0]):
                 for j in range(arr_np.shape[1]):
                     ax.text(
-                        j, i, f"{arr_np[i, j]:{fmt}}",
-                        ha="center", va="center",
+                        j,
+                        i,
+                        f"{arr_np[i, j]:{fmt}}",
+                        ha="center",
+                        va="center",
                         fontsize=FONT_SIZE_ANNOTATION,
                         color="white" if abs(arr_np[i, j]) > 0.5 else "black",
                     )
@@ -178,14 +188,18 @@ class HeatmapPlotter(BasePlotter):
 
         methods = list(correlations.keys())
         n = len(methods)
-        matrix = np.zeros((n, n))
+        matrix = np.eye(n)
         for i, m in enumerate(methods):
             result = correlations[m]
             coeff = result.coefficient if hasattr(result, "coefficient") else float(result)
             matrix[i, i] = coeff
-            for j, m2 in enumerate(methods):
-                if i != j:
-                    matrix[i, j] = coeff  # symmetric display
+            for j in range(i):
+                m2 = methods[j]
+                r2 = correlations[m2]
+                c2 = r2.coefficient if hasattr(r2, "coefficient") else float(r2)
+                cross = (coeff + c2) / 2
+                matrix[i, j] = cross
+                matrix[j, i] = cross
 
         return self.plot(matrix, labels=methods, title=title)
 
@@ -217,6 +231,7 @@ class HeatmapPlotter(BasePlotter):
 
         try:
             import pandas as pd
+
             df = pd.DataFrame(score_matrix, index=agent_names).T
             corr = df.corr(method=method)
         except ImportError:

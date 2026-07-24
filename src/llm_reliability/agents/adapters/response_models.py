@@ -22,4 +22,6 @@ class LLMResponse(SerializableModel):
     tokens_output: int = Field(ge=0, description="Number of tokens in the generated output.")
     model_name: str = Field(min_length=1, description="Identifier of the model used.")
     provider: str = Field(min_length=1, description="Name of the LLM provider.")
-    metadata: dict[str, Any] = Field(default_factory=dict, description="Provider-specific metadata.")
+    metadata: dict[str, Any] = Field(
+        default_factory=dict, description="Provider-specific metadata."
+    )

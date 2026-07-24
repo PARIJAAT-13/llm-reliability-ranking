@@ -1,8 +1,8 @@
 # Peer Review Report (Program Committee Evaluation)
 
-**Paper Title**: LLM Reliability Ranking Framework: Benchmarking Local Open-Weights Language Models Under Hardware Memory Constraints  
-**Reviewer Role**: Program Committee Member (Top-Tier AI Conference: ICLR / NeurIPS / EMNLP)  
-**Primary Track**: LLM Systems, Benchmarking, & Reliability Engineering  
+**Paper Title**: LLM Reliability Ranking Framework: Benchmarking Local Open-Weights Language Models Under Hardware Memory Constraints
+**Reviewer Role**: Program Committee Member (Top-Tier AI Conference: ICLR / NeurIPS / EMNLP)
+**Primary Track**: LLM Systems, Benchmarking, & Reliability Engineering
 
 ---
 

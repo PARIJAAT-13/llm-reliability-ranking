@@ -4,10 +4,10 @@ Reliability Ranking Strategy.
 Ranks agents based on their composite reliability.
 """
 
+from llm_reliability.ranking.ranking_strategy import RankingStrategy
+from llm_reliability.ranking.utils import sort_and_rank, validate_metrics
 from llm_reliability.records.metric import MetricRecord
 from llm_reliability.records.ranking import RankingRecord
-from llm_reliability.ranking.ranking_strategy import RankingStrategy
-from llm_reliability.ranking.utils import validate_metrics, sort_and_rank
 
 
 class ReliabilityRanker(RankingStrategy):
@@ -29,7 +29,7 @@ class ReliabilityRanker(RankingStrategy):
             Reliability-based rankings.
         """
         validate_metrics(metrics)
-        
+
         # Ensure composite_reliability is not missing/None
         for m in metrics:
             if m.composite_reliability is None:

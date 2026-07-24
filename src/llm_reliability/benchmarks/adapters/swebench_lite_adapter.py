@@ -37,15 +37,13 @@ class SWEBenchLiteAdapter(BaseBenchmarkAdapter):
         """Validate SWE-bench Lite specific configuration."""
         super().validate_configuration()
         if not self.config.metadata.get("dataset_path"):
-            raise ValueError(
-                "Configuration metadata must contain 'dataset_path' for SWEBenchLite."
-            )
+            raise ValueError("Configuration metadata must contain 'dataset_path' for SWEBenchLite.")
 
     def _load_tasks(self) -> None:
         """Load and validate the SWE-bench Lite dataset."""
         dataset_path = self.config.metadata["dataset_path"]
         try:
-            with open(dataset_path, "r", encoding="utf-8") as f:
+            with open(dataset_path, encoding="utf-8") as f:
                 data = json.load(f)
         except Exception as e:
             logger.error("Failed to load dataset from %s: %s", dataset_path, e)

@@ -79,8 +79,7 @@ class FigureExporter:
         fmt = fmt.lower().lstrip(".")
         if fmt not in cls.SUPPORTED_FORMATS:
             raise ValueError(
-                f"Unsupported figure format '{fmt}'. "
-                f"Choose from {cls.SUPPORTED_FORMATS}."
+                f"Unsupported figure format '{fmt}'. " f"Choose from {cls.SUPPORTED_FORMATS}."
             )
 
         dest = pathlib.Path(path).with_suffix(f".{fmt}")
@@ -91,6 +90,7 @@ class FigureExporter:
         if close:
             try:
                 import matplotlib.pyplot as plt
+
                 plt.close(fig)
             except ImportError:
                 pass
@@ -195,8 +195,7 @@ class TableExporter:
             df.to_excel(dest, sheet_name=sheet_name, index=index, **kwargs)
         except ImportError as exc:
             raise ImportError(
-                "openpyxl is required for Excel export. "
-                "Install it with: pip install openpyxl"
+                "openpyxl is required for Excel export. " "Install it with: pip install openpyxl"
             ) from exc
         logger.debug("Table saved (Excel): %s", dest)
         return dest

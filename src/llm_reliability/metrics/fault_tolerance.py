@@ -49,9 +49,7 @@ def compute_fault_tolerance(evaluations: list[EvaluationRecord]) -> float:
     faulted = [ev for ev in evaluations if ev.fault_injected]
 
     if not faulted:
-        raise ValueError(
-            "No fault-injected evaluations found. Cannot compute fault_tolerance."
-        )
+        raise ValueError("No fault-injected evaluations found. Cannot compute fault_tolerance.")
 
     normal_sr = float(np.mean([ev.score for ev in normal])) if normal else 0.0
     fault_sr = float(np.mean([ev.score for ev in faulted]))

@@ -4,7 +4,9 @@ import json
 
 import pytest
 
-from llm_reliability.benchmarks.adapters.swebench_lite_adapter import SWEBenchLiteAdapter
+from llm_reliability.benchmarks.adapters.swebench_lite_adapter import (
+    SWEBenchLiteAdapter,
+)
 from llm_reliability.benchmarks.adapters.swebench_utils import normalize_patch
 from llm_reliability.configs.config import Configuration
 from tests.contracts.test_agent_contract import ValidAgent

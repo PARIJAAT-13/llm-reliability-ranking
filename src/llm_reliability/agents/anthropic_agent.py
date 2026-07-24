@@ -33,7 +33,11 @@ from typing import Any
 from llm_reliability.agents.adapters.base_llm_adapter import BaseLLMAdapter
 from llm_reliability.agents.adapters.exceptions import (
     AuthenticationError,
+)
+from llm_reliability.agents.adapters.exceptions import (
     ConnectionError as ProviderConnectionError,
+)
+from llm_reliability.agents.adapters.exceptions import (
     ProviderError,
     RateLimitError,
     ResponseValidationError,
@@ -83,9 +87,7 @@ class _AnthropicAdapter(BaseLLMAdapter):
 
         api_key = os.environ.get("ANTHROPIC_API_KEY")
         if not api_key:
-            raise AuthenticationError(
-                "ANTHROPIC_API_KEY environment variable is not set."
-            )
+            raise AuthenticationError("ANTHROPIC_API_KEY environment variable is not set.")
 
         kwargs: dict[str, Any] = {"api_key": api_key}
         base_url = os.environ.get("ANTHROPIC_BASE_URL")
@@ -95,7 +97,9 @@ class _AnthropicAdapter(BaseLLMAdapter):
         self._client = anthropic.Anthropic(**kwargs)
         logger.info(
             "Anthropic client initialised (model=%s, temperature=%.2f, max_tokens=%d).",
-            self._model, self._temperature, self._max_tokens,
+            self._model,
+            self._temperature,
+            self._max_tokens,
         )
 
     def generate(self, request: LLMRequest) -> LLMResponse:
@@ -194,9 +198,12 @@ class AnthropicAgent(Runtime):
                 config.metadata.get("requests_per_second", DEFAULT_REQUESTS_PER_SECOND)
             )
         )
-        logger.debug("AnthropicAgent created (model=%s, seed=%d, retries=%d).",
-                     config.metadata.get("model", config.llm) or DEFAULT_MODEL,
-                     config.seed, self._max_retries)
+        logger.debug(
+            "AnthropicAgent created (model=%s, seed=%d, retries=%d).",
+            config.metadata.get("model", config.llm) or DEFAULT_MODEL,
+            config.seed,
+            self._max_retries,
+        )
 
     def initialize(self) -> None:
         logger.info("Initialising AnthropicAgent.")
@@ -216,13 +223,21 @@ class AnthropicAgent(Runtime):
             seed=None,  # Anthropic does not support seed parameter
             system_prompt=self._config.metadata.get("system_prompt"),
         )
-        logger.info("AnthropicAgent.run: task_id=%r, model=%s, prompt_len=%d.",
-                    task.get("task_id", "<unknown>"), self._adapter._model, len(prompt))
+        logger.info(
+            "AnthropicAgent.run: task_id=%r, model=%s, prompt_len=%d.",
+            task.get("task_id", "<unknown>"),
+            self._adapter._model,
+            len(prompt),
+        )
         self._rate_limiter.acquire()
-        response = self._adapter.retry(request, max_attempts=self._max_retries,
-                                       backoff_seconds=self._retry_backoff)
-        logger.info("AnthropicAgent.run complete: task_id=%r, finish=%s.",
-                    task.get("task_id", "<unknown>"), response.finish_reason)
+        response = self._adapter.retry(
+            request, max_attempts=self._max_retries, backoff_seconds=self._retry_backoff
+        )
+        logger.info(
+            "AnthropicAgent.run complete: task_id=%r, finish=%s.",
+            task.get("task_id", "<unknown>"),
+            response.finish_reason,
+        )
         return response.text
 
     def shutdown(self) -> None:
@@ -250,8 +265,10 @@ class AnthropicAgent(Runtime):
         fallback = str(task).strip()
         if not fallback or fallback == "{}":
             raise ValueError(f"Cannot extract a prompt from task dict: {task!r}.")
-        logger.warning("No standard prompt key found in task %r; using str(task).",
-                       task.get("task_id", "<unknown>"))
+        logger.warning(
+            "No standard prompt key found in task %r; using str(task).",
+            task.get("task_id", "<unknown>"),
+        )
         return fallback
 
 

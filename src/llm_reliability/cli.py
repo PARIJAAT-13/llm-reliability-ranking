@@ -47,6 +47,7 @@ def _validate_config(args: argparse.Namespace) -> None:
 
     try:
         from llm_reliability.experiments.experiment_models import ExperimentSpec
+
         data = path.read_text(encoding="utf-8")
         spec = ExperimentSpec.from_canonical_json(data)
         print(f"Config valid: {spec.experiment_name} ({spec.experiment_id})")
@@ -61,6 +62,7 @@ def _validate_config(args: argparse.Namespace) -> None:
 def _clear_cache(args: argparse.Namespace) -> None:
     """Clear the experiment cache."""
     from llm_reliability.cache import ExperimentCache
+
     cache = ExperimentCache()
     cache.clear()
     print("Cache cleared.")
@@ -96,7 +98,9 @@ def _run_experiment(args: argparse.Namespace) -> None:
 
     runner = ExperimentRunner(spec, agent_factory=agent_factory, cache=cache_to_pass)
     status = runner.run()
-    print(f"Experiment {status.state}: {status.completed_runs} completed, {status.failed_runs} failed")
+    print(
+        f"Experiment {status.state}: {status.completed_runs} completed, {status.failed_runs} failed"
+    )
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -105,9 +109,7 @@ def main(argv: list[str] | None = None) -> None:
         prog="llm-reliability",
         description="LLM Reliability Ranking — evaluate and rank LLM agents",
     )
-    parser.add_argument(
-        "--version", action="store_true", help="Show version and exit"
-    )
+    parser.add_argument("--version", action="store_true", help="Show version and exit")
 
     sub = parser.add_subparsers(dest="command", help="Available commands")
 
@@ -118,10 +120,14 @@ def main(argv: list[str] | None = None) -> None:
 
     p_list = sub.add_parser("list", help="List registered items")
     p_list.add_argument(
-        "what", type=str, choices=["benchmarks", "runtimes"],
+        "what",
+        type=str,
+        choices=["benchmarks", "runtimes"],
         help="What to list",
     )
-    p_list.set_defaults(func=lambda a: _list_benchmarks(a) if a.what == "benchmarks" else _list_runtimes(a))
+    p_list.set_defaults(
+        func=lambda a: _list_benchmarks(a) if a.what == "benchmarks" else _list_runtimes(a)
+    )
 
     p_validate = sub.add_parser("validate", help="Validate a config file")
     p_validate.add_argument("config", type=str, help="Path to experiment config JSON")

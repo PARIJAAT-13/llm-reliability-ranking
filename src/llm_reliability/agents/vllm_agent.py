@@ -44,6 +44,7 @@ class _VLLMAdapter(BaseLLMAdapter):
     def initialize(self) -> None:
         try:
             from openai import OpenAI
+
             self._client = OpenAI(base_url=self._base_url, api_key="vllm")
         except ImportError as exc:
             raise ImportError("The 'openai' package is required for VLLMAgent.") from exc

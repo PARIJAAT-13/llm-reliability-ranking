@@ -1,0 +1,16 @@
+\begin{table}[t]
+\centering
+\caption{Error analysis: failure categorization with frequency, primary agent, severity, and recommended mitigation.}
+\label{tab:errors}
+\begin{tabular}{llllll}
+\toprule
+Category & Count & \% & Primary Agent & Severity & Mitigation \\
+\midrule
+Fault Injection Failure & 3240 & 10.13\% & MockAgent & Unknown & Further investigation required \\
+Instruction Following & 174 & 0.54\% & llama & Moderate & Improved system prompts, few-shot exampl \\
+Model Capability Limit & 54 & 0.17\% & ollama:phi3:mini & Moderate & Use larger models for complex tasks, imp \\
+Unknown & 30 & 0.09\% & google & Unknown & Further investigation required \\
+Task Difficulty & 16 & 0.05\% & ollama:llama3.1:8b & Minor & Task decomposition, chain-of-thought pro \\
+\bottomrule
+\end{tabular}
+\end{table}

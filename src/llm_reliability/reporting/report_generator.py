@@ -30,10 +30,10 @@ from __future__ import annotations
 import pathlib
 from typing import Literal
 
-from llm_reliability.reporting.summary import ExperimentSummary
-from llm_reliability.reporting.markdown_report import MarkdownReportWriter
-from llm_reliability.reporting.latex_report import LaTeXReportWriter
 from llm_reliability.reporting.html_report import HTMLReportWriter
+from llm_reliability.reporting.latex_report import LaTeXReportWriter
+from llm_reliability.reporting.markdown_report import MarkdownReportWriter
+from llm_reliability.reporting.summary import ExperimentSummary
 from llm_reliability.visualization.tables import TableGenerator
 
 ReportFormat = Literal["markdown", "latex", "html"]

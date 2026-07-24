@@ -40,10 +40,10 @@ from pydantic import BaseModel, Field
 from llm_reliability.records.ranking import RankingRecord
 from llm_reliability.statistics.utils import validate_rankings
 
-
 # ---------------------------------------------------------------------------
 # Result model
 # ---------------------------------------------------------------------------
+
 
 class RankingDivergenceResult(BaseModel):
     """Pairwise ranking divergence metrics.
@@ -89,6 +89,7 @@ class RankingDivergenceResult(BaseModel):
 # ---------------------------------------------------------------------------
 # Core computation functions
 # ---------------------------------------------------------------------------
+
 
 def compute_ranking_overlap(
     ranking1: RankingRecord,
@@ -177,16 +178,12 @@ def compute_rank_displacement(
         Both are 0 when fewer than 2 agents exist.
     """
     validate_rankings(ranking1, ranking2)
-    shared_agents = sorted(
-        set(ranking1.rank_map) & set(ranking2.rank_map)
-    )
+    shared_agents = sorted(set(ranking1.rank_map) & set(ranking2.rank_map))
 
     if not shared_agents:
         return 0.0, 0
 
-    displacements = [
-        abs(ranking1.rank_map[a] - ranking2.rank_map[a]) for a in shared_agents
-    ]
+    displacements = [abs(ranking1.rank_map[a] - ranking2.rank_map[a]) for a in shared_agents]
     return (
         sum(displacements) / len(displacements),
         max(displacements),
@@ -196,6 +193,7 @@ def compute_rank_displacement(
 # ---------------------------------------------------------------------------
 # Convenience analyser
 # ---------------------------------------------------------------------------
+
 
 def analyze_ranking_divergence(
     ranking1: RankingRecord,
@@ -252,6 +250,7 @@ def analyze_ranking_divergence(
 # ---------------------------------------------------------------------------
 # Helper
 # ---------------------------------------------------------------------------
+
 
 def _sign(x: float) -> int:
     """Return −1, 0, or +1."""

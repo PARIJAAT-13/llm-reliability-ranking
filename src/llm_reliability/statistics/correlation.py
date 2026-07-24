@@ -40,11 +40,12 @@ def compute_kendall_tau(
     """Compute Kendall's Tau correlation coefficient and p-value."""
     x, y = _align_ranking_scores(ranking1, ranking2)
     res = kendalltau(x, y)
-    
+
     import math
+
     coefficient = float(res.statistic) if not math.isnan(res.statistic) else 0.0
     p_value = float(res.pvalue) if not math.isnan(res.pvalue) else 1.0
-    
+
     if len(x) < 2:
         coefficient, p_value = 1.0, 1.0
 
@@ -62,8 +63,9 @@ def compute_spearman(
     """Compute Spearman's rank correlation coefficient and p-value."""
     x, y = _align_ranking_scores(ranking1, ranking2)
     res = spearmanr(x, y)
-    
+
     import math
+
     coefficient = float(res.statistic) if not math.isnan(res.statistic) else 0.0
     p_value = float(res.pvalue) if not math.isnan(res.pvalue) else 1.0
 

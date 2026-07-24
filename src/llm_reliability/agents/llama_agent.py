@@ -38,7 +38,11 @@ from typing import Any
 from llm_reliability.agents.adapters.base_llm_adapter import BaseLLMAdapter
 from llm_reliability.agents.adapters.exceptions import (
     AuthenticationError,
+)
+from llm_reliability.agents.adapters.exceptions import (
     ConnectionError as ProviderConnectionError,
+)
+from llm_reliability.agents.adapters.exceptions import (
     ProviderError,
     RateLimitError,
     ResponseValidationError,
@@ -54,9 +58,9 @@ from llm_reliability.runtime.registry import RuntimeRegistry
 logger = logging.getLogger(__name__)
 
 DEFAULT_MODEL: str = "meta-llama/Llama-3.3-70B-Instruct"
-DEFAULT_TEMPERATURE: float = 0.01   # HF serverless requires > 0 for most Llama models
+DEFAULT_TEMPERATURE: float = 0.01  # HF serverless requires > 0 for most Llama models
 DEFAULT_MAX_TOKENS: int = 1024
-DEFAULT_REQUESTS_PER_SECOND: float = 1.0   # HF serverless rate limits are conservative
+DEFAULT_REQUESTS_PER_SECOND: float = 1.0  # HF serverless rate limits are conservative
 LLAMA_AGENT_VERSION: str = "1.0"
 
 _PROMPT_KEYS: tuple[str, ...] = ("prompt", "question", "problem_statement")
@@ -78,7 +82,7 @@ class _LlamaAdapter(BaseLLMAdapter):
             configured_model = "llama3.1:8b"
         self._model = configured_model
         # Accept short names like "llama-3.3-70b" and expand to full HF path
-       
+
         raw_temp = float(config.metadata.get("temperature", DEFAULT_TEMPERATURE))
         # Apply minimum temperature floor for HF serverless compatibility
         self._temperature = max(raw_temp, _MIN_TEMPERATURE)
@@ -90,19 +94,20 @@ class _LlamaAdapter(BaseLLMAdapter):
             from openai import OpenAI  # noqa: PLC0415
         except ImportError as exc:
             raise ImportError(
-    "The 'openai' package is required for LlamaAgent. "
-    "Install with: pip install openai"
-) from exc
+                "The 'openai' package is required for LlamaAgent. "
+                "Install with: pip install openai"
+            ) from exc
 
         self._client = OpenAI(
-    base_url="http://127.0.0.1:11434/v1",
-    api_key="ollama",
-)
-    
+            base_url="http://127.0.0.1:11434/v1",
+            api_key="ollama",
+        )
 
         logger.info(
             "Llama client initialised (model=%s, temperature=%.4f, max_tokens=%d).",
-            self._model, self._temperature, self._max_tokens,
+            self._model,
+            self._temperature,
+            self._max_tokens,
         )
 
     def generate(self, request: LLMRequest) -> LLMResponse:
@@ -174,13 +179,11 @@ class _LlamaAdapter(BaseLLMAdapter):
         try:
             # Minimal inference call with a tiny prompt to verify connectivity
             self._client.chat.completions.create(
-    model=self._model,
-    messages=[
-        {"role": "user", "content": "ping"}
-    ],
-    max_tokens=5,
-    temperature=_MIN_TEMPERATURE,
-)
+                model=self._model,
+                messages=[{"role": "user", "content": "ping"}],
+                max_tokens=5,
+                temperature=_MIN_TEMPERATURE,
+            )
             return True
         except Exception as exc:  # noqa: BLE001
             logger.warning("Llama health check failed: %s", exc)
@@ -220,13 +223,20 @@ class LlamaAgent(Runtime):
             max_tokens=int(self._config.metadata.get("max_tokens", DEFAULT_MAX_TOKENS)),
             system_prompt=self._config.metadata.get("system_prompt"),
         )
-        logger.info("LlamaAgent.run: task_id=%r, prompt_len=%d.",
-                    task.get("task_id", "<unknown>"), len(prompt))
+        logger.info(
+            "LlamaAgent.run: task_id=%r, prompt_len=%d.",
+            task.get("task_id", "<unknown>"),
+            len(prompt),
+        )
         self._rate_limiter.acquire()
-        response = self._adapter.retry(request, max_attempts=self._max_retries,
-                                       backoff_seconds=self._retry_backoff)
-        logger.info("LlamaAgent.run complete: task_id=%r, finish=%s.",
-                    task.get("task_id", "<unknown>"), response.finish_reason)
+        response = self._adapter.retry(
+            request, max_attempts=self._max_retries, backoff_seconds=self._retry_backoff
+        )
+        logger.info(
+            "LlamaAgent.run complete: task_id=%r, finish=%s.",
+            task.get("task_id", "<unknown>"),
+            response.finish_reason,
+        )
         return response.text
 
     def shutdown(self) -> None:

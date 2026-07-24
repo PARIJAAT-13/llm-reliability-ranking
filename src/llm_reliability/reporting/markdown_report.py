@@ -148,7 +148,9 @@ class MarkdownReportWriter:
         # Success vs reliability divergence
         bench_findings = []
         for bench in s.benchmarks:
-            bench_findings.append(f"- Benchmark **{bench}**: {len(s.metrics_for_benchmark(bench))} agents evaluated.")
+            bench_findings.append(
+                f"- Benchmark **{bench}**: {len(s.metrics_for_benchmark(bench))} agents evaluated."
+            )
 
         lines.extend(bench_findings if bench_findings else ["- No benchmark data available."])
 
@@ -157,7 +159,11 @@ class MarkdownReportWriter:
             if corrs:
                 for name, cr in corrs.items():
                     coeff = cr.coefficient
-                    interp = "strong" if abs(coeff) > 0.7 else ("moderate" if abs(coeff) > 0.4 else "weak")
+                    interp = (
+                        "strong"
+                        if abs(coeff) > 0.7
+                        else ("moderate" if abs(coeff) > 0.4 else "weak")
+                    )
                     lines.append(
                         f"- {name.replace('_', ' ').title()}: coefficient = {coeff:.4f} ({interp} correlation)."
                     )
@@ -405,6 +411,7 @@ class MarkdownReportWriter:
         if s.config_snapshot:
             lines.append("```json")
             import json
+
             lines.append(json.dumps(s.config_snapshot, indent=2, default=str))
             lines.append("```")
         else:

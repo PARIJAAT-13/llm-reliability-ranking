@@ -136,7 +136,9 @@ class FaultReportGenerator:
             rec_rate = rec / attempts if attempts > 0 else 0.0
             fail_rate = fail / attempts if attempts > 0 else 0.0
 
-            rec_latencies = [t.latency_seconds for t in group if t.recovery_status in ("success", "partial")]
+            rec_latencies = [
+                t.latency_seconds for t in group if t.recovery_status in ("success", "partial")
+            ]
             avg_lat = sum(rec_latencies) / len(rec_latencies) if rec_latencies else 0.0
 
             by_fault_type[fname] = FaultTypeMetrics(

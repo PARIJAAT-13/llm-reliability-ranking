@@ -6,6 +6,7 @@ and validation of statistical metrics.
 """
 
 from typing import Any
+
 from pydantic import BaseModel, Field, field_validator
 
 
@@ -24,8 +25,12 @@ class HypothesisTestResult(BaseModel):
     p_value: float = Field(..., ge=0.0, le=1.0, description="P-value of the test.")
     method: str = Field(..., description="Name of the test.")
     alternative: str = Field("two-sided", description="Alternative hypothesis.")
-    assumptions_met: bool = Field(..., description="Whether the statistical assumptions were satisfied.")
-    warnings: list[str] = Field(default_factory=list, description="Warnings regarding assumptions or sample sizes.")
+    assumptions_met: bool = Field(
+        ..., description="Whether the statistical assumptions were satisfied."
+    )
+    warnings: list[str] = Field(
+        default_factory=list, description="Warnings regarding assumptions or sample sizes."
+    )
 
 
 class EffectSizeResult(BaseModel):
@@ -33,7 +38,9 @@ class EffectSizeResult(BaseModel):
 
     value: float = Field(..., description="Calculated effect size value.")
     method: str = Field(..., description="Name of the effect size metric.")
-    interpretation: str = Field(..., description="Qualitative interpretation (e.g., small, medium, large).")
+    interpretation: str = Field(
+        ..., description="Qualitative interpretation (e.g., small, medium, large)."
+    )
 
 
 class ConfidenceIntervalResult(BaseModel):
@@ -41,7 +48,9 @@ class ConfidenceIntervalResult(BaseModel):
 
     lower: float = Field(..., description="Lower bound of the confidence interval.")
     upper: float = Field(..., description="Upper bound of the confidence interval.")
-    confidence_level: float = Field(0.95, ge=0.0, le=1.0, description="Confidence level (e.g., 0.95).")
+    confidence_level: float = Field(
+        0.95, ge=0.0, le=1.0, description="Confidence level (e.g., 0.95)."
+    )
 
     @field_validator("confidence_level")
     @classmethod
@@ -69,26 +78,20 @@ class StatisticalReport(BaseModel):
     """Comprehensive report containing all generated statistical outputs."""
 
     summary_statistics: dict[str, SummaryStatistics] = Field(
-        ...,
-        description="Summary statistics mapped by variable/group name."
+        ..., description="Summary statistics mapped by variable/group name."
     )
     correlations: dict[str, CorrelationResult] = Field(
-        default_factory=dict,
-        description="Correlation results mapped by analysis name."
+        default_factory=dict, description="Correlation results mapped by analysis name."
     )
     hypothesis_tests: list[HypothesisTestResult] = Field(
-        default_factory=list,
-        description="Hypothesis test results."
+        default_factory=list, description="Hypothesis test results."
     )
     effect_sizes: list[EffectSizeResult] = Field(
-        default_factory=list,
-        description="Effect size calculations."
+        default_factory=list, description="Effect size calculations."
     )
     confidence_intervals: dict[str, ConfidenceIntervalResult] = Field(
-        default_factory=dict,
-        description="Confidence intervals mapped by variable name."
+        default_factory=dict, description="Confidence intervals mapped by variable name."
     )
     metadata: dict[str, Any] = Field(
-        default_factory=dict,
-        description="Additional context such as sample sizes and timestamps."
+        default_factory=dict, description="Additional context such as sample sizes and timestamps."
     )

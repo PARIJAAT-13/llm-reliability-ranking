@@ -11,7 +11,6 @@ import time
 from typing import Any
 
 from llm_reliability.agents.adapters.base_llm_adapter import BaseLLMAdapter
-from llm_reliability.agents.adapters.exceptions import ProviderError
 from llm_reliability.agents.adapters.provider_registry import ProviderRegistry
 from llm_reliability.agents.adapters.request_models import LLMRequest
 from llm_reliability.agents.adapters.response_models import LLMResponse
@@ -42,6 +41,7 @@ class _HuggingFaceAdapter(BaseLLMAdapter):
     def initialize(self) -> None:
         try:
             import transformers
+
             # Optional pipeline initialization with CPU fallback
             self._pipeline = transformers.pipeline(
                 "text-generation",
@@ -49,7 +49,11 @@ class _HuggingFaceAdapter(BaseLLMAdapter):
                 device_map="auto" if transformers.is_torch_available() else None,
             )
         except Exception as exc:
-            logger.warning("Could not initialize local HF pipeline for %s: %s. Using pipeline fallback.", self._model, exc)
+            logger.warning(
+                "Could not initialize local HF pipeline for %s: %s. Using pipeline fallback.",
+                self._model,
+                exc,
+            )
 
         logger.info("Initializing HuggingFaceTransformersAgent (model=%s).", self._model)
 
@@ -62,9 +66,11 @@ class _HuggingFaceAdapter(BaseLLMAdapter):
         t0 = time.perf_counter()
         if self._pipeline:
             try:
-                out = self._pipeline(prompt, max_new_tokens=request.max_tokens, do_sample=request.temperature > 0)
+                out = self._pipeline(
+                    prompt, max_new_tokens=request.max_tokens, do_sample=request.temperature > 0
+                )
                 text = out[0]["generated_text"]
-            except Exception as exc:
+            except Exception:
                 text = f"[HF Transformers offline output for prompt: {prompt[:30]}...]"
         else:
             text = f"[HF Transformers pipeline fallback for prompt: {prompt[:30]}...]"

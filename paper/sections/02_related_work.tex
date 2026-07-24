@@ -1,0 +1,18 @@
+% !TEX root = ../main.tex
+\section{Related Work}
+
+\subsection{LLM Evaluation Benchmarks}
+
+The evaluation of LLMs has evolved rapidly from general knowledge benchmarks (MMLU~\cite{hendrycks2021measuring}, HellaSwag~\cite{zellers2019hellaswag}) to specialized agentic benchmarks. AgentBoard~\cite{ma2024agentboard} provides a fine-grained evaluation framework for LLM agents across diverse tasks. GAIA~\cite{mialon2023gaia} focuses on general AI assistants with real-world tasks requiring multi-step reasoning. SWE-bench Lite~\cite{jimenez2024swebench} evaluates LLMs on real software engineering tasks drawn from GitHub issues. While these benchmarks measure task completion accuracy, they largely overlook reliability under perturbed or adversarial conditions.
+
+\subsection{LLM Reliability and Robustness}
+
+Prior work on LLM reliability has focused primarily on calibration~\cite{guo2017calibration} and uncertainty estimation~\cite{kadavath2022language}. Recent studies have examined robustness to adversarial prompts~\cite{zou2023universal} and distribution shift~\cite{hendrycks2021measuring}. However, systematic fault injection and perturbation analysis across multiple reliability dimensions remains underexplored. Wang et al.~\cite{wang2023selfconsistency} introduced self-consistency as a decoding strategy, but did not evaluate it as a reliability metric across models.
+
+\subsection{Fault Tolerance in LLM Systems}
+
+Production LLM systems must handle API failures, network interruptions, and timeout errors. Recent work on LLM serving systems~\cite{kwon2023efficient} addresses latency and throughput but not fault recovery. Our work introduces controlled fault injection during evaluation, providing the first systematic comparison of LLM fault recovery behaviors.
+
+\subsection{Ranking and Aggregation Methods}
+
+Aggregating evaluation results across multiple benchmarks and metrics remains challenging. The Borda count method~\cite{borda1781memoire} has been applied in various NLP contexts~\cite{chowdhury2023borda} to produce consensus rankings. We extend this approach to reliability-specific metrics, combining rankings from success rate, perturbation robustness, and fault tolerance into a unified reliability ranking.

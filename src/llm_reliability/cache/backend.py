@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-import json
 import logging
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from llm_reliability.pipeline.experiment_pipeline import ExperimentResult
@@ -18,24 +17,19 @@ class CacheBackend(ABC):
     """Abstract interface for experiment result cache storage."""
 
     @abstractmethod
-    def get(self, key: str) -> ExperimentResult | None:
-        ...
+    def get(self, key: str) -> ExperimentResult | None: ...
 
     @abstractmethod
-    def set(self, key: str, result: ExperimentResult) -> None:
-        ...
+    def set(self, key: str, result: ExperimentResult) -> None: ...
 
     @abstractmethod
-    def exists(self, key: str) -> bool:
-        ...
+    def exists(self, key: str) -> bool: ...
 
     @abstractmethod
-    def invalidate(self, key: str) -> None:
-        ...
+    def invalidate(self, key: str) -> None: ...
 
     @abstractmethod
-    def clear(self) -> None:
-        ...
+    def clear(self) -> None: ...
 
 
 class FileSystemCacheBackend(CacheBackend):
@@ -54,6 +48,7 @@ class FileSystemCacheBackend(CacheBackend):
 
     def get(self, key: str) -> ExperimentResult | None:
         from llm_reliability.pipeline.experiment_pipeline import ExperimentResult
+
         path = self._path(key)
         if not path.exists():
             return None

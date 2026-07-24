@@ -33,7 +33,6 @@ import pathlib
 from datetime import date
 from typing import Any
 
-
 _CFF_TEMPLATE = """\
 cff-version: "1.2.0"
 message: "If you use this software, please cite it as below."
@@ -140,6 +139,7 @@ class CitationGenerator:
         """
         try:
             import yaml
+
             return yaml.dump(cff, allow_unicode=True, default_flow_style=False, sort_keys=False)
         except ImportError:
             # Hand-format a valid YAML string without pyyaml

@@ -1,9 +1,9 @@
 # Comprehensive Scientific Audit & Peer Review Report
 
-**Paper Title**: Benchmarking Local Open-Weights Language Models Under Hardware Memory Constraints: A Reliability Ranking Framework  
-**Authors**: Parijaat Srivastava, Pooja Mourya  
-**Affiliation**: Independent Researcher  
-**Target Venues**: NeurIPS, ICML, ICLR, ACL, EMNLP, NAACL, AAAI  
+**Paper Title**: Benchmarking Local Open-Weights Language Models Under Hardware Memory Constraints: A Reliability Ranking Framework
+**Authors**: Parijaat Srivastava, Pooja Mourya
+**Affiliation**: Independent Researcher
+**Target Venues**: NeurIPS, ICML, ICLR, ACL, EMNLP, NAACL, AAAI
 
 ---
 

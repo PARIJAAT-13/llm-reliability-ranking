@@ -31,7 +31,11 @@ from typing import Any
 from llm_reliability.agents.adapters.base_llm_adapter import BaseLLMAdapter
 from llm_reliability.agents.adapters.exceptions import (
     AuthenticationError,
+)
+from llm_reliability.agents.adapters.exceptions import (
     ConnectionError as ProviderConnectionError,
+)
+from llm_reliability.agents.adapters.exceptions import (
     ProviderError,
     RateLimitError,
     ResponseValidationError,
@@ -95,7 +99,9 @@ class _GeminiAdapter(BaseLLMAdapter):
         self._genai = genai
         logger.info(
             "Gemini client initialised (model=%s, temperature=%.2f, max_tokens=%d).",
-            self._model_name, self._temperature, self._max_tokens,
+            self._model_name,
+            self._temperature,
+            self._max_tokens,
         )
 
     def generate(self, request: LLMRequest) -> LLMResponse:
@@ -209,13 +215,20 @@ class GeminiAgent(Runtime):
             max_tokens=int(self._config.metadata.get("max_tokens", DEFAULT_MAX_TOKENS)),
             system_prompt=self._config.metadata.get("system_prompt"),
         )
-        logger.info("GeminiAgent.run: task_id=%r, prompt_len=%d.",
-                    task.get("task_id", "<unknown>"), len(prompt))
+        logger.info(
+            "GeminiAgent.run: task_id=%r, prompt_len=%d.",
+            task.get("task_id", "<unknown>"),
+            len(prompt),
+        )
         self._rate_limiter.acquire()
-        response = self._adapter.retry(request, max_attempts=self._max_retries,
-                                       backoff_seconds=self._retry_backoff)
-        logger.info("GeminiAgent.run complete: task_id=%r, finish=%s.",
-                    task.get("task_id", "<unknown>"), response.finish_reason)
+        response = self._adapter.retry(
+            request, max_attempts=self._max_retries, backoff_seconds=self._retry_backoff
+        )
+        logger.info(
+            "GeminiAgent.run complete: task_id=%r, finish=%s.",
+            task.get("task_id", "<unknown>"),
+            response.finish_reason,
+        )
         return response.text
 
     def shutdown(self) -> None:

@@ -59,9 +59,7 @@ def _compute_perturbation_robustness(
 
 def _compute_fault_tolerance(evaluations: list[EvaluationRecord]) -> float | None:
     """Success rate under fault-injection conditions when data is present."""
-    fault_evaluations = [
-        evaluation for evaluation in evaluations if evaluation.fault_injected
-    ]
+    fault_evaluations = [evaluation for evaluation in evaluations if evaluation.fault_injected]
     if not fault_evaluations:
         return None
     return sum(item.success for item in fault_evaluations) / len(fault_evaluations)

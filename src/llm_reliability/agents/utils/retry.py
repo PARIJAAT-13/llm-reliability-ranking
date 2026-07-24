@@ -8,7 +8,8 @@ adapters can apply retry logic declaratively.
 import functools
 import logging
 import time
-from typing import Callable, TypeVar
+from collections.abc import Callable
+from typing import TypeVar
 
 from llm_reliability.agents.adapters.exceptions import ProviderError
 
@@ -32,6 +33,7 @@ def with_retry(
     Returns:
         A decorator that wraps the target function with retry logic.
     """
+
     def decorator(fn: F) -> F:
         @functools.wraps(fn)
         def wrapper(*args, **kwargs):
@@ -44,10 +46,15 @@ def with_retry(
                     wait = backoff_seconds * (2 ** (attempt - 1))
                     logger.warning(
                         "Retryable error on attempt %d/%d: %s — retrying in %.1fs",
-                        attempt, max_attempts, exc, wait,
+                        attempt,
+                        max_attempts,
+                        exc,
+                        wait,
                     )
                     if attempt < max_attempts:
                         time.sleep(wait)
             raise last_exc  # type: ignore[misc]
+
         return wrapper  # type: ignore[return-value]
+
     return decorator

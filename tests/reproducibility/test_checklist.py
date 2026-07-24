@@ -1,7 +1,7 @@
 """Tests for reproducibility checklist generation."""
 
-from pathlib import Path
 from dataclasses import dataclass
+from pathlib import Path
 
 from llm_reliability.reproducibility.checklist import (
     CheckItem,
@@ -24,15 +24,11 @@ class TestCheckItem:
 
 class TestChecklistResult:
     def test_all_passed_true(self) -> None:
-        result = ChecklistResult(
-            items=[CheckItem(name="a", passed=True, message="ok")]
-        )
+        result = ChecklistResult(items=[CheckItem(name="a", passed=True, message="ok")])
         assert result.all_passed
 
     def test_all_passed_false(self) -> None:
-        result = ChecklistResult(
-            items=[CheckItem(name="a", passed=False, message="fail")]
-        )
+        result = ChecklistResult(items=[CheckItem(name="a", passed=False, message="fail")])
         assert not result.all_passed
 
     def test_critical_passed(self) -> None:
@@ -71,9 +67,7 @@ class TestChecklistResult:
         assert "2/3" not in md
 
     def test_markdown_summary_line(self) -> None:
-        result = ChecklistResult(
-            items=[CheckItem(name="A", passed=True, message="ok")]
-        )
+        result = ChecklistResult(items=[CheckItem(name="A", passed=True, message="ok")])
         md = result.markdown
         assert "1/1" in md
 
@@ -136,9 +130,7 @@ class TestReproducibilityChecklist:
         assert not result.critical_passed
 
     def test_save_creates_file(self, tmp_path: Path) -> None:
-        result = ChecklistResult(
-            items=[CheckItem(name="A", passed=True, message="ok")]
-        )
+        result = ChecklistResult(items=[CheckItem(name="A", passed=True, message="ok")])
         checker = ReproducibilityChecklist()
         dest = checker.save(result, str(tmp_path / "CHECKLIST.md"))
         assert dest.exists()

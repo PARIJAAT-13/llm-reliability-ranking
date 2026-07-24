@@ -13,7 +13,7 @@ from __future__ import annotations
 import importlib
 import pkgutil
 import sys
-from typing import Callable
+from collections.abc import Callable
 
 from llm_reliability.runtime.interface import Runtime
 
@@ -43,6 +43,7 @@ class RuntimeRegistry:
             class MyRuntime(Runtime):
                 ...
         """
+
         def _do_register(runtime_cls: type[Runtime]) -> type[Runtime]:
             if name in cls._runtimes:
                 raise ValueError(f"Runtime '{name}' is already registered.")
@@ -127,6 +128,7 @@ class RuntimeRegistry:
         """
         if package is None:
             import llm_reliability.agents as _agents_pkg
+
             package = _agents_pkg
 
         pkg_name = package.__name__ if hasattr(package, "__name__") else str(package)

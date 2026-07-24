@@ -21,13 +21,13 @@ Usage example
 """
 
 import hashlib
-from typing import Any, Dict, List
+from typing import Any
 
+from llm_reliability.configs.config import Configuration
 from llm_reliability.interfaces.agent import Agent
 from llm_reliability.interfaces.benchmark import Benchmark
 from llm_reliability.records.evaluation import EvaluationRecord
 from llm_reliability.records.execution import ExecutionRecord
-from llm_reliability.configs.config import Configuration
 
 MOCK_TASKS = [
     {
@@ -54,17 +54,15 @@ class MockBenchmark(Benchmark):
         self._config = config
         self._seed = config.seed if config is not None else seed
 
-        self._tasks: Dict[str, Any] = {}
-        self._logs: List[Dict[str, Any]] = []
+        self._tasks: dict[str, Any] = {}
+        self._logs: list[dict[str, Any]] = []
         self._loaded = False
-        
+
     def load(self) -> None:
         """Load deterministic mock tasks."""
         self._tasks = {t["task_id"]: t for t in MOCK_TASKS}
         self._loaded = True
-        self._logs.append(
-            {"event": "load", "status": "success", "task_count": len(self._tasks)}
-        )
+        self._logs.append({"event": "load", "status": "success", "task_count": len(self._tasks)})
 
     def list_tasks(self) -> list[str]:
         """Return all task identifiers in deterministic order."""
@@ -163,9 +161,7 @@ class MockBenchmark(Benchmark):
             evaluated_at=evaluated_at,
         )
 
-        self._logs.append(
-            {"event": "evaluate", "task_id": execution.task_id, "success": success}
-        )
+        self._logs.append({"event": "evaluate", "task_id": execution.task_id, "success": success})
 
         return eval_record
 

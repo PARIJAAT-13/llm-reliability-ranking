@@ -52,7 +52,7 @@ class MBPPAdapter(BaseBenchmarkAdapter):
 
         if path_obj.exists() and path_obj.is_file():
             try:
-                with open(path_obj, "r", encoding="utf-8") as f:
+                with open(path_obj, encoding="utf-8") as f:
                     data = json.load(f)
             except Exception as e:
                 logger.error("Failed to load dataset from %s: %s", dataset_path, e)
@@ -66,7 +66,10 @@ class MBPPAdapter(BaseBenchmarkAdapter):
                 tid = str(item.get("task_id", item.get("task_id", len(self._tasks))))
                 text = item.get("text", item.get("prompt", ""))
                 test_list = item.get("test_list", item.get("tests", []))
-                prompt = f"Write a Python function to solve the following problem:\n{text}\nYour function should satisfy these tests:\n" + "\n".join(test_list)
+                prompt = (
+                    f"Write a Python function to solve the following problem:\n{text}\nYour function should satisfy these tests:\n"
+                    + "\n".join(test_list)
+                )
                 self._tasks[tid] = {
                     "task_id": tid,
                     "prompt": prompt,

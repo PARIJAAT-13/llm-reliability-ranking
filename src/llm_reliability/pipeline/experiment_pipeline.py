@@ -51,7 +51,19 @@ def classify_failure_reason(error_str: str | None) -> str:
     if not error_str:
         return "none"
     err = str(error_str).lower()
-    if any(term in err for term in ("memory", "ram", "vram", "alloc", "gib", "mib", "out of memory", "insufficient")):
+    if any(
+        term in err
+        for term in (
+            "memory",
+            "ram",
+            "vram",
+            "alloc",
+            "gib",
+            "mib",
+            "out of memory",
+            "insufficient",
+        )
+    ):
         return "memory"
     if any(term in err for term in ("not found", "unavailable", "installed", "does not exist")):
         return "model_unavailable"
@@ -109,20 +121,28 @@ class ExperimentPipeline:
                 cached = self.cache.get(key)
                 if cached is not None:
                     logger.info("Cache HIT — returning cached result for key '%s'", key)
-                    log.info("Cache hit for experiment pipeline",
-                             extra={"event": "cache_hit",
-                                    "cache_key": key,
-                                    "benchmark": self.config.benchmark,
-                                    "agent": self.config.agent,
-                                    "seed": self.config.seed})
+                    log.info(
+                        "Cache hit for experiment pipeline",
+                        extra={
+                            "event": "cache_hit",
+                            "cache_key": key,
+                            "benchmark": self.config.benchmark,
+                            "agent": self.config.agent,
+                            "seed": self.config.seed,
+                        },
+                    )
                     return cached
 
         pipeline_start = __import__("time").time()
-        log.info("Pipeline execution started",
-                 extra={"event": "pipeline_start",
-                        "benchmark": self.config.benchmark,
-                        "agent": self.config.agent,
-                        "seed": self.config.seed})
+        log.info(
+            "Pipeline execution started",
+            extra={
+                "event": "pipeline_start",
+                "benchmark": self.config.benchmark,
+                "agent": self.config.agent,
+                "seed": self.config.seed,
+            },
+        )
 
         logger.info("experiment start")
         try:
@@ -168,15 +188,19 @@ class ExperimentPipeline:
         self._maybe_cache(result)
 
         duration = __import__("time").time() - pipeline_start
-        log.info("Pipeline execution completed",
-                 extra={"event": "pipeline_finish",
-                        "benchmark": self.config.benchmark,
-                        "agent": self.config.agent,
-                        "seed": self.config.seed,
-                        "duration_seconds": round(duration, 3),
-                        "num_executions": len(result.execution_records),
-                        "num_evaluations": len(result.evaluation_records),
-                        "num_errors": len(self.errors)})
+        log.info(
+            "Pipeline execution completed",
+            extra={
+                "event": "pipeline_finish",
+                "benchmark": self.config.benchmark,
+                "agent": self.config.agent,
+                "seed": self.config.seed,
+                "duration_seconds": round(duration, 3),
+                "num_executions": len(result.execution_records),
+                "num_evaluations": len(result.evaluation_records),
+                "num_errors": len(self.errors),
+            },
+        )
         return result
 
     def _maybe_cache(self, result: ExperimentResult) -> None:
@@ -273,7 +297,10 @@ class ExperimentPipeline:
                     self.execution_records.append(err_record)
         else:
             if use_perturbations:
-                from llm_reliability.reliability.perturbation.manager import PerturbationManager
+                from llm_reliability.reliability.perturbation.manager import (
+                    PerturbationManager,
+                )
+
                 pm = PerturbationManager(config=self.config)
                 pert_res = pm.run_perturbed_task(self.agent, self.benchmark, task)
                 self.execution_records.extend(pert_res.execution_records)
@@ -282,11 +309,14 @@ class ExperimentPipeline:
 
             if use_faults:
                 from llm_reliability.reliability.faults.manager import FaultManager
+
                 fm = FaultManager(config=self.config)
                 fault_res = fm.run_fault_injected_task(self.agent, self.benchmark, task)
                 if use_perturbations:
                     # Filter out baseline run to avoid duplicate baseline runs
-                    self.execution_records.extend([r for r in fault_res.execution_records if r.fault_injected])
+                    self.execution_records.extend(
+                        [r for r in fault_res.execution_records if r.fault_injected]
+                    )
                 else:
                     self.execution_records.extend(fault_res.execution_records)
                 if fault_res.errors:
@@ -294,7 +324,11 @@ class ExperimentPipeline:
 
     def _log_model_skipped(self, agent_name: str, reason: str, details: str) -> None:
         model_name = self.config.metadata.get("model") or agent_name
-        reason_desc = "insufficient system memory" if reason == "memory" else f"model un-executable ({reason})"
+        reason_desc = (
+            "insufficient system memory"
+            if reason == "memory"
+            else f"model un-executable ({reason})"
+        )
         logger.warning("\nModel %s skipped.", model_name)
         logger.warning("Reason: %s.", reason_desc)
         logger.info("Continuing with next scheduled model.\n")
@@ -338,8 +372,12 @@ class ExperimentPipeline:
                 evaluation = self.benchmark.evaluate(execution)
                 self.evaluation_records.append(evaluation)
             except Exception as e:
-                logger.error("errors evaluating execution %s: %s", execution.task_id, e, exc_info=True)
-                self.errors.append({"phase": "evaluate", "task_id": execution.task_id, "error": str(e)})
+                logger.error(
+                    "errors evaluating execution %s: %s", execution.task_id, e, exc_info=True
+                )
+                self.errors.append(
+                    {"phase": "evaluate", "task_id": execution.task_id, "error": str(e)}
+                )
 
     def compute_metrics(self) -> None:
         """Compute aggregate reliability metrics from evaluation records.
@@ -357,6 +395,7 @@ class ExperimentPipeline:
 
         # Group evaluations by (benchmark, agent) — mirrors ExperimentRunner._aggregate()
         from collections import defaultdict
+
         groups: dict[tuple[str, str], list] = defaultdict(list)
         for ev in self.evaluation_records:
             groups[(ev.benchmark, ev.agent)].append(ev)
@@ -373,9 +412,19 @@ class ExperimentPipeline:
             except Exception as e:
                 logger.error(
                     "errors computing metrics for (%s, %s): %s",
-                    bench, agent_name, e, exc_info=True,
+                    bench,
+                    agent_name,
+                    e,
+                    exc_info=True,
                 )
-                self.errors.append({"phase": "compute_metrics", "benchmark": bench, "agent": agent_name, "error": str(e)})
+                self.errors.append(
+                    {
+                        "phase": "compute_metrics",
+                        "benchmark": bench,
+                        "agent": agent_name,
+                        "error": str(e),
+                    }
+                )
 
     def compute_rankings(self) -> None:
         """Compute rankings from aggregated metric records."""
@@ -388,7 +437,7 @@ class ExperimentPipeline:
             for rtype in ["success", "reliability"]:
                 ranking = RankingRecord.from_metrics(
                     self.metric_records,
-                    ranking_type=rtype, # type: ignore
+                    ranking_type=rtype,  # type: ignore
                     computed_at=computed_at,
                 )
                 self.ranking_records.append(ranking)

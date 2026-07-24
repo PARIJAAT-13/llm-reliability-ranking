@@ -52,7 +52,9 @@ class PromptPerturbationRobustnessMetric(ReliabilityMetric):
         perturbed_evals = [ev for ev in evaluation_records if ev.perturbation is not None]
 
         if not perturbed_evals:
-            logger.warning("No perturbation evaluation records found for robustness metric computation.")
+            logger.warning(
+                "No perturbation evaluation records found for robustness metric computation."
+            )
             return RobustnessMetricResult(
                 success_retention_rate=0.0,
                 response_stability=0.0,
@@ -90,7 +92,9 @@ class PromptPerturbationRobustnessMetric(ReliabilityMetric):
                 match_val = 1.0 if b_out.strip() == p_out.strip() else 0.0
                 stability_matches.append(match_val)
 
-        response_stability = float(np.mean(stability_matches)) if stability_matches else success_retention_rate
+        response_stability = (
+            float(np.mean(stability_matches)) if stability_matches else success_retention_rate
+        )
 
         robustness_score = float(
             np.clip(0.6 * success_retention_rate + 0.4 * response_stability, 0.0, 1.0)

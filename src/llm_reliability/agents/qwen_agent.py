@@ -34,7 +34,11 @@ from typing import Any
 from llm_reliability.agents.adapters.base_llm_adapter import BaseLLMAdapter
 from llm_reliability.agents.adapters.exceptions import (
     AuthenticationError,
+)
+from llm_reliability.agents.adapters.exceptions import (
     ConnectionError as ProviderConnectionError,
+)
+from llm_reliability.agents.adapters.exceptions import (
     ProviderError,
     RateLimitError,
     ResponseValidationError,
@@ -93,7 +97,10 @@ class _QwenAdapter(BaseLLMAdapter):
         self._client = openai.OpenAI(api_key=api_key, base_url=base_url)
         logger.info(
             "Qwen client initialised (model=%s, base_url=%s, temperature=%.2f, max_tokens=%d).",
-            self._model, base_url, self._temperature, self._max_tokens,
+            self._model,
+            base_url,
+            self._temperature,
+            self._max_tokens,
         )
 
     def generate(self, request: LLMRequest) -> LLMResponse:
@@ -213,13 +220,20 @@ class QwenAgent(Runtime):
             seed=self._config.seed if self._config.seed is not None else None,
             system_prompt=self._config.metadata.get("system_prompt"),
         )
-        logger.info("QwenAgent.run: task_id=%r, prompt_len=%d.",
-                    task.get("task_id", "<unknown>"), len(prompt))
+        logger.info(
+            "QwenAgent.run: task_id=%r, prompt_len=%d.",
+            task.get("task_id", "<unknown>"),
+            len(prompt),
+        )
         self._rate_limiter.acquire()
-        response = self._adapter.retry(request, max_attempts=self._max_retries,
-                                       backoff_seconds=self._retry_backoff)
-        logger.info("QwenAgent.run complete: task_id=%r, finish=%s.",
-                    task.get("task_id", "<unknown>"), response.finish_reason)
+        response = self._adapter.retry(
+            request, max_attempts=self._max_retries, backoff_seconds=self._retry_backoff
+        )
+        logger.info(
+            "QwenAgent.run complete: task_id=%r, finish=%s.",
+            task.get("task_id", "<unknown>"),
+            response.finish_reason,
+        )
         return response.text
 
     def shutdown(self) -> None:

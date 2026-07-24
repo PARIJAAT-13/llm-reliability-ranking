@@ -9,19 +9,33 @@ from llm_reliability.agents.adapters.response_models import LLMResponse
 
 
 class Provider1(BaseLLMAdapter):
-    def initialize(self): pass
+    def initialize(self):
+        pass
+
     def generate(self, r: LLMRequest) -> LLMResponse: ...
-    def shutdown(self): pass
-    def provider_metadata(self): return {}
-    def health_check(self): return True
+    def shutdown(self):
+        pass
+
+    def provider_metadata(self):
+        return {}
+
+    def health_check(self):
+        return True
 
 
 class Provider2(BaseLLMAdapter):
-    def initialize(self): pass
+    def initialize(self):
+        pass
+
     def generate(self, r: LLMRequest) -> LLMResponse: ...
-    def shutdown(self): pass
-    def provider_metadata(self): return {}
-    def health_check(self): return True
+    def shutdown(self):
+        pass
+
+    def provider_metadata(self):
+        return {}
+
+    def health_check(self):
+        return True
 
 
 class NotAProvider:

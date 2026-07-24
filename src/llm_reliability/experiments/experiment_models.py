@@ -70,14 +70,14 @@ class ExperimentSpec(SerializableModel):
     metadata: dict[str, Any] = Field(default_factory=dict)
 
     @model_validator(mode="after")
-    def _no_duplicate_benchmarks(self) -> "ExperimentSpec":
+    def _no_duplicate_benchmarks(self) -> ExperimentSpec:
         names = [b.name for b in self.benchmarks]
         if len(names) != len(set(names)):
             raise ValueError("Duplicate benchmark names are not allowed.")
         return self
 
     @model_validator(mode="after")
-    def _no_duplicate_agents(self) -> "ExperimentSpec":
+    def _no_duplicate_agents(self) -> ExperimentSpec:
         keys = []
         for a in self.agents:
             model = a.metadata.get("model") or a.agent_metadata.get("model")
@@ -87,7 +87,7 @@ class ExperimentSpec(SerializableModel):
         return self
 
     @model_validator(mode="after")
-    def _validate_seeds(self) -> "ExperimentSpec":
+    def _validate_seeds(self) -> ExperimentSpec:
         for s in self.seeds:
             if s < 0:
                 raise ValueError(f"Seeds must be non-negative integers, got {s}.")

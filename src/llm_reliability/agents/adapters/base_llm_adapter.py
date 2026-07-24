@@ -80,9 +80,7 @@ class BaseLLMAdapter(ABC):
         Raises RequestValidationError on invalid input.
         """
         if not isinstance(request, LLMRequest):
-            raise RequestValidationError(
-                f"Expected LLMRequest, got {type(request).__name__}."
-            )
+            raise RequestValidationError(f"Expected LLMRequest, got {type(request).__name__}.")
 
     def validate_response(self, response: LLMResponse) -> None:
         """Validate a response received from the provider.
@@ -90,9 +88,7 @@ class BaseLLMAdapter(ABC):
         Raises ResponseValidationError if the response is structurally invalid.
         """
         if not isinstance(response, LLMResponse):
-            raise ResponseValidationError(
-                f"Expected LLMResponse, got {type(response).__name__}."
-            )
+            raise ResponseValidationError(f"Expected LLMResponse, got {type(response).__name__}.")
         if not response.text.strip():
             raise ResponseValidationError("LLMResponse.text must not be blank.")
 
@@ -169,7 +165,10 @@ class BaseLLMAdapter(ABC):
                 wait = backoff_seconds * (2 ** (attempt - 1))
                 logger.warning(
                     "Transient provider error on attempt %d/%d: %s — retrying in %.1fs",
-                    attempt, max_attempts, exc, wait,
+                    attempt,
+                    max_attempts,
+                    exc,
+                    wait,
                 )
                 time.sleep(wait)
         raise last_exc  # type: ignore[misc]

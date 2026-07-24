@@ -90,7 +90,7 @@ def test_ranking_engine_stateless_invocation():
         create_mock_metric("agent_b", success_rate=0.9),
     ]
     engine = RankingEngine()  # Uninitialized engine
-    
+
     with pytest.raises(ValueError, match="No metrics provided"):
         engine.rank_success("2026-07-21T02:00:00Z")
 
@@ -105,7 +105,7 @@ def test_ranking_record_serialization_roundtrip():
     ]
     engine = RankingEngine(metrics)
     ranking = engine.rank_success("2026-07-21T02:00:00Z")
-    
+
     json_str = ranking.canonical_json()
     loaded_ranking = RankingRecord.from_canonical_json(json_str)
     assert loaded_ranking.ranking_type == ranking.ranking_type

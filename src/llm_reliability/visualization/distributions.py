@@ -33,15 +33,14 @@ from typing import Any
 
 from llm_reliability.visualization.plotter import BasePlotter
 from llm_reliability.visualization.styles import (
-    COLOR_SUCCESS,
     COLOR_RELIABILITY,
-    FONT_SIZE_TITLE,
-    FONT_SIZE_LABEL,
-    FIG_WIDTH_DOUBLE,
+    COLOR_SUCCESS,
     FIG_HEIGHT_DEFAULT,
+    FIG_WIDTH_DOUBLE,
+    FONT_SIZE_LABEL,
+    FONT_SIZE_TITLE,
     PALETTE,
 )
-
 
 _METRIC_DISPLAY: dict[str, str] = {
     "success_rate": "Success Rate",
@@ -115,8 +114,7 @@ class DistributionPlotter(BasePlotter):
         agents, scores = _extract_scores(metrics, metric)
         if not scores:
             fig, ax = self._new_figure(figsize=figsize)
-            ax.text(0.5, 0.5, "No data available", ha="center", va="center",
-                    transform=ax.transAxes)
+            ax.text(0.5, 0.5, "No data available", ha="center", va="center", transform=ax.transAxes)
             return fig
 
         display_name = _METRIC_DISPLAY.get(metric, metric.replace("_", " ").title())
@@ -126,11 +124,13 @@ class DistributionPlotter(BasePlotter):
         fig, ax = self._new_figure(figsize=figsize)
         arr = np.array(scores)
 
-        ax.hist(arr, bins=bins, color=color, alpha=0.7, edgecolor="white",
-                linewidth=0.5, density=True)
+        ax.hist(
+            arr, bins=bins, color=color, alpha=0.7, edgecolor="white", linewidth=0.5, density=True
+        )
 
         try:
             from scipy.stats import gaussian_kde
+
             kde = gaussian_kde(arr)
             x_range = np.linspace(arr.min() - 0.05, arr.max() + 0.05, 200)
             ax.plot(x_range, kde(x_range), color=color, linewidth=1.5, label="KDE")
@@ -188,8 +188,7 @@ class DistributionPlotter(BasePlotter):
 
         if not data:
             fig, ax = self._new_figure(figsize=figsize)
-            ax.text(0.5, 0.5, "No data available", ha="center", va="center",
-                    transform=ax.transAxes)
+            ax.text(0.5, 0.5, "No data available", ha="center", va="center", transform=ax.transAxes)
             return fig
 
         labels = list(data.keys())
@@ -198,7 +197,6 @@ class DistributionPlotter(BasePlotter):
         fig, ax = self._new_figure(figsize=figsize or (FIG_WIDTH_DOUBLE, FIG_HEIGHT_DEFAULT))
         bp = ax.boxplot(
             values,
-            tick_labels=labels,
             patch_artist=True,
             widths=0.5,
             medianprops={"color": "black", "linewidth": 1.5},
@@ -256,13 +254,12 @@ class DistributionPlotter(BasePlotter):
 
         if not data:
             fig, ax = self._new_figure(figsize=figsize)
-            ax.text(0.5, 0.5, "No data available", ha="center", va="center",
-                    transform=ax.transAxes)
+            ax.text(0.5, 0.5, "No data available", ha="center", va="center", transform=ax.transAxes)
             return fig
 
         try:
-            import seaborn as sns
             import pandas as pd
+            import seaborn as sns
 
             rows = []
             for label, vals in data.items():
@@ -271,8 +268,15 @@ class DistributionPlotter(BasePlotter):
             df = pd.DataFrame(rows)
 
             fig, ax = self._new_figure(figsize=figsize or (FIG_WIDTH_DOUBLE, FIG_HEIGHT_DEFAULT))
-            sns.violinplot(data=df, x="Metric", y="Score", ax=ax,
-                           palette=PALETTE[:len(data)], inner="box", linewidth=0.8)
+            sns.violinplot(
+                data=df,
+                x="Metric",
+                y="Score",
+                ax=ax,
+                palette=PALETTE[: len(data)],
+                inner="box",
+                linewidth=0.8,
+            )
             ax.set_title(title, fontsize=FONT_SIZE_TITLE)
             ax.set_xlabel("", fontsize=FONT_SIZE_LABEL)
             ax.set_ylabel("Score", fontsize=FONT_SIZE_LABEL)
@@ -318,15 +322,15 @@ class DistributionPlotter(BasePlotter):
 
         if not metrics:
             fig, ax = self._new_figure(figsize=figsize)
-            ax.text(0.5, 0.5, "No data available", ha="center", va="center",
-                    transform=ax.transAxes)
+            ax.text(0.5, 0.5, "No data available", ha="center", va="center", transform=ax.transAxes)
             return fig
 
         fig, ax = self._new_figure(figsize=figsize)
         for i, m in enumerate(metrics):
             color = PALETTE[i % len(PALETTE)]
-            ax.scatter(m.success_rate, m.composite_reliability,
-                       color=color, s=40, zorder=3, label=m.agent)
+            ax.scatter(
+                m.success_rate, m.composite_reliability, color=color, s=40, zorder=3, label=m.agent
+            )
             if annotate:
                 ax.annotate(
                     m.agent,

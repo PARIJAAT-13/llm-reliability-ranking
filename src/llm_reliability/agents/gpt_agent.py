@@ -108,7 +108,11 @@ from typing import Any
 from llm_reliability.agents.adapters.base_llm_adapter import BaseLLMAdapter
 from llm_reliability.agents.adapters.exceptions import (
     AuthenticationError,
+)
+from llm_reliability.agents.adapters.exceptions import (
     ConnectionError as ProviderConnectionError,
+)
+from llm_reliability.agents.adapters.exceptions import (
     ProviderError,
     RateLimitError,
     ResponseValidationError,
@@ -131,7 +135,7 @@ DEFAULT_MODEL: str = "gpt-4.1"
 DEFAULT_TEMPERATURE: float = 0.0
 DEFAULT_MAX_TOKENS: int = 1024
 DEFAULT_TOP_P: float = 1.0
-DEFAULT_REQUESTS_PER_SECOND: float = 3.0   # conservative default; raise in config
+DEFAULT_REQUESTS_PER_SECOND: float = 3.0  # conservative default; raise in config
 GPT_AGENT_VERSION: str = "1.0"
 
 # Keys tried in order when extracting the prompt from a task dict
@@ -141,6 +145,7 @@ _PROMPT_KEYS: tuple[str, ...] = ("prompt", "question", "problem_statement")
 # ---------------------------------------------------------------------------
 # Private: OpenAI provider adapter (BaseLLMAdapter subclass)
 # ---------------------------------------------------------------------------
+
 
 class _OpenAIAdapter(BaseLLMAdapter):
     """Internal OpenAI Chat Completions adapter.
@@ -161,12 +166,8 @@ class _OpenAIAdapter(BaseLLMAdapter):
         super().__init__(config)
         self._client = None
         self._model = config.metadata.get("model", config.llm) or DEFAULT_MODEL
-        self._temperature = float(
-            config.metadata.get("temperature", DEFAULT_TEMPERATURE)
-        )
-        self._max_tokens = int(
-            config.metadata.get("max_tokens", DEFAULT_MAX_TOKENS)
-        )
+        self._temperature = float(config.metadata.get("temperature", DEFAULT_TEMPERATURE))
+        self._max_tokens = int(config.metadata.get("max_tokens", DEFAULT_MAX_TOKENS))
         self._top_p = float(config.metadata.get("top_p", DEFAULT_TOP_P))
         self._system_prompt: str | None = config.metadata.get("system_prompt")
 
@@ -248,8 +249,7 @@ class _OpenAIAdapter(BaseLLMAdapter):
         """
         if self._client is None:
             raise RuntimeError(
-                "_OpenAIAdapter.generate() called before initialize(). "
-                "Call initialize() first."
+                "_OpenAIAdapter.generate() called before initialize(). " "Call initialize() first."
             )
 
         try:
@@ -303,8 +303,7 @@ class _OpenAIAdapter(BaseLLMAdapter):
         choice = completion.choices[0] if completion.choices else None
         if choice is None or not getattr(choice.message, "content", None):
             raise ResponseValidationError(
-                "OpenAI returned an empty or missing completion choice. "
-                f"Response: {completion}"
+                "OpenAI returned an empty or missing completion choice. " f"Response: {completion}"
             )
 
         text: str = choice.message.content or ""
@@ -367,6 +366,7 @@ class _OpenAIAdapter(BaseLLMAdapter):
 # ---------------------------------------------------------------------------
 # Public: GPTAgent — Agent interface implementation
 # ---------------------------------------------------------------------------
+
 
 class GPTAgent(Runtime):
     """GPT agent for the LLM Reliability Ranking framework.
@@ -503,12 +503,8 @@ class GPTAgent(Runtime):
 
         request = LLMRequest(
             prompt=prompt,
-            temperature=float(
-                self._config.metadata.get("temperature", DEFAULT_TEMPERATURE)
-            ),
-            max_tokens=int(
-                self._config.metadata.get("max_tokens", DEFAULT_MAX_TOKENS)
-            ),
+            temperature=float(self._config.metadata.get("temperature", DEFAULT_TEMPERATURE)),
+            max_tokens=int(self._config.metadata.get("max_tokens", DEFAULT_MAX_TOKENS)),
             top_p=float(self._config.metadata.get("top_p", DEFAULT_TOP_P)),
             seed=self._config.seed if self._config.seed is not None else None,
             system_prompt=self._config.metadata.get("system_prompt"),

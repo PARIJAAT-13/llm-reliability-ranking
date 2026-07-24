@@ -4,15 +4,15 @@ Ranking Engine.
 Coordinates and executes agent rankings based on MetricRecords.
 """
 
-from typing import Callable
+from collections.abc import Callable
 
+from llm_reliability.ranking.ranking_strategy import RankingStrategy
+from llm_reliability.ranking.reliability_ranker import ReliabilityRanker
+from llm_reliability.ranking.success_ranker import SuccessRanker
+from llm_reliability.ranking.utils import sort_and_rank, validate_metrics
+from llm_reliability.ranking.weighted_ranker import WeightedRanker
 from llm_reliability.records.metric import MetricRecord
 from llm_reliability.records.ranking import RankingRecord
-from llm_reliability.ranking.ranking_strategy import RankingStrategy
-from llm_reliability.ranking.success_ranker import SuccessRanker
-from llm_reliability.ranking.reliability_ranker import ReliabilityRanker
-from llm_reliability.ranking.weighted_ranker import WeightedRanker
-from llm_reliability.ranking.utils import validate_metrics, sort_and_rank
 
 
 class RankingEngine:

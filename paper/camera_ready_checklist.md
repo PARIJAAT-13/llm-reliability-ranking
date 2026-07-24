@@ -1,8 +1,8 @@
 # Camera-Ready Submission Checklist
 
-**Paper Title**: LLM Reliability Ranking Framework: Benchmarking Local Open-Weights Language Models Under Hardware Memory Constraints  
-**Target Venues**: ICLR / NeurIPS / EMNLP / IEEE Transactions on Software Engineering (TSE)  
-**Status**: **100% READY FOR SUBMISSION**  
+**Paper Title**: LLM Reliability Ranking Framework: Benchmarking Local Open-Weights Language Models Under Hardware Memory Constraints
+**Target Venues**: ICLR / NeurIPS / EMNLP / IEEE Transactions on Software Engineering (TSE)
+**Status**: **100% READY FOR SUBMISSION**
 
 ---
 

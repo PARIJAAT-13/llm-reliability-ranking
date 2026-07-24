@@ -4,8 +4,9 @@ Utilities for the Statistical Analysis Engine.
 Handles input validations and helper functions for summary statistics.
 """
 
+from collections.abc import Sequence
+
 import numpy as np
-from typing import Sequence
 
 from llm_reliability.records.ranking import RankingRecord
 from llm_reliability.statistics.result_models import SummaryStatistics

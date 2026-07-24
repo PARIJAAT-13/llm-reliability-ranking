@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import logging
 import platform
-import psutil
 from typing import Any
 
 from llm_reliability.utils.serialization import SerializableModel
@@ -60,9 +59,18 @@ def detect_hardware_profile(profile_id: str = "Local_System") -> HardwareProfile
     os_name = platform.system()
     os_version = platform.platform()
     arch = platform.machine()
-    logical_cores = psutil.cpu_count(logical=True) or 1
-    physical_cores = psutil.cpu_count(logical=False)
-    ram_gb = round(psutil.virtual_memory().total / (1024**3), 2)
+
+    logical_cores = 0
+    physical_cores = 0
+    ram_gb = 0.0
+    try:
+        import psutil
+
+        logical_cores = psutil.cpu_count(logical=True) or 1
+        physical_cores = psutil.cpu_count(logical=False)
+        ram_gb = round(psutil.virtual_memory().total / (1024**3), 2)
+    except ImportError:
+        logger.warning("psutil not available; hardware detection limited.")
 
     gpu_name = None
     gpu_count = 0
@@ -72,6 +80,7 @@ def detect_hardware_profile(profile_id: str = "Local_System") -> HardwareProfile
     # Optional torch CUDA check
     try:
         import torch
+
         if torch.cuda.is_available():
             gpu_count = torch.cuda.device_count()
             gpu_name = torch.cuda.get_device_name(0)

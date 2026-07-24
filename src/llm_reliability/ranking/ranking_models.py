@@ -8,10 +8,7 @@ from pydantic import BaseModel, Field, field_validator
 class WeightedRankingConfig(BaseModel):
     """Configuration schema for weighted rankings."""
 
-    weights: dict[str, float] = Field(
-        ...,
-        description="Weights for each metric. Must sum to 1.0."
-    )
+    weights: dict[str, float] = Field(..., description="Weights for each metric. Must sum to 1.0.")
 
     @field_validator("weights")
     @classmethod

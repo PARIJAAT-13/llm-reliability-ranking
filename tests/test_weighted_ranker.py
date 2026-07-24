@@ -4,8 +4,8 @@ Tests for WeightedRanker.
 
 import pytest
 
-from llm_reliability.ranking.weighted_ranker import WeightedRanker
 from llm_reliability.ranking.ranking_models import WeightedRankingConfig
+from llm_reliability.ranking.weighted_ranker import WeightedRanker
 from tests.ranking_test_helpers import create_mock_metric
 
 

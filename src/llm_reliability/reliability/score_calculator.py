@@ -42,6 +42,7 @@ logger = logging.getLogger(__name__)
 # Weight schema
 # ---------------------------------------------------------------------------
 
+
 class ReliabilityWeights(BaseModel):
     """Configurable weights for the four reliability dimensions.
 
@@ -54,18 +55,17 @@ class ReliabilityWeights(BaseModel):
     fault_tolerance: float = Field(default=1 / 3, ge=0.0, le=1.0)
 
     @model_validator(mode="after")
-    def _weights_sum_to_one(self) -> "ReliabilityWeights":
+    def _weights_sum_to_one(self) -> ReliabilityWeights:
         total = self.success_rate + self.consistency + self.robustness + self.fault_tolerance
         if abs(total - 1.0) > 1e-6:
-            raise ValueError(
-                f"Reliability dimension weights must sum to 1.0, got {total:.6f}."
-            )
+            raise ValueError(f"Reliability dimension weights must sum to 1.0, got {total:.6f}.")
         return self
 
 
 # ---------------------------------------------------------------------------
 # Output model
 # ---------------------------------------------------------------------------
+
 
 class ReliabilityScore(BaseModel):
     """Computed reliability score for a single scope (agent or benchmark).
@@ -174,6 +174,7 @@ class ReliabilityScoreReport(BaseModel):
 # ---------------------------------------------------------------------------
 # Calculator
 # ---------------------------------------------------------------------------
+
 
 class ReliabilityScoreCalculator:
     """Compute weighted ``ReliabilityScore`` objects from engine output.

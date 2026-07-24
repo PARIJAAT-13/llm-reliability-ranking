@@ -15,6 +15,7 @@ from llm_reliability.interfaces.agent import Agent
 
 class ValidAgent(Agent):
     """A valid agent implementation that fulfills the contract."""
+
     def initialize(self) -> None:
         pass
 
@@ -35,11 +36,13 @@ class ValidAgent(Agent):
 
 class BrokenAgentNoInterface(Agent):
     """Fails to implement required abstract methods."""
+
     pass
 
 
 class BrokenAgentMutatesTask(Agent):
     """Intentionally breaks the contract by mutating the input task."""
+
     def initialize(self) -> None:
         pass
 
@@ -68,7 +71,7 @@ def test_agent_implements_interface():
 def test_agent_deterministic():
     agent1 = ValidAgent()
     ans1 = agent1.run({"task_id": "1"})
-    
+
     agent2 = ValidAgent()
     ans2 = agent2.run({"task_id": "1"})
 
@@ -94,8 +97,8 @@ def test_broken_agent_mutates_task():
     agent = BrokenAgentMutatesTask()
     task = {"task_id": "1"}
     original_task = copy.deepcopy(task)
-    
-    # Contract: Never mutate input tasks. 
+
+    # Contract: Never mutate input tasks.
     # This broken agent violates it.
     agent.run(task)
     assert task != original_task

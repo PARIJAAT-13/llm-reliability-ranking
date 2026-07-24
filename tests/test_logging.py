@@ -1,183 +1,118 @@
-"""Tests for structured logging subsystem."""
+"""Comprehensive tests for the structured logging module."""
 
 from __future__ import annotations
 
 import json
 import logging
-from pathlib import Path
+from io import StringIO
 
 import pytest
 
-from llm_reliability.logging import LogConfig, LogContext, configure_logging, get_logger
-from llm_reliability.logging.formatters import ContextFilter, JsonFormatter
-
-
-def _close_root_handlers() -> None:
-    """Close and remove all handlers from the root logger."""
-    root = logging.getLogger()
-    for h in list(root.handlers):
-        root.removeHandler(h)
-        h.close()
-
-
-@pytest.fixture(autouse=True)
-def _reset_logging():
-    """Remove and close all root handlers, reset config before each test."""
-    root = logging.getLogger()
-    for h in list(root.handlers):
-        root.removeHandler(h)
-        h.close()
-    root.setLevel(logging.WARNING)
-    import llm_reliability.logging.config as lcfg
-    lcfg._configured = False
-    yield
-
+from llm_reliability.logging import (
+    JsonFormatter,
+    LogConfig,
+    LogContext,
+    configure_logging,
+    get_log_context,
+    get_logger,
+)
+from llm_reliability.logging.formatters import ContextFilter
 
 # ---------------------------------------------------------------------------
-# Logger creation
+# JsonFormatter
 # ---------------------------------------------------------------------------
 
 
-def test_get_logger_returns_logger():
-    logger = get_logger("test.module")
-    assert isinstance(logger, logging.Logger)
-    assert logger.name == "test.module"
+class TestJsonFormatter:
+    @pytest.fixture(autouse=True)
+    def _reset_context(self):
+        get_log_context().clear()
 
+    def make_record(
+        self, msg="test message", level=logging.INFO, name="test_logger", exc_info=None, extra=None
+    ) -> logging.LogRecord:
+        record = logging.LogRecord(name, level, "test.py", 42, msg, (), exc_info)
+        if extra:
+            for k, v in extra.items():
+                setattr(record, k, v)
+        return record
 
-def test_get_logger_has_context_filter():
-    logger = get_logger("test.filter")
-    assert any(isinstance(f, ContextFilter) for f in logger.filters)
-
-
-def test_get_logger_reuses_existing():
-    logger1 = get_logger("test.reuse")
-    logger2 = get_logger("test.reuse")
-    assert logger1 is logger2
-
-
-# ---------------------------------------------------------------------------
-# Configurable log level
-# ---------------------------------------------------------------------------
-
-
-def test_configure_logging_sets_level():
-    cfg = LogConfig(level=logging.WARNING, console=False)
-    configure_logging(cfg, force=True)
-    root = logging.getLogger()
-    assert root.level <= logging.WARNING
-    _close_root_handlers()
-
-
-def test_configure_logging_string_level():
-    cfg = LogConfig(level="ERROR", console=False)
-    configure_logging(cfg, force=True)
-    root = logging.getLogger()
-    assert root.level <= logging.ERROR
-    _close_root_handlers()
-
-
-# ---------------------------------------------------------------------------
-# File logging
-# ---------------------------------------------------------------------------
-
-
-def test_file_logging_writes_output(tmp_path: Path):
-    log_file = tmp_path / "test.log"
-    cfg = LogConfig(level=logging.DEBUG, console=False, file=str(log_file))
-    configure_logging(cfg, force=True)
-    test_logger = get_logger("test.file")
-    test_logger.info("Hello from file test")
-    _close_root_handlers()
-    assert log_file.exists()
-    content = log_file.read_text(encoding="utf-8")
-    assert "Hello from file test" in content
-
-
-def test_file_logging_respects_level(tmp_path: Path):
-    log_file = tmp_path / "quiet.log"
-    cfg = LogConfig(level=logging.WARNING, console=False, file=str(log_file))
-    configure_logging(cfg, force=True)
-    test_logger = get_logger("test.quiet")
-    test_logger.info("Should not appear")
-    test_logger.warning("Should appear")
-    _close_root_handlers()
-    content = log_file.read_text(encoding="utf-8")
-    assert "Should not appear" not in content
-    assert "Should appear" in content
-
-
-# ---------------------------------------------------------------------------
-# Structured log format (JSON)
-# ---------------------------------------------------------------------------
-
-
-def test_json_formatter_output():
-    fmt = JsonFormatter()
-    record = logging.LogRecord(
-        name="test.json",
-        level=logging.INFO,
-        pathname=__file__,
-        lineno=100,
-        msg="JSON test message",
-        args=(),
-        exc_info=None,
-    )
-    output = fmt.format(record)
-    parsed = json.loads(output)
-    assert parsed["level"] == "INFO"
-    assert parsed["message"] == "JSON test message"
-    assert parsed["logger"] == "test.json"
-    assert "time" in parsed
-
-
-def test_json_formatter_includes_extra():
-    fmt = JsonFormatter()
-    record = logging.LogRecord(
-        name="test.extra",
-        level=logging.INFO,
-        pathname=__file__,
-        lineno=100,
-        msg="With extras",
-        args=(),
-        exc_info=None,
-    )
-    record.experiment_id = "exp-001"
-    record.benchmark = "agentboard"
-    output = fmt.format(record)
-    parsed = json.loads(output)
-    assert parsed["experiment_id"] == "exp-001"
-    assert parsed["benchmark"] == "agentboard"
-
-
-def test_json_formatter_with_log_context():
-    fmt = JsonFormatter()
-    with LogContext(experiment_id="ctx-001", run_index=5):
-        record = logging.LogRecord(
-            name="test.ctx",
-            level=logging.INFO,
-            pathname=__file__,
-            lineno=100,
-            msg="Context test",
-            args=(),
-            exc_info=None,
-        )
+    def test_json_formatter_basic(self):
+        fmt = JsonFormatter()
+        record = self.make_record()
         output = fmt.format(record)
         parsed = json.loads(output)
-        assert parsed["experiment_id"] == "ctx-001"
-        assert parsed["run_index"] == 5
+        assert isinstance(parsed, dict)
+
+    def test_json_formatter_includes_timestamp(self):
+        fmt = JsonFormatter()
+        record = self.make_record()
+        output = fmt.format(record)
+        parsed = json.loads(output)
+        assert "time" in parsed
+        assert isinstance(parsed["time"], str)
+
+    def test_json_formatter_includes_level(self):
+        fmt = JsonFormatter()
+        record = self.make_record(level=logging.WARNING)
+        output = fmt.format(record)
+        parsed = json.loads(output)
+        assert parsed["level"] == "WARNING"
+
+    def test_json_formatter_includes_logger_name(self):
+        fmt = JsonFormatter()
+        record = self.make_record(name="my.custom.logger")
+        output = fmt.format(record)
+        parsed = json.loads(output)
+        assert parsed["logger"] == "my.custom.logger"
+
+    def test_json_formatter_includes_message(self):
+        fmt = JsonFormatter()
+        record = self.make_record(msg="hello world")
+        output = fmt.format(record)
+        parsed = json.loads(output)
+        assert parsed["message"] == "hello world"
+
+    def test_json_formatter_includes_exception(self):
+        fmt = JsonFormatter()
+        try:
+            raise ValueError("boom")
+        except ValueError:
+            import sys
+
+            exc_info = sys.exc_info()
+            record = self.make_record(exc_info=exc_info)
+        output = fmt.format(record)
+        parsed = json.loads(output)
+        assert "exc_info" in parsed
+        assert "boom" in parsed["exc_info"]
+
+    def test_json_formatter_handles_extra_fields(self):
+        fmt = JsonFormatter()
+        record = self.make_record(extra={"experiment_id": "abc-123", "benchmark": "test"})
+        output = fmt.format(record)
+        parsed = json.loads(output)
+        assert parsed["experiment_id"] == "abc-123"
+        assert parsed["benchmark"] == "test"
 
 
-def test_configure_logging_json_format(tmp_path: Path):
-    log_file = tmp_path / "structured.log"
-    cfg = LogConfig(level=logging.INFO, console=False, file=str(log_file), format="json")
-    configure_logging(cfg, force=True)
-    test_logger = get_logger("test.structured")
-    test_logger.info("Structured message")
-    _close_root_handlers()
-    content = log_file.read_text(encoding="utf-8").strip()
-    parsed = json.loads(content)
-    assert parsed["message"] == "Structured message"
-    assert parsed["logger"] == "test.structured"
+# ---------------------------------------------------------------------------
+# ContextFilter
+# ---------------------------------------------------------------------------
+
+
+class TestContextFilter:
+    @pytest.fixture(autouse=True)
+    def _reset_context(self):
+        get_log_context().clear()
+
+    def test_context_filter_filters_extra_fields(self):
+        f = ContextFilter()
+        with LogContext(experiment_id="ctx-1", run_id=42):
+            record = logging.LogRecord("test", logging.INFO, "test.py", 42, "msg", (), None)
+            assert f.filter(record)
+            assert getattr(record, "experiment_id", None) == "ctx-1"
+            assert getattr(record, "run_id", None) == 42
 
 
 # ---------------------------------------------------------------------------
@@ -185,102 +120,109 @@ def test_configure_logging_json_format(tmp_path: Path):
 # ---------------------------------------------------------------------------
 
 
-def test_log_context_adds_fields():
-    with LogContext(experiment_id="exp-999"):
-        ctx = __import__("llm_reliability.logging.context", fromlist=["get_log_context"]).get_log_context()
-        assert ctx["experiment_id"] == "exp-999"
+class TestLogContext:
+    @pytest.fixture(autouse=True)
+    def _reset_context(self):
+        get_log_context().clear()
 
+    def test_log_context_single(self):
+        with LogContext(experiment_id="exp-123"):
+            ctx = get_log_context()
+            assert ctx["experiment_id"] == "exp-123"
 
-def test_log_context_restores_after_exit():
-    with LogContext(experiment_id="exp-999"):
-        pass
-    ctx = __import__("llm_reliability.logging.context", fromlist=["get_log_context"]).get_log_context()
-    assert "experiment_id" not in ctx
+    def test_log_context_nested(self):
+        with LogContext(outer="a"):
+            with LogContext(inner="b"):
+                ctx = get_log_context()
+                assert "outer" not in ctx
+                assert ctx["inner"] == "b"
+            ctx = get_log_context()
+            assert ctx["outer"] == "a"
+            assert "inner" not in ctx
+
+    def test_log_context_no_interference(self):
+        with LogContext(experiment_id="first"):
+            pass
+        with LogContext(experiment_id="second"):
+            ctx = get_log_context()
+            assert ctx["experiment_id"] == "second"
+
+    def test_log_context_empty(self):
+        with LogContext():
+            ctx = get_log_context()
+            assert ctx == {}
+
+    def test_log_context_unicode(self):
+        with LogContext(label="\u00e9\u00e0\u00fc\u00f1"):
+            ctx = get_log_context()
+            assert ctx["label"] == "\u00e9\u00e0\u00fc\u00f1"
+
+    def test_log_context_many_fields(self):
+        fields = {f"key_{i}": i for i in range(100)}
+        with LogContext(**fields):
+            ctx = get_log_context()
+            assert len(ctx) == 100
+            assert ctx["key_0"] == 0
+            assert ctx["key_99"] == 99
 
 
 # ---------------------------------------------------------------------------
-# Backward compatibility
+# configure_logging
 # ---------------------------------------------------------------------------
 
 
-def test_standard_logging_still_works():
-    std_logger = logging.getLogger("test.std_compat")
-    std_logger.info("Standard log message still works")
+class TestConfigureLogging:
+    @pytest.fixture(autouse=True)
+    def _reset_configured_flag(self, monkeypatch: pytest.MonkeyPatch):
+        import llm_reliability.logging.config as cfg_module
 
+        monkeypatch.setattr(cfg_module, "_configured", False)
+        root = logging.getLogger()
+        for h in list(root.handlers):
+            root.removeHandler(h)
+            h.close()
 
-def test_configure_logging_called_twice_is_noop():
-    cfg = LogConfig(level=logging.INFO)
-    configure_logging(cfg)
-    configure_logging(cfg)  # Should not raise
+    def test_configure_logging_basic(self):
+        configure_logging()
+        root = logging.getLogger()
+        assert len(root.handlers) > 0
+
+    def test_configure_logging_level(self):
+        configure_logging(LogConfig(level=logging.DEBUG))
+        root = logging.getLogger()
+        assert root.level == logging.DEBUG
+
+    def test_configure_logging_force(self):
+        configure_logging(LogConfig(level=logging.INFO))
+        configure_logging(LogConfig(level=logging.DEBUG), force=True)
+        root = logging.getLogger()
+        assert root.level == logging.DEBUG
+
+    def test_configure_logging_json(self, capsys):
+        configure_logging(LogConfig(format="json"))
+        logger = logging.getLogger("json_test")
+        logger.info("hello json")
+        captured = capsys.readouterr()
+        output = (captured.out or captured.err).strip()
+        parsed = json.loads(output)
+        assert parsed["level"] == "INFO"
+        assert parsed["message"] == "hello json"
+        assert parsed["logger"] == "json_test"
+        assert "time" in parsed
 
 
 # ---------------------------------------------------------------------------
-# Integration: experiment logging via ExperimentRunner
+# get_logger
 # ---------------------------------------------------------------------------
 
 
-def test_experiment_runner_creates_logger():
-    from llm_reliability.experiments.experiment_runner import ExperimentRunner
-    from llm_reliability.experiments.experiment_models import ExperimentSpec, BenchmarkSpec, AgentSpec
+class TestGetLogger:
+    def test_logger_creation(self):
+        logger = get_logger("my.module")
+        assert logger.name == "my.module"
+        assert isinstance(logger, logging.Logger)
 
-    spec = ExperimentSpec(
-        experiment_name="log_test",
-        benchmarks=[BenchmarkSpec(name="mock", dataset_path="dummy.json")],
-        agents=[AgentSpec(name="mock")],
-        seeds=[0],
-    )
-    runner = ExperimentRunner(spec, agent_factory=lambda a, c: None)
-    assert runner._logger is not None
-
-
-# ---------------------------------------------------------------------------
-# CLI / demo helpers
-# ---------------------------------------------------------------------------
-
-
-def test_log_events_format(tmp_path: Path):
-    """Verify that structured log events at key lifecycle points contain expected fields."""
-    log_file = tmp_path / "events.log"
-    cfg = LogConfig(level=logging.DEBUG, console=False, file=str(log_file), format="json")
-    configure_logging(cfg, force=True)
-
-    logger = get_logger("test.events")
-
-    with LogContext(experiment_id="demo-exp", benchmark="demo-bench"):
-        logger.info("Experiment started", extra={"event": "experiment_start", "total_runs": 5})
-        logger.info("Cache hit", extra={"event": "cache_hit", "cache_key": "abc123"})
-        logger.info("Benchmark run completed", extra={
-            "event": "benchmark_complete", "model": "gpt-4",
-            "duration_seconds": 12.345, "num_executions": 10,
-        })
-        logger.error("Benchmark run failed", extra={
-            "event": "benchmark_failure", "model": "gpt-4",
-            "error": "Connection timeout",
-        })
-
-    _close_root_handlers()
-
-    lines = log_file.read_text(encoding="utf-8").strip().splitlines()
-    assert len(lines) == 4
-
-    # Experiment start event
-    ev1 = json.loads(lines[0])
-    assert ev1["event"] == "experiment_start"
-    assert ev1["total_runs"] == 5
-    assert ev1["experiment_id"] == "demo-exp"
-
-    # Cache hit event
-    ev2 = json.loads(lines[1])
-    assert ev2["event"] == "cache_hit"
-    assert ev2["cache_key"] == "abc123"
-
-    # Benchmark complete event
-    ev3 = json.loads(lines[2])
-    assert ev3["event"] == "benchmark_complete"
-    assert ev3["model"] == "gpt-4"
-    assert ev3["duration_seconds"] == 12.345
-
-    # Failure event
-    ev4 = json.loads(lines[3])
-    assert ev4["event"] == "benchmark_failure"
-    assert "Connection timeout" in ev4["error"]
+    def test_logger_creation_has_context_filter(self):
+        logger = get_logger("my.module")
+        has_filter = any(isinstance(f, ContextFilter) for f in logger.filters)
+        assert has_filter

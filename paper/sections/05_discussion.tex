@@ -1,0 +1,54 @@
+% !TEX root = ../main.tex
+\section{Discussion}
+
+\subsection{Key Findings}
+
+Our comprehensive reliability analysis reveals several important findings:
+
+\paragraph{Models are highly reliable under standard conditions.} All evaluated models achieve near-perfect composite reliability scores of 1.0 on standard evaluations, demonstrating that modern LLMs are highly reliable for their intended use cases when operating under normal conditions.
+
+\paragraph{Fault recovery is binary.} The fault injection analysis reveals a stark dichotomy: models either recover perfectly from a fault type (100\% recovery) or fail catastrophically (0\% recovery). Network interruptions and tool failures represent critical gaps in current LLM reliability that require architectural solutions---such as circuit breakers, fallback models, or graceful degradation strategies.
+
+\paragraph{Perturbation robustness is uniform.} All perturbation types show near-perfect success rates, suggesting that state-of-the-art LLMs are insensitive to superficial input variations. This is a positive finding for production deployment, as it indicates robustness to formatting inconsistencies in user inputs.
+
+\paragraph{Open-weight models match API models.} The open-weight models (Qwen 2.5 72B, Llama 3.3 70B) achieve reliability scores comparable to API-based models (GPT-4o, Claude 3.5 Sonnet), suggesting that careful training and alignment can produce models with production-grade reliability characteristics.
+
+\subsection{Implications for Production Deployment}
+
+Our results have direct implications for organizations deploying LLMs in production:
+
+\begin{enumerate}
+    \item \textbf{Fault tolerance architecture}: Given the 0\% recovery rate for network interruptions and tool failures, production systems must implement external fault tolerance mechanisms at the orchestration layer, including retry with exponential backoff, fallback model routing, and circuit breaker patterns.
+
+    \item \textbf{Model selection}: When reliability is the primary concern, our consensus ranking provides guidance for model selection. Ollama-based models show substantial differentiation (Borda scores: 1.0 to 0.02), while all six API-based models tie at 0.125, indicating equivalent reliability profiles under our framework. For these models, other factors (latency, cost, task-specific accuracy) should drive model choice.
+
+    \item \textbf{Monitoring}: The high consistency across repeated runs (mean $> 0.99$ for all top models) suggests that single-run evaluations are generally reliable, but monitoring should focus on fault conditions rather than output variability.
+\end{enumerate}
+
+\subsection{Limitations}
+
+This study has several limitations:
+
+\begin{itemize}
+    \item \textbf{Task scope}: Our evaluation uses simulated (mock) tasks to enable controlled fault injection. While this provides high internal validity, the results may not fully generalize to real-world task distributions.
+
+    \item \textbf{Fault type coverage}: While we cover six fault types, production systems may encounter additional failure modes (rate limiting, authentication failures, model degradation over time).
+
+    \item \textbf{Sample size}: With 3--8 repeated runs per model-benchmark pair (mean 6.7 across all agents), our statistical power for detecting small differences in reliability is limited for API-based models (3 runs) but adequate for locally hosted models (7--8 runs).
+
+    \item \textbf{Model recency}: The rapid pace of LLM development means that reliability characteristics may change with model updates.
+\end{itemize}
+
+\subsection{Future Work}
+
+Several directions for future research emerge from this work:
+
+\begin{itemize}
+    \item \textbf{Longitudinal reliability studies}: Tracking reliability across model versions to understand how updates affect consistency and robustness.
+
+    \item \textbf{Adversarial perturbation robustness}: Extending perturbation analysis to include adversarially crafted inputs designed to trigger failures.
+
+    \item \textbf{Multi-modal reliability}: Extending the framework to vision-language models and other modalities.
+
+    \item \textbf{Reliability-aware model selection}: Developing automated tools that incorporate reliability metrics into the model deployment pipeline.
+\end{itemize}

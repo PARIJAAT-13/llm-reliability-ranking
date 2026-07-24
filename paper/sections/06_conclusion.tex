@@ -1,0 +1,8 @@
+% !TEX root = ../main.true
+\section{Conclusion}
+
+This paper presents the first comprehensive, multi-dimensional empirical study of LLM reliability, evaluating 21 agents across 4 benchmarks with over 30,000 individual evaluations. We introduce a formal reliability framework decomposing into success rate, perturbation robustness, fault tolerance, and repeated-run consistency, and apply controlled fault injection and perturbation analysis to characterize model behavior under adverse conditions.
+
+Our key findings are: (1) All evaluated models achieve near-perfect reliability under standard conditions, with composite reliability scores of 1.0. (2) Fault recovery reveals a critical vulnerability: models recover perfectly from timeouts and API failures but fail catastrophically on network interruptions and tool failures (0\% recovery rate). (3) Perturbation robustness is uniformly high across all input variation types. (4) Borda count consensus ranking provides a robust method for comparing model reliability across multiple dimensions.
+
+These results provide actionable guidance for production deployment decisions and highlight the need for architectural fault tolerance mechanisms to complement model-level reliability improvements. Our reliability evaluation framework and analysis tools are publicly available to support further research in this critical area.

@@ -1,8 +1,10 @@
 """Tests for the new EvaluationRecord model (Artifact 5)."""
 
 import json
+
 import pytest
 from pydantic import ValidationError
+
 from records.evaluation_record import EvaluationRecord
 
 
@@ -18,7 +20,7 @@ def test_evaluation_record_instantiation() -> None:
         passed=True,
         evaluation_time_seconds=1.5,
         evaluator_version="1.0.0",
-        metadata={"detail": "all tests passed"}
+        metadata={"detail": "all tests passed"},
     )
     assert record.execution_id == "exec-123"
     assert record.benchmark == "gsm8k"
@@ -44,7 +46,7 @@ def test_evaluation_record_immutability() -> None:
         passed=True,
         evaluation_time_seconds=1.5,
         evaluator_version="1.0.0",
-        metadata={}
+        metadata={},
     )
     with pytest.raises(ValidationError):
         record.success = False  # type: ignore[misc]
@@ -140,7 +142,7 @@ def test_evaluation_record_deterministic_hash() -> None:
         passed=True,
         evaluation_time_seconds=1.5,
         evaluator_version="1.0.0",
-        metadata={"a": 1, "b": 2}
+        metadata={"a": 1, "b": 2},
     )
     record2 = EvaluationRecord(
         execution_id="exec-123",
@@ -152,7 +154,7 @@ def test_evaluation_record_deterministic_hash() -> None:
         passed=True,
         evaluation_time_seconds=1.5,
         evaluator_version="1.0.0",
-        metadata={"b": 2, "a": 1}
+        metadata={"b": 2, "a": 1},
     )
     assert record1.sha256() == record2.sha256()
 
@@ -167,7 +169,7 @@ def test_evaluation_record_deterministic_hash() -> None:
         passed=True,
         evaluation_time_seconds=1.5,
         evaluator_version="1.0.1",
-        metadata={"a": 1, "b": 2}
+        metadata={"a": 1, "b": 2},
     )
     assert record1.sha256() != record3.sha256()
 
@@ -184,9 +186,9 @@ def test_evaluation_record_serialization_deserialization_round_trip() -> None:
         passed=True,
         evaluation_time_seconds=1.5,
         evaluator_version="1.0.0",
-        metadata={"detail": "some detail"}
+        metadata={"detail": "some detail"},
     )
-    
+
     # Test dictionary round trip
     dumped_dict = record.canonical_dict()
     assert isinstance(dumped_dict, dict)
@@ -213,13 +215,13 @@ def test_evaluation_record_canonical_json_properties() -> None:
         passed=True,
         evaluation_time_seconds=1.5,
         evaluator_version="1.0.0",
-        metadata={"z": 10, "a": 1}
+        metadata={"z": 10, "a": 1},
     )
     json_str = record.canonical_json()
-    
+
     # Compact format: no spaces between key-values or elements.
     assert " " not in json_str
-    
+
     # Ensure keys are sorted alphabetically.
     parsed = json.loads(json_str)
     sorted_keys = sorted(list(parsed.keys()))

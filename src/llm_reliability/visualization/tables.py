@@ -74,16 +74,24 @@ class TableGenerator:
 
         rows = []
         for m in metrics:
-            rows.append({
-                "Benchmark": m.benchmark,
-                "Agent": m.agent,
-                "Evaluations": m.evaluation_count,
-                "Success Rate": round(m.success_rate, 4),
-                "Consistency": round(m.repeated_run_consistency, 4),
-                "Pert. Robustness": round(m.perturbation_robustness, 4) if m.perturbation_robustness is not None else None,
-                "Fault Tolerance": round(m.fault_tolerance, 4) if m.fault_tolerance is not None else None,
-                "Composite Reliability": round(m.composite_reliability, 4),
-            })
+            rows.append(
+                {
+                    "Benchmark": m.benchmark,
+                    "Agent": m.agent,
+                    "Evaluations": m.evaluation_count,
+                    "Success Rate": round(m.success_rate, 4),
+                    "Consistency": round(m.repeated_run_consistency, 4),
+                    "Pert. Robustness": (
+                        round(m.perturbation_robustness, 4)
+                        if m.perturbation_robustness is not None
+                        else None
+                    ),
+                    "Fault Tolerance": (
+                        round(m.fault_tolerance, 4) if m.fault_tolerance is not None else None
+                    ),
+                    "Composite Reliability": round(m.composite_reliability, 4),
+                }
+            )
 
         df = pd.DataFrame(rows)
         if df.empty:
@@ -144,14 +152,16 @@ class TableGenerator:
             s_rank = s_map.get(agent)
             r_rank = r_map.get(agent)
             delta = (s_rank - r_rank) if (s_rank is not None and r_rank is not None) else None
-            rows.append({
-                "Agent": agent,
-                "Success Rank": s_rank,
-                "Success Score": round(s_scores.get(agent, float("nan")), 4),
-                "Reliability Rank": r_rank,
-                "Reliability Score": round(r_scores.get(agent, float("nan")), 4),
-                "Rank Δ": delta,
-            })
+            rows.append(
+                {
+                    "Agent": agent,
+                    "Success Rank": s_rank,
+                    "Success Score": round(s_scores.get(agent, float("nan")), 4),
+                    "Reliability Rank": r_rank,
+                    "Reliability Score": round(r_scores.get(agent, float("nan")), 4),
+                    "Rank Δ": delta,
+                }
+            )
 
         df = pd.DataFrame(rows)
         if not df.empty:
@@ -179,14 +189,16 @@ class TableGenerator:
 
         rows = []
         for result in statistical_report.hypothesis_tests:
-            rows.append({
-                "Test": result.method,
-                "Statistic": round(result.statistic, 6),
-                "p-value": round(result.p_value, 6),
-                "Significant (α=0.05)": result.p_value < 0.05,
-                "Assumptions Met": result.assumptions_met,
-                "Warnings": "; ".join(result.warnings) if result.warnings else "",
-            })
+            rows.append(
+                {
+                    "Test": result.method,
+                    "Statistic": round(result.statistic, 6),
+                    "p-value": round(result.p_value, 6),
+                    "Significant (α=0.05)": result.p_value < 0.05,
+                    "Assumptions Met": result.assumptions_met,
+                    "Warnings": "; ".join(result.warnings) if result.warnings else "",
+                }
+            )
         return pd.DataFrame(rows)
 
     def effect_size_table(self, statistical_report: Any) -> Any:
@@ -205,11 +217,13 @@ class TableGenerator:
 
         rows = []
         for result in statistical_report.effect_sizes:
-            rows.append({
-                "Method": result.method,
-                "Value": round(result.value, 6),
-                "Interpretation": result.interpretation,
-            })
+            rows.append(
+                {
+                    "Method": result.method,
+                    "Value": round(result.value, 6),
+                    "Interpretation": result.interpretation,
+                }
+            )
         return pd.DataFrame(rows)
 
     def confidence_interval_table(self, statistical_report: Any) -> Any:
@@ -228,12 +242,14 @@ class TableGenerator:
 
         rows = []
         for name, ci in statistical_report.confidence_intervals.items():
-            rows.append({
-                "Variable": name,
-                "Lower": round(ci.lower, 6),
-                "Upper": round(ci.upper, 6),
-                "Confidence Level": ci.confidence_level,
-            })
+            rows.append(
+                {
+                    "Variable": name,
+                    "Lower": round(ci.lower, 6),
+                    "Upper": round(ci.upper, 6),
+                    "Confidence Level": ci.confidence_level,
+                }
+            )
         return pd.DataFrame(rows)
 
     def correlation_table(self, statistical_report: Any) -> Any:
@@ -252,11 +268,13 @@ class TableGenerator:
 
         rows = []
         for name, result in statistical_report.correlations.items():
-            rows.append({
-                "Method": result.method,
-                "Coefficient": round(result.coefficient, 6),
-                "p-value": round(result.p_value, 6),
-            })
+            rows.append(
+                {
+                    "Method": result.method,
+                    "Coefficient": round(result.coefficient, 6),
+                    "p-value": round(result.p_value, 6),
+                }
+            )
         return pd.DataFrame(rows)
 
     # ------------------------------------------------------------------
@@ -275,9 +293,10 @@ class TableGenerator:
         pandas.DataFrame
             Columns: Benchmark, # Agents, Mean Success, Mean Reliability, …
         """
-        import pandas as pd
-        import numpy as np
         from collections import defaultdict
+
+        import numpy as np
+        import pandas as pd
 
         groups: dict[str, list[Any]] = defaultdict(list)
         for m in metrics:
@@ -285,15 +304,17 @@ class TableGenerator:
 
         rows = []
         for bench, mlist in groups.items():
-            rows.append({
-                "Benchmark": bench,
-                "# Agents": len(mlist),
-                "Mean Success Rate": round(np.mean([m.success_rate for m in mlist]), 4),
-                "Std Success Rate": round(np.std([m.success_rate for m in mlist]), 4),
-                "Mean Reliability": round(np.mean([m.composite_reliability for m in mlist]), 4),
-                "Std Reliability": round(np.std([m.composite_reliability for m in mlist]), 4),
-                "Total Evaluations": sum(m.evaluation_count for m in mlist),
-            })
+            rows.append(
+                {
+                    "Benchmark": bench,
+                    "# Agents": len(mlist),
+                    "Mean Success Rate": round(np.mean([m.success_rate for m in mlist]), 4),
+                    "Std Success Rate": round(np.std([m.success_rate for m in mlist]), 4),
+                    "Mean Reliability": round(np.mean([m.composite_reliability for m in mlist]), 4),
+                    "Std Reliability": round(np.std([m.composite_reliability for m in mlist]), 4),
+                    "Total Evaluations": sum(m.evaluation_count for m in mlist),
+                }
+            )
 
         df = pd.DataFrame(rows)
         if not df.empty:
@@ -312,9 +333,10 @@ class TableGenerator:
         pandas.DataFrame
             Columns: Agent, # Benchmarks, Mean Success, Mean Reliability, …
         """
-        import pandas as pd
-        import numpy as np
         from collections import defaultdict
+
+        import numpy as np
+        import pandas as pd
 
         groups: dict[str, list[Any]] = defaultdict(list)
         for m in metrics:
@@ -322,14 +344,18 @@ class TableGenerator:
 
         rows = []
         for agent, mlist in groups.items():
-            rows.append({
-                "Agent": agent,
-                "# Benchmarks": len(mlist),
-                "Mean Success Rate": round(np.mean([m.success_rate for m in mlist]), 4),
-                "Mean Consistency": round(np.mean([m.repeated_run_consistency for m in mlist]), 4),
-                "Mean Reliability": round(np.mean([m.composite_reliability for m in mlist]), 4),
-                "Total Evaluations": sum(m.evaluation_count for m in mlist),
-            })
+            rows.append(
+                {
+                    "Agent": agent,
+                    "# Benchmarks": len(mlist),
+                    "Mean Success Rate": round(np.mean([m.success_rate for m in mlist]), 4),
+                    "Mean Consistency": round(
+                        np.mean([m.repeated_run_consistency for m in mlist]), 4
+                    ),
+                    "Mean Reliability": round(np.mean([m.composite_reliability for m in mlist]), 4),
+                    "Total Evaluations": sum(m.evaluation_count for m in mlist),
+                }
+            )
 
         df = pd.DataFrame(rows)
         if not df.empty:

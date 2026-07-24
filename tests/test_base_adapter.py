@@ -64,13 +64,13 @@ def test_adapter_validate_dataset(valid_config):
 
 def test_adapter_deterministic_behavior_and_lifecycle(valid_config):
     adapter = DummyAdapter(config=valid_config)
-    
+
     # Must fail to get tasks before loading
     with pytest.raises(RuntimeError):
         adapter.list_tasks()
-        
+
     adapter.load()
-    
+
     tasks = adapter.list_tasks()
     assert tasks == ["task_1"]  # Sorted array returned deterministically
 

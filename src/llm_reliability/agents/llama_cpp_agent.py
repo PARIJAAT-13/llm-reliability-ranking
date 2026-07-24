@@ -13,9 +13,7 @@ from typing import Any
 
 from llm_reliability.agents.adapters.base_llm_adapter import BaseLLMAdapter
 from llm_reliability.agents.adapters.exceptions import (
-    ConnectionError as ProviderConnectionError,
     ProviderError,
-    ResponseValidationError,
 )
 from llm_reliability.agents.adapters.provider_registry import ProviderRegistry
 from llm_reliability.agents.adapters.request_models import LLMRequest
@@ -49,9 +47,12 @@ class _LlamaCppAdapter(BaseLLMAdapter):
     def initialize(self) -> None:
         try:
             import httpx
+
             self._httpx_client = httpx.Client(timeout=60.0)
         except ImportError as exc:
-            raise ImportError("The 'httpx' package is required for LlamaCppAgent. Install via: pip install httpx") from exc
+            raise ImportError(
+                "The 'httpx' package is required for LlamaCppAgent. Install via: pip install httpx"
+            ) from exc
 
         logger.info("Initializing LlamaCppAgent (model=%s, url=%s).", self._model, self._base_url)
 

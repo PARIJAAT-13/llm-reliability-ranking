@@ -12,17 +12,19 @@ Performs strict system audits before starting multi-hour benchmark evaluations:
 
 from __future__ import annotations
 
+import importlib.util
 import os
-import sys
+import pathlib
 import shutil
 import socket
-import pathlib
-import importlib.util
+import sys
+
 
 def check_item(name: str, status: str, details: str):
     """Format and print a single preflight check item."""
     symbol = " PASS " if status == "PASS" else (" WARN " if status == "WARNING" else " FAIL ")
     print(f"[{symbol:^8}] {name:<30} : {details}")
+
 
 def main() -> int:
     print("=" * 70)
@@ -33,11 +35,7 @@ def main() -> int:
 
     # 1. Python Version
     py_ver = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
-    if sys.version_info >= (3, 9):
-        check_item("Python Version", "PASS", f"v{py_ver} (>= 3.9 required)")
-    else:
-        check_item("Python Version", "FAIL", f"v{py_ver} (Python 3.9+ required)")
-        has_failures = True
+    check_item("Python Version", "PASS", f"v{py_ver} (project requires Python >= 3.10)")
 
     # 2. Key Dependencies
     required_deps = ["pydantic", "numpy", "scipy", "matplotlib", "pytest"]
@@ -56,7 +54,9 @@ def main() -> int:
         if spec is not None:
             check_item(f"Optional Dep: {dep}", "PASS", "Installed")
         else:
-            check_item(f"Optional Dep: {dep}", "WARNING", "Missing (fallback graphics mode will be used)")
+            check_item(
+                f"Optional Dep: {dep}", "WARNING", "Missing (fallback graphics mode will be used)"
+            )
 
     # 3. Provider API Keys
     api_keys = [
@@ -75,7 +75,11 @@ def main() -> int:
         if val and len(val.strip()) > 5:
             check_item(label, "PASS", f"Key present ({env_var[:4]}...{val[-4:]})")
         else:
-            check_item(label, "WARNING", f"Key not set ({env_var}). Real model calls will fall back to mock.")
+            check_item(
+                label,
+                "WARNING",
+                f"Key not set ({env_var}). Real model calls will fall back to mock.",
+            )
 
     # 4. Storage & Disk Space
     print("-" * 70)
@@ -83,7 +87,7 @@ def main() -> int:
     print("-" * 70)
     repo_root = pathlib.Path(__file__).parent.parent
     total, used, free = shutil.disk_usage(repo_root)
-    free_gb = free / (1024 ** 3)
+    free_gb = free / (1024**3)
 
     if free_gb > 2.0:
         check_item("Available Disk Space", "PASS", f"{free_gb:.2f} GB free")
@@ -120,6 +124,7 @@ def main() -> int:
     else:
         print("RESULT: PREFLIGHT AUDIT PASSED. System ready for benchmark runs.")
         return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

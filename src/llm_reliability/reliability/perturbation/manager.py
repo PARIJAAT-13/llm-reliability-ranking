@@ -77,11 +77,7 @@ class PerturbationManager:
                 else None
             )
         )
-        self.seed = (
-            seed
-            if seed is not None
-            else (config.seed if config is not None else 0)
-        )
+        self.seed = seed if seed is not None else (config.seed if config is not None else 0)
 
         # Register default available strategies
         self.all_strategies: dict[str, PerturbationStrategy] = {
@@ -262,7 +258,9 @@ class PerturbationManager:
                 evaluation_records.append(base_eval)
             except Exception as eval_exc:
                 logger.error("Baseline evaluation failed for task '%s': %s", task_id, eval_exc)
-                errors.append({"phase": "evaluate_baseline", "task_id": task_id, "error": str(eval_exc)})
+                errors.append(
+                    {"phase": "evaluate_baseline", "task_id": task_id, "error": str(eval_exc)}
+                )
         except Exception as exec_exc:
             logger.error("Baseline execution failed for task '%s': %s", task_id, exec_exc)
             errors.append({"phase": "run_baseline", "task_id": task_id, "error": str(exec_exc)})
@@ -278,9 +276,14 @@ class PerturbationManager:
         for run_idx, ptask in enumerate(perturbed_tasks, start=1):
             p_meta = ptask.get("metadata", {}).get("perturbation", {})
             strategy_name = p_meta.get("strategy", "perturbed")
-            p_meta.get("perturbation_id", f"{strategy_name}_{run_idx}")
 
-            logger.info("Executing perturbed run %d/%d (strategy='%s') for task '%s'.", run_idx, len(perturbed_tasks), strategy_name, task_id)
+            logger.info(
+                "Executing perturbed run %d/%d (strategy='%s') for task '%s'.",
+                run_idx,
+                len(perturbed_tasks),
+                strategy_name,
+                task_id,
+            )
 
             t_start = time.perf_counter()
             try:
@@ -304,13 +307,37 @@ class PerturbationManager:
                     p_eval = benchmark.evaluate(p_exec)
                     evaluation_records.append(p_eval)
                 except Exception as eval_exc:
-                    logger.error("Evaluation failed for perturbation '%s' on task '%s': %s", strategy_name, task_id, eval_exc)
-                    errors.append({"phase": "evaluate_perturbed", "task_id": task_id, "strategy": strategy_name, "error": str(eval_exc)})
+                    logger.error(
+                        "Evaluation failed for perturbation '%s' on task '%s': %s",
+                        strategy_name,
+                        task_id,
+                        eval_exc,
+                    )
+                    errors.append(
+                        {
+                            "phase": "evaluate_perturbed",
+                            "task_id": task_id,
+                            "strategy": strategy_name,
+                            "error": str(eval_exc),
+                        }
+                    )
 
             except Exception as exec_exc:
                 elapsed_sec = time.perf_counter() - t_start
-                logger.error("Execution failed for perturbation '%s' on task '%s': %s", strategy_name, task_id, exec_exc)
-                errors.append({"phase": "run_perturbed", "task_id": task_id, "strategy": strategy_name, "error": str(exec_exc)})
+                logger.error(
+                    "Execution failed for perturbation '%s' on task '%s': %s",
+                    strategy_name,
+                    task_id,
+                    exec_exc,
+                )
+                errors.append(
+                    {
+                        "phase": "run_perturbed",
+                        "task_id": task_id,
+                        "strategy": strategy_name,
+                        "error": str(exec_exc),
+                    }
+                )
 
                 # Create error ExecutionRecord for telemetry link
                 error_record = ExecutionRecord(
@@ -333,8 +360,8 @@ class PerturbationManager:
                 try:
                     p_eval = benchmark.evaluate(error_record)
                     evaluation_records.append(p_eval)
-                except Exception:
-                    pass
+                except Exception as exc:
+                    logger.warning("Error record evaluation also failed: %s", exc)
 
         return PerturbationRunResult(
             configuration=effective_config,

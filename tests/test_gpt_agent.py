@@ -26,10 +26,10 @@ import pytest
 from llm_reliability.configs.config import Configuration
 from llm_reliability.interfaces.agent import Agent
 
-
 # ---------------------------------------------------------------------------
 # Helpers & fixtures
 # ---------------------------------------------------------------------------
+
 
 def _make_config(**overrides: Any) -> Configuration:
     """Return a valid Configuration with sensible defaults."""
@@ -123,6 +123,7 @@ def agent_with_mock_openai(config, openai_mod, monkeypatch):
     monkeypatch.setenv("OPENAI_API_KEY", "sk-test-key")
     # Import after patch so _OpenAIAdapter.initialize picks up the stub module
     from llm_reliability.agents.gpt_agent import GPTAgent
+
     agent = GPTAgent(config)
     agent.initialize()
     return agent
@@ -132,10 +133,12 @@ def agent_with_mock_openai(config, openai_mod, monkeypatch):
 # Interface compliance
 # ---------------------------------------------------------------------------
 
+
 def test_gpt_agent_is_agent_subclass(config, openai_mod, monkeypatch):
     """GPTAgent must satisfy the Agent abstract interface."""
     monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
     from llm_reliability.agents.gpt_agent import GPTAgent
+
     agent = GPTAgent(config)
     assert isinstance(agent, Agent)
 
@@ -143,6 +146,7 @@ def test_gpt_agent_is_agent_subclass(config, openai_mod, monkeypatch):
 def test_gpt_agent_requires_config(openai_mod):
     """Passing None as config must raise ValueError immediately."""
     from llm_reliability.agents.gpt_agent import GPTAgent
+
     with pytest.raises(ValueError, match="Configuration must be provided"):
         GPTAgent(None)  # type: ignore[arg-type]
 
@@ -151,11 +155,13 @@ def test_gpt_agent_requires_config(openai_mod):
 # Initialization
 # ---------------------------------------------------------------------------
 
+
 def test_initialize_raises_without_api_key(config, openai_mod, monkeypatch):
     """initialize() must raise AuthenticationError when OPENAI_API_KEY is unset."""
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     from llm_reliability.agents.adapters.exceptions import AuthenticationError
     from llm_reliability.agents.gpt_agent import GPTAgent
+
     agent = GPTAgent(config)
     with pytest.raises(AuthenticationError, match="OPENAI_API_KEY"):
         agent.initialize()
@@ -165,8 +171,9 @@ def test_initialize_succeeds_with_api_key(config, openai_mod, monkeypatch):
     """initialize() must succeed when OPENAI_API_KEY is set."""
     monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
     from llm_reliability.agents.gpt_agent import GPTAgent
+
     agent = GPTAgent(config)
-    agent.initialize()          # should not raise
+    agent.initialize()  # should not raise
     assert agent._adapter._client is not None
 
 
@@ -174,14 +181,19 @@ def test_initialize_succeeds_with_api_key(config, openai_mod, monkeypatch):
 # Prompt extraction
 # ---------------------------------------------------------------------------
 
-@pytest.mark.parametrize("task,expected_prefix", [
-    ({"task_id": "t1", "prompt": "What is 2+2?"}, "What is 2+2?"),
-    ({"task_id": "t2", "question": "Explain gravity."}, "Explain gravity."),
-    ({"task_id": "t3", "problem_statement": "Fix the bug."}, "Fix the bug."),
-])
+
+@pytest.mark.parametrize(
+    "task,expected_prefix",
+    [
+        ({"task_id": "t1", "prompt": "What is 2+2?"}, "What is 2+2?"),
+        ({"task_id": "t2", "question": "Explain gravity."}, "Explain gravity."),
+        ({"task_id": "t3", "problem_statement": "Fix the bug."}, "Fix the bug."),
+    ],
+)
 def test_prompt_extraction_standard_keys(task, expected_prefix, openai_mod):
     """_extract_prompt must recognise standard task keys."""
     from llm_reliability.agents.gpt_agent import GPTAgent
+
     prompt = GPTAgent._extract_prompt(task)
     assert prompt == expected_prefix
 
@@ -189,6 +201,7 @@ def test_prompt_extraction_standard_keys(task, expected_prefix, openai_mod):
 def test_prompt_extraction_falls_back_to_str(openai_mod):
     """_extract_prompt falls back to str(task) for non-standard dicts."""
     from llm_reliability.agents.gpt_agent import GPTAgent
+
     task = {"task_id": "t99", "content": "do something"}
     prompt = GPTAgent._extract_prompt(task)
     assert "do something" in prompt
@@ -197,6 +210,7 @@ def test_prompt_extraction_falls_back_to_str(openai_mod):
 def test_prompt_extraction_raises_on_empty_task(openai_mod):
     """_extract_prompt raises ValueError for a completely empty task dict."""
     from llm_reliability.agents.gpt_agent import GPTAgent
+
     with pytest.raises(ValueError, match="Cannot extract a prompt"):
         GPTAgent._extract_prompt({})
 
@@ -204,6 +218,7 @@ def test_prompt_extraction_raises_on_empty_task(openai_mod):
 # ---------------------------------------------------------------------------
 # run() — success path
 # ---------------------------------------------------------------------------
+
 
 def test_run_returns_raw_text(agent_with_mock_openai, openai_mod):
     """run() must return the raw model text string from the completion."""
@@ -271,6 +286,7 @@ def test_run_uses_model_from_metadata(openai_mod, monkeypatch):
 # ---------------------------------------------------------------------------
 # run() — error mapping
 # ---------------------------------------------------------------------------
+
 
 def test_run_raises_authentication_error_on_401(config, openai_mod, monkeypatch):
     """run() must raise AuthenticationError when OpenAI rejects credentials."""
@@ -340,6 +356,7 @@ def test_run_raises_response_validation_error_on_empty_choice(config, openai_mod
 # reset() and shutdown()
 # ---------------------------------------------------------------------------
 
+
 def test_reset_clears_logs(agent_with_mock_openai, openai_mod):
     """reset() must clear adapter request/response logs."""
     agent_with_mock_openai._adapter._request_logs.append({"event": "request"})
@@ -359,6 +376,7 @@ def test_shutdown_closes_client(agent_with_mock_openai):
 # metadata()
 # ---------------------------------------------------------------------------
 
+
 def test_metadata_returns_required_keys(agent_with_mock_openai):
     """metadata() must return all required keys."""
     meta = agent_with_mock_openai.metadata()
@@ -372,11 +390,13 @@ def test_metadata_returns_required_keys(agent_with_mock_openai):
 # ProviderRegistry self-registration
 # ---------------------------------------------------------------------------
 
+
 def test_provider_registry_registers_openai(openai_mod):
     """Importing gpt_agent must register 'openai' in ProviderRegistry."""
     from llm_reliability.agents.adapters.base_llm_adapter import BaseLLMAdapter
     from llm_reliability.agents.adapters.provider_registry import ProviderRegistry
     from llm_reliability.agents.gpt_agent import _OpenAIAdapter
+
     if not ProviderRegistry.exists("openai"):
         ProviderRegistry.register("openai", _OpenAIAdapter)
     assert ProviderRegistry.exists("openai")
@@ -388,6 +408,7 @@ def test_provider_registry_registers_openai(openai_mod):
 # ---------------------------------------------------------------------------
 # System prompt
 # ---------------------------------------------------------------------------
+
 
 def test_system_prompt_forwarded_to_api(openai_mod, monkeypatch):
     """A system_prompt in config.metadata must appear as the first message."""

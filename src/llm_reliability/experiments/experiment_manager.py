@@ -46,9 +46,7 @@ class ExperimentManager:
         """
         target = self._workspace / f"{spec.experiment_id}.json"
         if target.exists():
-            raise FileExistsError(
-                f"Experiment '{spec.experiment_id}' already exists at {target}."
-            )
+            raise FileExistsError(f"Experiment '{spec.experiment_id}' already exists at {target}.")
         target.write_text(spec.canonical_json(), encoding="utf-8")
         return spec
 

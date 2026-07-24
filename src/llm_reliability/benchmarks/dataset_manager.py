@@ -115,7 +115,10 @@ class DatasetManager:
     def __init__(self, cache_dir: str | pathlib.Path = "data/cache", offline_mode: bool = False):
         self.cache_dir = pathlib.Path(cache_dir)
         self.cache_dir.mkdir(parents=True, exist_ok=True)
-        self.offline_mode = offline_mode or os.getenv("LLM_RELIABILITY_OFFLINE", "0").lower() in ("1", "true")
+        self.offline_mode = offline_mode or os.getenv("LLM_RELIABILITY_OFFLINE", "0").lower() in (
+            "1",
+            "true",
+        )
 
     def compute_sha256(self, file_path: pathlib.Path) -> str:
         """Compute SHA-256 hash of a local file."""
@@ -131,15 +134,17 @@ class DatasetManager:
             return False
 
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 if file_path.suffix.lower() in (".jsonl", ".ndjson"):
                     line_count = sum(1 for line in f if line.strip())
                     return line_count > 0
                 else:
                     data = json.load(f)
-                    return isinstance(data, (list, dict)) and len(data) > 0
+                    return isinstance(data, list | dict) and len(data) > 0
         except Exception as e:
-            logger.warning("Dataset validation failed for %s at %s: %s", benchmark_name, file_path, e)
+            logger.warning(
+                "Dataset validation failed for %s at %s: %s", benchmark_name, file_path, e
+            )
             return False
 
     def get_dataset(self, benchmark_name: str, force_download: bool = False) -> DatasetInfo:
@@ -179,7 +184,16 @@ class DatasetManager:
         if self.offline_mode:
             # Fallback auto-creation of mock task dataset for offline evaluation
             with open(target_path, "w", encoding="utf-8") as f:
-                json.dump([{"task_id": f"{norm_name}_1", "prompt": f"Solve {norm_name}", "ground_truth_answer": "A"}], f)
+                json.dump(
+                    [
+                        {
+                            "task_id": f"{norm_name}_1",
+                            "prompt": f"Solve {norm_name}",
+                            "ground_truth_answer": "A",
+                        }
+                    ],
+                    f,
+                )
             sha = self.compute_sha256(target_path)
             return DatasetInfo(
                 benchmark_name=norm_name,
@@ -194,13 +208,33 @@ class DatasetManager:
         try:
             urllib.request.urlretrieve(manifest["url"], target_path)
         except Exception as e:
-            logger.warning("Download failed for %s (%s). Creating local fallback dataset.", norm_name, e)
+            logger.warning(
+                "Download failed for %s (%s). Creating local fallback dataset.", norm_name, e
+            )
             with open(target_path, "w", encoding="utf-8") as f:
-                json.dump([{"task_id": f"{norm_name}_1", "prompt": f"Solve {norm_name}", "ground_truth_answer": "A"}], f)
+                json.dump(
+                    [
+                        {
+                            "task_id": f"{norm_name}_1",
+                            "prompt": f"Solve {norm_name}",
+                            "ground_truth_answer": "A",
+                        }
+                    ],
+                    f,
+                )
 
         if not self.validate_dataset(norm_name, target_path):
             with open(target_path, "w", encoding="utf-8") as f:
-                json.dump([{"task_id": f"{norm_name}_1", "prompt": f"Solve {norm_name}", "ground_truth_answer": "A"}], f)
+                json.dump(
+                    [
+                        {
+                            "task_id": f"{norm_name}_1",
+                            "prompt": f"Solve {norm_name}",
+                            "ground_truth_answer": "A",
+                        }
+                    ],
+                    f,
+                )
 
         sha = self.compute_sha256(target_path)
         return DatasetInfo(

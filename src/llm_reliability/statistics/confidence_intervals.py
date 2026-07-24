@@ -4,8 +4,9 @@ Confidence intervals module.
 Computes bootstrap confidence intervals for a given sequence of numbers.
 """
 
+from collections.abc import Sequence
+
 import numpy as np
-from typing import Sequence
 
 from llm_reliability.statistics.result_models import ConfidenceIntervalResult
 
@@ -41,7 +42,7 @@ def compute_bootstrap_ci(
 
     arr = np.asarray(data, dtype=float)
     rng = np.random.default_rng(seed)
-    
+
     # Generate bootstrap samples of the mean
     boot_means = []
     for _ in range(n_resamples):

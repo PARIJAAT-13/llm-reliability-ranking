@@ -14,8 +14,8 @@ Responsibilities
 from abc import abstractmethod
 from typing import Any
 
-from llm_reliability.configs.config import Configuration
 from llm_reliability.benchmarks import BenchmarkPlugin
+from llm_reliability.configs.config import Configuration
 from llm_reliability.interfaces.agent import Agent
 from llm_reliability.records.evaluation import EvaluationRecord
 from llm_reliability.records.execution import ExecutionRecord

@@ -1,0 +1,45 @@
+% !TEX root = ../main.tex
+\section{Practical Significance}
+
+\subsection{Implications for Model Selection}
+
+Our findings provide actionable guidance for practitioners selecting LLMs for production deployment, stratified by operational context:
+
+\paragraph{High-stakes production systems.} For applications where reliability failures carry significant cost (e.g., financial trading, healthcare triage, automated code review), the six API-based models (GPT-4o, Claude 3.5 Sonnet, Gemini 1.5 Pro, Llama 3.3 70B, Qwen 2.5 72B, DeepSeek Chat) demonstrate equivalent reliability characteristics under standard conditions, all achieving perfect metric scores. The practical implication is that model selection in high-stakes environments should be driven by secondary factors: runtime latency, cost-per-request, data residency requirements, and ecosystem integration rather than reliability differentiation. The Borda consensus ranking (Table~\ref{tab:final_rankings}) places 9b first, but with no statistical significance over the other top models (Task 4).
+
+\paragraph{Resource-constrained deployments.} For deployments using smaller or locally hosted models, our framework provides meaningful differentiation. The Ollama-based models show substantial variation: 9b leads with 100\% success rate and perfect consistency, while TinyLlama achieves 90\% success rate but with measurable variance ($\sigma = 0.10$). The ablation study (Task 1) reveals that success rate is the primary differentiator for this group -- removing it causes rank displacements of up to 3 positions, compared to 0--1 positions for removing consistency. Practitioners deploying smaller models should therefore prioritize task completion capability over run-to-run consistency when reliability constraints are tight.
+
+\subsection{Fault Tolerance Architecture Guidance}
+
+The fault injection analysis yields a clear architectural prescription: current LLM agents exhibit a binary recovery pattern -- they either always or never recover from a given fault type. The catastrophic failure modes (network interruption, tool failure) account for 100\% of unrecovered errors in the dataset (3,240 failures out of 9,720 fault injections). Practical implications:
+
+\begin{enumerate}
+    \item \textbf{Orchestration-layer fault tolerance is mandatory.} Since model-level fault recovery is binary and incomplete, production systems must implement external retry logic, circuit breakers, and fallback routing at the orchestration layer. The observed 0\% recovery rate for network interruptions despite 3 automatic retries suggests that retry logic alone is insufficient; alternative routing to backup models or degradation strategies is necessary.
+
+    \item \textbf{Temporary API failures are well-handled.} With 100\% recovery in 1--2 retries, standard exponential backoff strategies are sufficient for this fault class. The mean retry count of 1.0 for temporary API failures provides a data-driven guideline for timeout configuration.
+
+    \item \textbf{Fault monitoring should focus on catastrophic failures.} The four recoverable fault types (artificial timeout, context truncation, invalid model response, temporary API failure) require minimal monitoring investment since recovery is guaranteed. Monitoring budgets should concentrate on network interruption and tool failure detection, where intervention is required.
+\end{enumerate}
+
+\subsection{Ranking Stability and Reproducibility}
+
+The reproducibility analysis (Task 12) demonstrates that single-run rankings are reliable for top-tier models: mean pairwise run-to-run consistency exceeds 0.99 for all API-based models. For Ollama models, consistency ranges from 0.82 (Llama 3.1 8B) to 1.0 (multiple models), with a mean of 0.97. This suggests that:
+
+\begin{itemize}
+    \item \textbf{Single-shot evaluation is sufficient} for comparing top-tier production models under standard conditions. Multi-run aggregation adds negligible information gain ($< 1\%$ rank change probability).
+    \item \textbf{At least 3 repeated runs are advisable} for smaller models to obtain stable estimates, particularly for models with consistency below 0.90. The reproducibility figures (Fig.~\ref{fig:reproducibility_consistency}) show that consistency estimates stabilize after 3 runs for models with $\text{consistency} > 0.95$, but require 5+ runs for models with higher variance.
+\end{itemize}
+
+\subsection{Benchmark Selection for Reliability Evaluation}
+
+Our benchmark-specific analysis (Task 6) informs efficient evaluation design:
+
+\begin{itemize}
+    \item \textbf{GAIA is the most informative single benchmark} for reliability assessment, showing the widest discriminative variance across all four metrics and the broadest agent coverage (11 agents). A reliability evaluation campaign limited to a single benchmark should prioritize GAIA.
+    \item \textbf{MockBenchmark contributes volume, not signal.} Despite containing 85\% of all evaluations, MockBenchmark shows near-zero discriminative variance ($\sigma^2 < 0.01$ for all metrics). Practitioners can reduce evaluation costs by 80--85\% without meaningful reliability information loss by deprioritizing mock-task evaluations.
+    \item \textbf{AgentBoard and SWEBench Lite offer limited coverage} in the current dataset (1 agent each), but their unique task structures suggest potential for discriminative reliability analysis in broader agent populations. Expanding these benchmarks across more agents is a high-value investment for future reliability studies.
+\end{itemize}
+
+\subsection{Cost-Reliability Trade-offs}
+
+While we do not construct a formal cost-reliability Pareto frontier, the data support qualitative observations. API-based models with permissive rate limits (DeepSeek Chat) achieve reliability parity with premium models (GPT-4o, Claude 3.5 Sonnet), suggesting that cost optimization need not compromise reliability for typical workloads. Among Ollama models, the 7B--9B parameter range (Gemma 2 9B, Qwen 2.5 7B, Mistral 7B) achieves 87.5--100\% success rates with local deployment advantages, representing a sweet spot for reliability-conscious edge deployments.

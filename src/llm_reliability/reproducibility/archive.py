@@ -80,11 +80,9 @@ class ArchiveBuilder:
         self._set_backend()
 
     def _set_backend(self) -> None:
-        try:
-            import matplotlib
-            matplotlib.use(self._backend)
-        except ImportError:
-            pass
+        import matplotlib
+
+        matplotlib.use(self._backend, force=True)
 
     # ------------------------------------------------------------------
     # Public API
@@ -145,10 +143,10 @@ class ArchiveBuilder:
     def _generate_figures(self, summary: Any, figures_dir: pathlib.Path) -> None:
         """Produce all visualisation figures."""
         try:
-            from llm_reliability.visualization.ranking_plots import RankingPlotter
             from llm_reliability.visualization.distributions import DistributionPlotter
-            from llm_reliability.visualization.heatmaps import HeatmapPlotter
             from llm_reliability.visualization.export import FigureExporter
+            from llm_reliability.visualization.heatmaps import HeatmapPlotter
+            from llm_reliability.visualization.ranking_plots import RankingPlotter
         except ImportError as exc:
             logger.warning("Visualization imports failed: %s", exc)
             return
@@ -252,8 +250,8 @@ class ArchiveBuilder:
     ) -> None:
         """Export all data tables."""
         try:
-            from llm_reliability.visualization.tables import TableGenerator
             from llm_reliability.visualization.export import TableExporter
+            from llm_reliability.visualization.tables import TableGenerator
         except ImportError as exc:
             logger.warning("Table imports failed: %s", exc)
             return
@@ -268,22 +266,31 @@ class ArchiveBuilder:
         if metrics:
             try:
                 df = tg.reliability_metrics_table(metrics)
-                TableExporter.save_all(df, tables_dir / "reliability_metrics",
-                                       caption="Reliability metrics", skip_excel=skip_excel)
+                TableExporter.save_all(
+                    df,
+                    tables_dir / "reliability_metrics",
+                    caption="Reliability metrics",
+                    skip_excel=skip_excel,
+                )
             except Exception as exc:
                 logger.warning("reliability_metrics table failed: %s", exc)
 
             try:
                 df = tg.agent_summary_table(metrics)
-                TableExporter.save_all(df, tables_dir / "agent_summary",
-                                       caption="Agent summary", skip_excel=skip_excel)
+                TableExporter.save_all(
+                    df, tables_dir / "agent_summary", caption="Agent summary", skip_excel=skip_excel
+                )
             except Exception as exc:
                 logger.warning("agent_summary table failed: %s", exc)
 
             try:
                 df = tg.benchmark_summary_table(metrics)
-                TableExporter.save_all(df, tables_dir / "benchmark_summary",
-                                       caption="Benchmark summary", skip_excel=skip_excel)
+                TableExporter.save_all(
+                    df,
+                    tables_dir / "benchmark_summary",
+                    caption="Benchmark summary",
+                    skip_excel=skip_excel,
+                )
             except Exception as exc:
                 logger.warning("benchmark_summary table failed: %s", exc)
 
@@ -291,8 +298,9 @@ class ArchiveBuilder:
         if s_rnks and r_rnks:
             try:
                 df = tg.ranking_table(s_rnks[0], r_rnks[0])
-                TableExporter.save_all(df, tables_dir / "ranking",
-                                       caption="Ranking comparison", skip_excel=skip_excel)
+                TableExporter.save_all(
+                    df, tables_dir / "ranking", caption="Ranking comparison", skip_excel=skip_excel
+                )
             except Exception as exc:
                 logger.warning("ranking table failed: %s", exc)
 
@@ -306,8 +314,9 @@ class ArchiveBuilder:
             ]:
                 try:
                     df = getattr(tg, method_name)(stat_report)
-                    TableExporter.save_all(df, tables_dir / stem,
-                                           caption=caption, skip_excel=skip_excel)
+                    TableExporter.save_all(
+                        df, tables_dir / stem, caption=caption, skip_excel=skip_excel
+                    )
                 except Exception as exc:
                     logger.warning("%s table failed: %s", stem, exc)
 
@@ -347,8 +356,8 @@ class ArchiveBuilder:
 
     def _write_manifest(self, summary: Any, exp_dir: pathlib.Path) -> None:
         try:
-            from llm_reliability.reproducibility.manifest import ManifestGenerator
             from llm_reliability.reproducibility.environment import EnvironmentCapture
+            from llm_reliability.reproducibility.manifest import ManifestGenerator
 
             env = EnvironmentCapture.capture()
             gen = ManifestGenerator()
@@ -363,9 +372,7 @@ class ArchiveBuilder:
 
             env = EnvironmentCapture.capture()
             dest = exp_dir / "environment.json"
-            dest.write_text(
-                json.dumps(env.to_dict(), indent=2, default=str), encoding="utf-8"
-            )
+            dest.write_text(json.dumps(env.to_dict(), indent=2, default=str), encoding="utf-8")
         except Exception as exc:
             logger.warning("environment.json generation failed: %s", exc)
 
@@ -381,7 +388,9 @@ class ArchiveBuilder:
 
     def _write_checklist(self, summary: Any, exp_dir: pathlib.Path) -> None:
         try:
-            from llm_reliability.reproducibility.checklist import ReproducibilityChecklist
+            from llm_reliability.reproducibility.checklist import (
+                ReproducibilityChecklist,
+            )
 
             checker = ReproducibilityChecklist()
             result = checker.run(summary, archive_dir=exp_dir)
@@ -393,7 +402,7 @@ class ArchiveBuilder:
         """Write a README.md for the archive."""
         readme = f"""# Experiment Archive: {summary.experiment_name}
 
-**Experiment ID**: `{summary.experiment_id}`  
+**Experiment ID**: `{summary.experiment_id}`
 **Generated**: {summary.generated_at}
 
 ## Directory Structure
@@ -437,7 +446,7 @@ Please cite this work using the `CITATION.cff` file in this directory.
 
 ## Reproducibility
 
-See `manifest.json` for record hashes, seeds, and git commit hash.  
+See `manifest.json` for record hashes, seeds, and git commit hash.
 See `CHECKLIST.md` for automated reproducibility audit results.
 """
         dest = exp_dir / "README.md"

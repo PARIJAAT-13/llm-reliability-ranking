@@ -16,7 +16,9 @@ class LLMRequest(SerializableModel):
     """Provider-agnostic model for a single LLM inference request."""
 
     prompt: str = Field(min_length=1, description="The user prompt to send to the model.")
-    system_prompt: str | None = Field(default=None, description="Optional system-level instructions.")
+    system_prompt: str | None = Field(
+        default=None, description="Optional system-level instructions."
+    )
     temperature: float = Field(default=0.0, ge=0.0, le=2.0, description="Sampling temperature.")
     max_tokens: int = Field(default=1024, gt=0, description="Maximum tokens to generate.")
     top_p: float = Field(default=1.0, ge=0.0, le=1.0, description="Nucleus sampling probability.")

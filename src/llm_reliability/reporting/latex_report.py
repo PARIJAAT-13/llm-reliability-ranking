@@ -221,7 +221,8 @@ class LaTeXReportWriter:
             r"We define five reliability components:" + "\n\n"
             r"\begin{enumerate}" + "\n"
             r"  \item \textbf{Success Rate} ($s$): fraction of tasks completed successfully." + "\n"
-            r"  \item \textbf{Repeated-Run Consistency} ($c$): fraction of repeated runs that " + "\n"
+            r"  \item \textbf{Repeated-Run Consistency} ($c$): fraction of repeated runs that "
+            + "\n"
             r"    agree with the majority outcome." + "\n"
             r"  \item \textbf{Perturbation Robustness} ($p$): ratio of perturbed-run " + "\n"
             r"    success to baseline success, capped at 1." + "\n"
@@ -284,10 +285,16 @@ class LaTeXReportWriter:
         lines.append(r"\subsection{Figures}")
         lines.append("")
         fig_refs = [
-            ("ranking_comparison.png", "Side-by-side comparison of success and reliability rankings."),
-            ("rank_divergence.png", "Rank divergence scatter: success rank vs.\ reliability rank."),
+            (
+                "ranking_comparison.png",
+                "Side-by-side comparison of success and reliability rankings.",
+            ),
+            (
+                "rank_divergence.png",
+                r"Rank divergence scatter: success rank vs.\ reliability rank.",
+            ),
             ("bump_chart.png", "Rank trajectory bump chart across ranking types."),
-            ("scatter_success_vs_reliability.png", "Success rate vs.\ composite reliability."),
+            ("scatter_success_vs_reliability.png", r"Success rate vs.\ composite reliability."),
             ("correlation_heatmap.png", "Correlation coefficient heatmap."),
         ]
         for fname, caption in fig_refs:
@@ -319,14 +326,30 @@ class LaTeXReportWriter:
             except Exception as exc:
                 lines.append(f"% Failed: {exc}")
 
-        _add_table("correlation_table", "Rank Correlations", "tab:correlations",
-                   "Rank correlation coefficients between success and reliability rankings.")
-        _add_table("hypothesis_test_table", "Hypothesis Tests", "tab:hypothesis",
-                   "Hypothesis test results ($\\alpha=0.05$).")
-        _add_table("effect_size_table", "Effect Sizes", "tab:effects",
-                   "Effect size measures for ranking divergence.")
-        _add_table("confidence_interval_table", "Confidence Intervals", "tab:ci",
-                   "Bootstrap confidence intervals (95\\%) for ranking scores and differences.")
+        _add_table(
+            "correlation_table",
+            "Rank Correlations",
+            "tab:correlations",
+            "Rank correlation coefficients between success and reliability rankings.",
+        )
+        _add_table(
+            "hypothesis_test_table",
+            "Hypothesis Tests",
+            "tab:hypothesis",
+            "Hypothesis test results ($\\alpha=0.05$).",
+        )
+        _add_table(
+            "effect_size_table",
+            "Effect Sizes",
+            "tab:effects",
+            "Effect size measures for ranking divergence.",
+        )
+        _add_table(
+            "confidence_interval_table",
+            "Confidence Intervals",
+            "tab:ci",
+            "Bootstrap confidence intervals (95\\%) for ranking scores and differences.",
+        )
 
         return "\n".join(lines)
 

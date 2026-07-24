@@ -1,0 +1,32 @@
+\begin{table}[t]
+\centering
+\caption{Per-model reliability summary across all benchmarks.}
+\label{tab:models_detail}
+\begin{tabular}{lcccccccc}
+\toprule
+Model & Composite & SR & Consistency & Fault Tol. & Pert. Rob. & Runtime & Benchmarks & Failures \\
+\midrule
+MockAgent & 0.9174311926605505 & 0.2169 & 1.0000
+--- & --- & --- & 3.19s & 1 & 0 \\
+--- & --- & --- & 2.19s & 1 & 0 \\
+claude-3-5-sonn & 1.0 & 1.0000 & 1.0000
+deepseek & 1.0 & 0.0000 & 1.0000
+deepseek-chat & 1.0 & 0.9982 & 1.0000
+google & 1.0 & 0.0000 & 1.0000
+gemini-1.5-pro & 1.0 & 1.0000 & 1.0000
+llama & 0.9818181818181819 & 0.4880 & 0.6391
+llama-3.3-70b & 1.0 & 1.0000 & 1.0000
+mock & 1.0 & 1.0000 & 1.0000
+--- & --- & --- & 2.46s & 1 & 0 \\
+9b & 1.0 & 0.9974 & 1.0000
+8b & 1.0 & 0.9688 & 0.8162
+7b & 1.0 & 0.9922 & 0.9927
+mini & 1.0 & 0.9756 & 1.0000
+7b & 1.0 & 0.9974 & 1.0000
+latest & 0.9 & 0.9951 & 1.0000
+openai & 1.0 & 0.0000 & 1.0000
+gpt-4o & 1.0 & 1.0000 & 1.0000
+qwen-2.5-72b & 1.0 & 1.0000 & 1.0000
+\bottomrule
+\end{tabular}
+\end{table}

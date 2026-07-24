@@ -268,7 +268,9 @@ class ReproducibilityChecklist:
         return CheckItem(
             name="Figures Directory",
             passed=ok,
-            message="Non-empty figures/ directory found." if ok else "figures/ is missing or empty.",
+            message=(
+                "Non-empty figures/ directory found." if ok else "figures/ is missing or empty."
+            ),
         )
 
     @staticmethod
@@ -278,5 +280,7 @@ class ReproducibilityChecklist:
         return CheckItem(
             name="Reports Directory",
             passed=ok,
-            message="Non-empty reports/ directory found." if ok else "reports/ is missing or empty.",
+            message=(
+                "Non-empty reports/ directory found." if ok else "reports/ is missing or empty."
+            ),
         )

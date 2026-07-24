@@ -63,26 +63,43 @@ class ConcreteAdapter(BaseLLMAdapter):
 class FailingAdapter(BaseLLMAdapter):
     """Always raises ProviderError from generate()."""
 
-    def initialize(self) -> None: pass
+    def initialize(self) -> None:
+        pass
+
     def generate(self, request: LLMRequest) -> LLMResponse:
         raise ProviderError("service unavailable")
-    def shutdown(self) -> None: pass
-    def provider_metadata(self) -> dict: return {}
-    def health_check(self) -> bool: return False
+
+    def shutdown(self) -> None:
+        pass
+
+    def provider_metadata(self) -> dict:
+        return {}
+
+    def health_check(self) -> bool:
+        return False
 
 
 class BlankResponseAdapter(BaseLLMAdapter):
     """Returns a response with blank text — violates the response contract."""
 
-    def initialize(self) -> None: pass
+    def initialize(self) -> None:
+        pass
+
     def generate(self, request: LLMRequest) -> LLMResponse:
         return _make_response(text="   ")
-    def shutdown(self) -> None: pass
-    def provider_metadata(self) -> dict: return {}
-    def health_check(self) -> bool: return True
+
+    def shutdown(self) -> None:
+        pass
+
+    def provider_metadata(self) -> dict:
+        return {}
+
+    def health_check(self) -> bool:
+        return True
 
 
 # ── Tests ────────────────────────────────────────────────────────────────────
+
 
 def test_adapter_implements_interface(config):
     adapter = ConcreteAdapter(config)

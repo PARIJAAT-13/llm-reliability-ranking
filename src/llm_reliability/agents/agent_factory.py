@@ -107,3 +107,8 @@ class AgentFactory:
     def available_names() -> list[str]:
         """Return the list of known agent name prefixes."""
         return sorted(_PREFIX_MAP.keys())
+
+    @staticmethod
+    def resolve(name: str) -> str | None:
+        """Resolve *name* to a canonical runtime name, or ``None`` if unknown."""
+        return _resolve(name)

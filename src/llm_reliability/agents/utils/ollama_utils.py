@@ -28,7 +28,9 @@ def normalize_ollama_url(base_url: str) -> str:
     return url
 
 
-def check_ollama_server(base_url: str = DEFAULT_OLLAMA_BASE_URL, timeout: float = 3.0) -> tuple[bool, str]:
+def check_ollama_server(
+    base_url: str = DEFAULT_OLLAMA_BASE_URL, timeout: float = 3.0
+) -> tuple[bool, str]:
     """Check if the local Ollama server is reachable."""
     host_url = normalize_ollama_url(base_url)
     tags_url = f"{host_url}/api/tags"
@@ -82,7 +84,9 @@ def model_matches(requested: str, available_models: list[str]) -> bool:
     return False
 
 
-def validate_models_exist(models: list[str], base_url: str = DEFAULT_OLLAMA_BASE_URL) -> tuple[bool, list[str]]:
+def validate_models_exist(
+    models: list[str], base_url: str = DEFAULT_OLLAMA_BASE_URL
+) -> tuple[bool, list[str]]:
     """Validate that Ollama server is running and all requested models exist locally."""
     server_ok, msg = check_ollama_server(base_url)
     if not server_ok:
@@ -113,7 +117,9 @@ def validate_models_exist(models: list[str], base_url: str = DEFAULT_OLLAMA_BASE
     return True, []
 
 
-def estimate_model_memory(model_name: str, base_url: str = DEFAULT_OLLAMA_BASE_URL, timeout: float = 3.0) -> dict[str, Any]:
+def estimate_model_memory(
+    model_name: str, base_url: str = DEFAULT_OLLAMA_BASE_URL, timeout: float = 3.0
+) -> dict[str, Any]:
     """Query model details from POST /api/show to estimate size and memory requirements."""
     host_url = normalize_ollama_url(base_url)
     show_url = f"{host_url}/api/show"
@@ -130,7 +136,7 @@ def estimate_model_memory(model_name: str, base_url: str = DEFAULT_OLLAMA_BASE_U
                 data = json.loads(resp.read().decode("utf-8"))
                 details = data.get("details", {})
                 size_bytes = data.get("size", 0)
-                size_gb = round(size_bytes / (1024 ** 3), 2) if size_bytes else None
+                size_gb = round(size_bytes / (1024**3), 2) if size_bytes else None
                 return {
                     "model": model_name,
                     "size_gb": size_gb,
@@ -147,7 +153,8 @@ def get_available_memory_gb() -> float | None:
     """Get system available memory in GB."""
     try:
         import psutil  # noqa: PLC0415
-        return round(psutil.virtual_memory().available / (1024 ** 3), 2)
+
+        return round(psutil.virtual_memory().available / (1024**3), 2)
     except ImportError:
         pass
 
@@ -172,25 +179,27 @@ def get_available_memory_gb() -> float | None:
             stat = MEMORYSTATUSEX()
             stat.dwLength = ctypes.sizeof(MEMORYSTATUSEX)
             if ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(stat)):
-                return round(stat.ullAvailPhys / (1024 ** 3), 2)
+                return round(stat.ullAvailPhys / (1024**3), 2)
         except Exception:  # noqa: BLE001
             pass
 
     # Linux /proc/meminfo fallback
     if os.path.exists("/proc/meminfo"):
         try:
-            with open("/proc/meminfo", "r", encoding="utf-8") as f:
+            with open("/proc/meminfo", encoding="utf-8") as f:
                 for line in f:
                     if line.startswith("MemAvailable:"):
                         kb = int(line.split()[1])
-                        return round(kb / (1024 ** 2), 2)
+                        return round(kb / (1024**2), 2)
         except Exception:  # noqa: BLE001
             pass
 
     return None
 
 
-def unload_ollama_model(model_name: str, base_url: str = DEFAULT_OLLAMA_BASE_URL, timeout: float = 5.0) -> bool:
+def unload_ollama_model(
+    model_name: str, base_url: str = DEFAULT_OLLAMA_BASE_URL, timeout: float = 5.0
+) -> bool:
     """Unload model from Ollama VRAM/RAM by sending keep_alive: 0 to /api/generate."""
     host_url = normalize_ollama_url(base_url)
     gen_url = f"{host_url}/api/generate"
@@ -222,10 +231,12 @@ def format_model_not_found_error(missing_models: list[str], installed_models: li
     ]
     for m in missing_models:
         lines.append(f"  • Run: `ollama pull {m}` to download this model")
-    lines.extend([
-        "  • Or try using an installed model like phi3:mini or tinyllama",
-        "  • Verify Ollama is running (`ollama list`)",
-    ])
+    lines.extend(
+        [
+            "  • Or try using an installed model like phi3:mini or tinyllama",
+            "  • Verify Ollama is running (`ollama list`)",
+        ]
+    )
     return "\n".join(lines)
 
 
@@ -239,10 +250,12 @@ def format_memory_error(model_name: str, req_gb: float | None, avail_gb: float |
     if avail_gb:
         lines.append(f"Available system memory : {avail_gb:.1f} GB")
 
-    lines.extend([
-        "\nSuggestions:",
-        "  • Close other applications to free system RAM and GPU VRAM",
-        f"  • Use a smaller quantized model (e.g. {model_name.split(':')[0]}:1.8b or phi3:mini)",
-        "  • Use a smaller context window size (max_tokens)",
-    ])
+    lines.extend(
+        [
+            "\nSuggestions:",
+            "  • Close other applications to free system RAM and GPU VRAM",
+            f"  • Use a smaller quantized model (e.g. {model_name.split(':')[0]}:1.8b or phi3:mini)",
+            "  • Use a smaller context window size (max_tokens)",
+        ]
+    )
     return "\n".join(lines)

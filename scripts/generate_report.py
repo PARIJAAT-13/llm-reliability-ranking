@@ -47,6 +47,10 @@ import json
 import logging
 import pathlib
 import sys
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from llm_reliability.reporting.summary import ExperimentSummary
 
 # Ensure src/ is on the path when running from the repo root
 _REPO_ROOT = pathlib.Path(__file__).parent.parent
@@ -62,6 +66,7 @@ logger = logging.getLogger("generate_report")
 # ---------------------------------------------------------------------------
 # Argument parsing
 # ---------------------------------------------------------------------------
+
 
 def build_parser() -> argparse.ArgumentParser:
     """Build the argument parser."""
@@ -138,7 +143,8 @@ def build_parser() -> argparse.ArgumentParser:
 # Data loading
 # ---------------------------------------------------------------------------
 
-def load_summary_from_dir(exp_dir: pathlib.Path) -> "ExperimentSummary":  # type: ignore[name-defined]
+
+def load_summary_from_dir(exp_dir: pathlib.Path) -> ExperimentSummary:
     """Load an ExperimentSummary from a ResultManager output directory.
 
     Parameters
@@ -150,11 +156,11 @@ def load_summary_from_dir(exp_dir: pathlib.Path) -> "ExperimentSummary":  # type
     -------
     ExperimentSummary
     """
-    from llm_reliability.reporting.summary import ExperimentSummary
-    from llm_reliability.records.metric import MetricRecord
-    from llm_reliability.records.ranking import RankingRecord
     from llm_reliability.records.evaluation import EvaluationRecord
     from llm_reliability.records.execution import ExecutionRecord
+    from llm_reliability.records.metric import MetricRecord
+    from llm_reliability.records.ranking import RankingRecord
+    from llm_reliability.reporting.summary import ExperimentSummary
 
     def _load_json(fname: str) -> list:
         path = exp_dir / fname
@@ -222,18 +228,19 @@ def load_summary_from_dir(exp_dir: pathlib.Path) -> "ExperimentSummary":  # type
     )
 
 
-def build_demo_summary() -> "ExperimentSummary":  # type: ignore[name-defined]
+def build_demo_summary() -> ExperimentSummary:
     """Build a synthetic ExperimentSummary for demo purposes."""
-    from llm_reliability.reporting.summary import ExperimentSummary
+    from datetime import datetime, timezone
+
     from llm_reliability.records.metric import MetricRecord
     from llm_reliability.records.ranking import RankingRecord
-    from datetime import datetime, timezone
+    from llm_reliability.reporting.summary import ExperimentSummary
 
     ts = datetime.now(timezone.utc).isoformat()
 
     agents = [
         ("AgentAlpha", 0.85, 0.72, None, None),
-        ("AgentBeta",  0.78, 0.81, 0.65, 0.70),
+        ("AgentBeta", 0.78, 0.81, 0.65, 0.70),
         ("AgentGamma", 0.92, 0.55, 0.48, None),
         ("AgentDelta", 0.61, 0.88, 0.79, 0.84),
     ]
@@ -276,6 +283,7 @@ def build_demo_summary() -> "ExperimentSummary":  # type: ignore[name-defined]
 # Main
 # ---------------------------------------------------------------------------
 
+
 def main() -> int:
     """CLI entry point. Returns exit code."""
     parser = build_parser()
@@ -314,6 +322,7 @@ def main() -> int:
     if args.archive:
         try:
             from llm_reliability.reproducibility.archive import ArchiveBuilder
+
             builder = ArchiveBuilder()
             archive_dir = builder.build(
                 summary,
@@ -336,8 +345,10 @@ def main() -> int:
         if args.figures:
             try:
                 import matplotlib
+
                 matplotlib.use("Agg")
                 from llm_reliability.reproducibility.archive import ArchiveBuilder
+
                 ArchiveBuilder()._generate_figures(summary, figures_dir)
                 logger.info("Figures written to %s", figures_dir)
             except Exception as exc:
@@ -346,6 +357,7 @@ def main() -> int:
         if args.tables:
             try:
                 from llm_reliability.reproducibility.archive import ArchiveBuilder
+
                 ArchiveBuilder()._generate_tables(summary, tables_dir, skip_excel=args.skip_excel)
                 logger.info("Tables written to %s", tables_dir)
             except Exception as exc:
@@ -353,6 +365,7 @@ def main() -> int:
 
         try:
             from llm_reliability.reporting.report_generator import ReportGenerator
+
             gen = ReportGenerator()
             paths = gen.generate(
                 summary,

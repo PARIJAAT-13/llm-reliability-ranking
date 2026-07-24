@@ -2,7 +2,6 @@
 Tests for SuccessRanker.
 """
 
-
 from llm_reliability.ranking.success_ranker import SuccessRanker
 from tests.ranking_test_helpers import create_mock_metric
 

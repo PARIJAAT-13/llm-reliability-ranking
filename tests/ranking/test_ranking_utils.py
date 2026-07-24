@@ -2,7 +2,7 @@
 
 import pytest
 
-from llm_reliability.ranking.utils import validate_metrics, sort_and_rank
+from llm_reliability.ranking.utils import sort_and_rank, validate_metrics
 from tests.ranking_test_helpers import create_mock_metric
 
 

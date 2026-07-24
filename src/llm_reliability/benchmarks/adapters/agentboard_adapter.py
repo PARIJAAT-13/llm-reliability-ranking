@@ -36,15 +36,13 @@ class AgentBoardAdapter(BaseBenchmarkAdapter):
         """Validate AgentBoard specific configuration."""
         super().validate_configuration()
         if not self.config.metadata.get("dataset_path"):
-            raise ValueError(
-                "Configuration metadata must contain 'dataset_path' for AgentBoard."
-            )
+            raise ValueError("Configuration metadata must contain 'dataset_path' for AgentBoard.")
 
     def _load_tasks(self) -> None:
         """Load and validate the AgentBoard dataset."""
         dataset_path = self.config.metadata["dataset_path"]
         try:
-            with open(dataset_path, "r", encoding="utf-8") as f:
+            with open(dataset_path, encoding="utf-8") as f:
                 data = json.load(f)
         except Exception as e:
             logger.error("Failed to load dataset from %s: %s", dataset_path, e)
@@ -108,7 +106,7 @@ class AgentBoardAdapter(BaseBenchmarkAdapter):
             software_versions={"agentboard": "1.0"},
             environment_metadata={},
         )
-        
+
         self._logs.append({"event": "run", "task_id": task_id, "status": status})
         return record
 
@@ -139,7 +137,7 @@ class AgentBoardAdapter(BaseBenchmarkAdapter):
             metrics={"difficulty": task.get("difficulty")},
             evaluated_at=evaluated_at,
         )
-        
+
         self._logs.append({"event": "evaluate", "task_id": execution.task_id, "success": success})
         return eval_record
 

@@ -51,7 +51,7 @@ class WinograndeAdapter(BaseBenchmarkAdapter):
 
         if path_obj.exists() and path_obj.is_file():
             try:
-                with open(path_obj, "r", encoding="utf-8") as f:
+                with open(path_obj, encoding="utf-8") as f:
                     data = json.load(f)
             except Exception as e:
                 logger.error("Failed to load dataset from %s: %s", dataset_path, e)
@@ -69,7 +69,9 @@ class WinograndeAdapter(BaseBenchmarkAdapter):
                 gt = str(item.get("answer", item.get("ground_truth_answer", "1"))).strip().upper()
                 if gt in ("1", "2"):
                     gt = "A" if gt == "1" else "B"
-                prompt = f"Fill in the blank: {sentence}\nA. {option1}\nB. {option2}\nAnswer (A or B):"
+                prompt = (
+                    f"Fill in the blank: {sentence}\nA. {option1}\nB. {option2}\nAnswer (A or B):"
+                )
                 self._tasks[tid] = {
                     "task_id": tid,
                     "sentence": sentence,

@@ -1,7 +1,8 @@
 """Tests for the Fault Injection Framework."""
 
-import pytest
 from typing import Any
+
+import pytest
 
 from llm_reliability.agents.mock_agent import MockAgent
 from llm_reliability.benchmarks.mock_benchmark import MockBenchmark

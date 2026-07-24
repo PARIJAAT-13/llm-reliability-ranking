@@ -9,8 +9,10 @@ from llm_reliability.benchmarks.adapters.registry import BenchmarkRegistry
 class ValidAdapter1(BaseBenchmarkAdapter):
     def _load_tasks(self):
         pass
+
     def run(self, agent, task):
         pass
+
     def evaluate(self, execution):
         pass
 
@@ -18,8 +20,10 @@ class ValidAdapter1(BaseBenchmarkAdapter):
 class ValidAdapter2(BaseBenchmarkAdapter):
     def _load_tasks(self):
         pass
+
     def run(self, agent, task):
         pass
+
     def evaluate(self, execution):
         pass
 

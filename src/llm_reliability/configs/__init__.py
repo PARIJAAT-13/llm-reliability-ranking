@@ -4,8 +4,8 @@ from llm_reliability.configs.config import (
     CONFIG_VERSION,
     Configuration,
     ReliabilityWeightsConfig,
-    VisualizationOptions,
     StatisticalOptions,
+    VisualizationOptions,
 )
 
 __all__ = [

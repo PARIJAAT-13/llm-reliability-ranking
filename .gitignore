@@ -39,5 +39,37 @@ Thumbs.db
 # Experiment results (large data, not source)
 results/
 
+# Lint / cache
+.ruff_cache/
+.cache/
+
 # Logs
 *.log
+
+# Type checking
+.mypy_cache/
+.typeshed/
+
+# OS / binaries
+*.exe
+*.dll
+*.msi
+*.zip
+*.7z
+*.tar.gz
+
+# Generated / compiled documents
+*.pdf
+
+# IDE / editor project files
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Generated lockfiles (use pip-compile / pip freeze locally)
+requirements_lock.txt
+
+# Empty dirs left by refactoring
+experiments/

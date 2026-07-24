@@ -1,0 +1,61 @@
+% !TEX root = ../main.tex
+\section{Methodology}
+
+\subsection{Reliability Metrics}
+
+We define LLM reliability as a multi-dimensional construct captured by four key metrics:
+
+\begin{itemize}
+    \item \textbf{Success Rate} ($S$): The proportion of evaluations where the model produces a correct or acceptable output, defined as $S = \frac{1}{N}\sum_{i=1}^{N} \mathbb{1}[\text{success}_i]$, where $N$ is the total number of evaluations for a given agent-benchmark pair.
+
+    \item \textbf{Perturbation Robustness} ($P$): The model's ability to maintain correct outputs when inputs are perturbed, computed as $P = \frac{1}{K}\sum_{j=1}^{K} S_j$, where $S_j$ is the success rate under perturbation type $j$, and $K$ is the number of perturbation types.
+
+    \item \textbf{Fault Tolerance} ($F$): The model's ability to recover from injected faults, measured as $F = \frac{1}{M}\sum_{k=1}^{M} R_k$, where $R_k \in \{0,1\}$ indicates successful recovery from fault $k$, and $M$ is the number of fault injections.
+
+    \item \textbf{Repeated-Run Consistency} ($C$): The consistency of model outputs across multiple runs with identical inputs, measured using pairwise agreement: $C = \frac{2}{N(N-1)}\sum_{i < j} \mathbb{1}[\text{outcome}_i = \text{outcome}_j]$, where $N$ is the number of repeated runs.
+\end{itemize}
+
+The \textbf{Composite Reliability Score} ($R$) is defined as the weighted combination:
+\[
+R = \alpha S + \beta P + \gamma F + \delta C
+\]
+where $\alpha = \beta = \gamma = \delta = 0.25$ by default, though alternative weightings can be explored.
+
+\subsection{Fault Injection Protocol}
+
+We inject six types of faults during evaluation to simulate production-environment anomalies:
+
+\begin{enumerate}
+    \item \textbf{Artificial Timeout}: Simulates a model response that exceeds a latency threshold, requiring retry logic.
+    \item \textbf{Temporary API Failure}: Simulates transient API unavailability, testing retry mechanisms.
+    \item \textbf{Invalid Model Response}: Injects a malformed response to test output validation.
+    \item \textbf{Tool Failure}: Simulates a tool execution error (e.g., web search unavailability).
+    \item \textbf{Network Interruption}: Simulates a connection reset during API communication.
+    \item \textbf{Context Truncation}: Simulates prompt truncation due to context window limits.
+\end{enumerate}
+
+Each fault type is injected systematically across all model-benchmark combinations, with recovery outcomes recorded as success (model produces valid output after recovery) or failure (model produces incorrect output or errors out).
+
+\subsection{Perturbation Types}
+
+We apply five perturbation types to evaluate input robustness:
+
+\begin{enumerate}
+    \item \textbf{Whitespace}: Addition or modification of whitespace characters in prompts.
+    \item \textbf{Synonym Substitution}: Replacement of words with semantically equivalent alternatives.
+    \item \textbf{Reordering}: Rearrangement of sentence or instruction order.
+    \item \textbf{Prompt Wrapper}: Addition or modification of instruction wrappers.
+    \item \textbf{Formatting}: Changes to output format specifications.
+\end{enumerate}
+
+\subsection{Ranking Methodology}
+
+We employ two ranking approaches:
+
+\paragraph{Per-Criterion Ranking:} For each reliability dimension (success, reliability, composite), models are ranked within each benchmark, producing ordered lists from best (rank 1) to worst.
+
+\paragraph{Borda Count Aggregation:} To produce a consensus ranking, we apply the Borda count method. For each ranking criterion, a model receives $B_i = N_{\text{models}} - \text{rank}_i$ points. The total Borda score is summed across all criteria and normalized to $[0, 1]$.
+
+\subsection{Experimental Setup}
+
+Our evaluation covers 6 API-based agents and 15 additional agents across 4 benchmarks, with 3--8 repeated runs per agent-benchmark pair (API-based models: 3 runs; locally hosted models: 7--8 runs). In total, we conducted 142 experiments totaling 31,981 individual evaluations.

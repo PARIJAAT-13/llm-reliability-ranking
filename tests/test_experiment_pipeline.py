@@ -55,7 +55,7 @@ def test_failed_task(config):
     pipeline = ExperimentPipeline(config=config, benchmark=benchmark, agent=agent)
 
     result = pipeline.run()
-    
+
     # 0 executions succeeded
     assert len(result.execution_records) == 0
     # errors list should be populated (10 tasks * 2 repetitions = 20 errors)
@@ -95,10 +95,10 @@ def test_deterministic_execution(config):
     # We must patch datetime to ensure they are identical for serialization comparison.
     # Instead of strict canonical comparison, we check that execution and evaluation hashes match,
     # and metrics/rankings are equal ignoring computed_at.
-    
+
     for e1, e2 in zip(result1.execution_records, result2.execution_records):
         assert e1.sha256() == e2.sha256()
-        
+
     for ev1, ev2 in zip(result1.evaluation_records, result2.evaluation_records):
         assert ev1.sha256() == ev2.sha256()
 

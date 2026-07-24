@@ -79,9 +79,7 @@ class Manifest(BaseModel):
     manifest_version: str = "1.0"
     experiment_id: str
     experiment_name: str
-    created_at: str = Field(
-        default_factory=lambda: datetime.now(timezone.utc).isoformat()
-    )
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     git_commit: str | None = None
     python_version: str = ""
     seeds: list[int] = Field(default_factory=list)
@@ -195,9 +193,7 @@ class ManifestGenerator:
                 hashes.append(rec.sha256())
             else:
                 # Fallback: hash the string repr
-                hashes.append(
-                    hashlib.sha256(str(rec).encode("utf-8")).hexdigest()
-                )
+                hashes.append(hashlib.sha256(str(rec).encode("utf-8")).hexdigest())
         return hashes
 
     @staticmethod

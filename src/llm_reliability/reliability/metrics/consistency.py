@@ -59,7 +59,10 @@ class RepeatedRunConsistencyMetric(ReliabilityMetric):
                 metadata={"warning": "empty_evaluations"},
             )
 
-        logger.info("Computing repeated-run consistency metrics across %d evaluations.", len(evaluation_records))
+        logger.info(
+            "Computing repeated-run consistency metrics across %d evaluations.",
+            len(evaluation_records),
+        )
 
         # 1. Success rate
         scores = [ev.score for ev in evaluation_records]
@@ -99,9 +102,7 @@ class RepeatedRunConsistencyMetric(ReliabilityMetric):
                 matching_maj = sum(s == maj_succ for s in succ_vals)
                 task_majority_agreements.append(matching_maj / len(succ_vals))
 
-        response_agreement_rate = (
-            float(np.mean(task_agreements)) if task_agreements else 1.0
-        )
+        response_agreement_rate = float(np.mean(task_agreements)) if task_agreements else 1.0
         majority_agreement = (
             float(np.mean(task_majority_agreements)) if task_majority_agreements else 1.0
         )
@@ -110,7 +111,9 @@ class RepeatedRunConsistencyMetric(ReliabilityMetric):
             np.clip(0.5 * response_agreement_rate + 0.5 * majority_agreement, 0.0, 1.0)
         )
 
-        logger.info("Consistency computation complete: score=%.4f.", deterministic_consistency_score)
+        logger.info(
+            "Consistency computation complete: score=%.4f.", deterministic_consistency_score
+        )
 
         return ConsistencyMetricResult(
             success_rate=success_rate,

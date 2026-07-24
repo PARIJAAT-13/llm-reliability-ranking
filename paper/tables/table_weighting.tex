@@ -1,0 +1,20 @@
+\begin{table}[t]
+\centering
+\caption{Ranking stability under alternative weighting strategies. All comparisons against equal-weight baseline.}
+\label{tab:weighting}
+\begin{tabular}{lcccccc}
+\toprule
+Weighting Scheme & Kendall $\tau$ & p-value & Spearman $\rho$ & Avg Shift & Max Shift & Score Var. \\
+\midrule
+Success Weighted & 1.0000 & 0.0028 & 1.0000 & 0.00 & 0 & 0.002170 \\
+Consistency Weighted & 1.0000 & 0.0028 & 1.0000 & 0.00 & 0 & 0.000347 \\
+Fault Tolerance Weighted & 1.0000 & 0.0028 & 1.0000 & 0.00 & 0 & 0.000195 \\
+Robustness Weighted & 1.0000 & 0.0028 & 1.0000 & 0.00 & 0 & 0.000195 \\
+No Fault & 1.0000 & 0.0028 & 1.0000 & 0.00 & 0 & 0.001389 \\
+No Perturbation & 1.0000 & 0.0028 & 1.0000 & 0.00 & 0 & 0.001389 \\
+Success Only & 1.0000 & 0.0028 & 1.0000 & 0.00 & 0 & 0.008681 \\
+Consistency Only & 1.0000 & 0.0028 & 1.0000 & 0.00 & 0 & 0.000000 \\
+Randomized (n=100) & 1.0000 $\pm$ 0.0000 & --- & --- & --- & --- & --- \\
+\bottomrule
+\end{tabular}
+\end{table}

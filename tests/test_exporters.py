@@ -108,7 +108,8 @@ def test_export_all(tmp_path: Path):
     execs = [_make_execution("t1")]
     evals = [_make_evaluation(execs[0])]
     paths = RecordExporter.export_all(
-        executions=execs, evaluations=evals,
+        executions=execs,
+        evaluations=evals,
         output_dir=str(tmp_path / "exports"),
     )
     assert "executions" in paths

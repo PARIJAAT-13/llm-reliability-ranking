@@ -5,6 +5,7 @@ Defines the abstract base class for all ranking strategies.
 """
 
 from abc import ABC, abstractmethod
+
 from llm_reliability.records.metric import MetricRecord
 from llm_reliability.records.ranking import RankingRecord
 

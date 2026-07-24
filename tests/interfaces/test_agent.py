@@ -15,8 +15,7 @@ def test_agent_is_abstract() -> None:
 def test_agent_defines_required_methods() -> None:
     required = {"initialize", "reset", "run", "shutdown", "metadata"}
     method_names = {
-        name
-        for name, member in inspect.getmembers(Agent, predicate=inspect.isfunction)
+        name for name, member in inspect.getmembers(Agent, predicate=inspect.isfunction)
     }
     assert required.issubset(method_names)
     for name in required:

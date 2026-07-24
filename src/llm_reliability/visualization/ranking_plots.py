@@ -33,15 +33,15 @@ from typing import Any
 
 from llm_reliability.visualization.plotter import BasePlotter
 from llm_reliability.visualization.styles import (
-    COLOR_SUCCESS,
     COLOR_RELIABILITY,
+    COLOR_SUCCESS,
     COLOR_WEIGHTED,
-    FONT_SIZE_TITLE,
+    FIG_HEIGHT_DEFAULT,
+    FIG_WIDTH_DOUBLE,
+    FONT_SIZE_ANNOTATION,
     FONT_SIZE_LABEL,
     FONT_SIZE_TICK,
-    FONT_SIZE_ANNOTATION,
-    FIG_WIDTH_DOUBLE,
-    FIG_HEIGHT_DEFAULT,
+    FONT_SIZE_TITLE,
     PALETTE,
 )
 
@@ -96,8 +96,9 @@ class RankingPlotter(BasePlotter):
 
         if not agents:
             fig, ax = self._new_figure(figsize=figsize)
-            ax.text(0.5, 0.5, "No rankings available", ha="center", va="center",
-                    transform=ax.transAxes)
+            ax.text(
+                0.5, 0.5, "No rankings available", ha="center", va="center", transform=ax.transAxes
+            )
             return fig
 
         rtype = getattr(ranking, "ranking_type", "success")
@@ -185,10 +186,24 @@ class RankingPlotter(BasePlotter):
 
         y = np.arange(n)
         bar_h = 0.35
-        ax.barh(y + bar_h / 2, s_vals, height=bar_h,
-                          color=COLOR_SUCCESS, alpha=0.85, label="Success", edgecolor="white")
-        ax.barh(y - bar_h / 2, r_vals, height=bar_h,
-                          color=COLOR_RELIABILITY, alpha=0.85, label="Reliability", edgecolor="white")
+        ax.barh(
+            y + bar_h / 2,
+            s_vals,
+            height=bar_h,
+            color=COLOR_SUCCESS,
+            alpha=0.85,
+            label="Success",
+            edgecolor="white",
+        )
+        ax.barh(
+            y - bar_h / 2,
+            r_vals,
+            height=bar_h,
+            color=COLOR_RELIABILITY,
+            alpha=0.85,
+            label="Reliability",
+            edgecolor="white",
+        )
 
         ax.set_yticks(y)
         ax.set_yticklabels(all_agents, fontsize=FONT_SIZE_TICK)
@@ -238,24 +253,27 @@ class RankingPlotter(BasePlotter):
 
         if not common:
             fig, ax = self._new_figure(figsize=figsize)
-            ax.text(0.5, 0.5, "No common agents", ha="center", va="center",
-                    transform=ax.transAxes)
+            ax.text(0.5, 0.5, "No common agents", ha="center", va="center", transform=ax.transAxes)
             return fig
 
         s_ranks = [s_map[a] for a in common]
         r_ranks = [r_map[a] for a in common]
         diffs = [abs(s - r) for s, r in zip(s_ranks, r_ranks)]
-        max_diff = max(diffs) if diffs else 1
+        max(diffs) if diffs else 1
 
         fig, ax = self._new_figure(figsize=figsize)
 
         for i, agent in enumerate(common):
-            diffs[i] / max(max_diff, 1)
             color = PALETTE[i % len(PALETTE)]
             ax.scatter(s_ranks[i], r_ranks[i], s=60, color=color, zorder=3)
-            ax.annotate(agent, (s_ranks[i], r_ranks[i]),
-                        textcoords="offset points", xytext=(4, 3),
-                        fontsize=FONT_SIZE_ANNOTATION, color=color)
+            ax.annotate(
+                agent,
+                (s_ranks[i], r_ranks[i]),
+                textcoords="offset points",
+                xytext=(4, 3),
+                fontsize=FONT_SIZE_ANNOTATION,
+                color=color,
+            )
 
         n_agents = len(common)
         diag = np.arange(1, n_agents + 2)
@@ -300,15 +318,19 @@ class RankingPlotter(BasePlotter):
         """
         if not rankings:
             fig, ax = self._new_figure(figsize=figsize)
-            ax.text(0.5, 0.5, "No rankings provided", ha="center", va="center",
-                    transform=ax.transAxes)
+            ax.text(
+                0.5, 0.5, "No rankings provided", ha="center", va="center", transform=ax.transAxes
+            )
             return fig
 
-        labels = ranking_labels or [getattr(r, "ranking_type", str(i)) for i, r in enumerate(rankings)]
+        labels = ranking_labels or [
+            getattr(r, "ranking_type", str(i)) for i, r in enumerate(rankings)
+        ]
         all_agents = sorted({a for r in rankings for a in r.rank_map})
 
         fig, ax = self._new_figure(
-            figsize=figsize or (FIG_WIDTH_DOUBLE * 0.8, max(FIG_HEIGHT_DEFAULT, 0.45 * len(all_agents)))
+            figsize=figsize
+            or (FIG_WIDTH_DOUBLE * 0.8, max(FIG_HEIGHT_DEFAULT, 0.45 * len(all_agents)))
         )
 
         for idx, agent in enumerate(all_agents):
@@ -316,14 +338,28 @@ class RankingPlotter(BasePlotter):
             x_vals = list(range(len(rankings)))
             y_vals = [r.rank_map.get(agent, float("nan")) for r in rankings]
 
-            ax.plot(x_vals, y_vals, "-o", color=color, linewidth=1.2,
-                    markersize=5, label=agent, zorder=3)
+            ax.plot(
+                x_vals,
+                y_vals,
+                "-o",
+                color=color,
+                linewidth=1.2,
+                markersize=5,
+                label=agent,
+                zorder=3,
+            )
 
             # Annotate left endpoint
             if y_vals[0] == y_vals[0]:  # not nan
-                ax.annotate(agent, (0, y_vals[0]),
-                            textcoords="offset points", xytext=(-4, 0),
-                            ha="right", fontsize=FONT_SIZE_ANNOTATION, color=color)
+                ax.annotate(
+                    agent,
+                    (0, y_vals[0]),
+                    textcoords="offset points",
+                    xytext=(-4, 0),
+                    ha="right",
+                    fontsize=FONT_SIZE_ANNOTATION,
+                    color=color,
+                )
 
         ax.set_xticks(range(len(rankings)))
         ax.set_xticklabels(labels, fontsize=FONT_SIZE_TICK)
@@ -362,33 +398,44 @@ class RankingPlotter(BasePlotter):
         """
         from datetime import datetime
 
-        records = [
-            r for r in execution_records
-            if hasattr(r, "started_at") and r.started_at and
-               hasattr(r, "completed_at") and r.completed_at
-        ]
+        sorted_records = sorted(
+            execution_records,
+            key=lambda r: r.timestamp,
+        )
 
-        if not records:
+        if not sorted_records:
             fig, ax = self._new_figure(figsize=figsize)
-            ax.text(0.5, 0.5, "No timeline data available", ha="center", va="center",
-                    transform=ax.transAxes)
+            ax.text(
+                0.5,
+                0.5,
+                "No timeline data available",
+                ha="center",
+                va="center",
+                transform=ax.transAxes,
+            )
             return fig
 
-        fig_h = max(FIG_HEIGHT_DEFAULT, 0.35 * len(records))
+        fig_h = max(FIG_HEIGHT_DEFAULT, 0.35 * len(sorted_records))
         fig, ax = self._new_figure(figsize=figsize or (FIG_WIDTH_DOUBLE, fig_h))
 
-        for i, rec in enumerate(records):
+        base_ts = datetime.fromisoformat(sorted_records[0].timestamp)
+        for i, rec in enumerate(sorted_records):
             try:
-                t_start = datetime.fromisoformat(rec.started_at)
-                t_end = datetime.fromisoformat(rec.completed_at)
-                duration = (t_end - t_start).total_seconds()
-                start_offset = (t_start - datetime.fromisoformat(records[0].started_at)).total_seconds()
-                label = f"{rec.agent}@{rec.benchmark}" if hasattr(rec, "benchmark") else str(i)
+                t_start = datetime.fromisoformat(rec.timestamp)
+                duration = rec.runtime_seconds
+                start_offset = (t_start - base_ts).total_seconds()
+                label = f"{rec.agent}@{rec.benchmark}"
                 color = PALETTE[i % len(PALETTE)]
-                ax.barh(i, duration, left=start_offset, height=0.6,
-                        color=color, alpha=0.8, edgecolor="white")
-                ax.text(start_offset + 0.5, i, label,
-                        va="center", fontsize=FONT_SIZE_ANNOTATION)
+                ax.barh(
+                    i,
+                    duration,
+                    left=start_offset,
+                    height=0.6,
+                    color=color,
+                    alpha=0.8,
+                    edgecolor="white",
+                )
+                ax.text(start_offset + 0.5, i, label, va="center", fontsize=FONT_SIZE_ANNOTATION)
             except Exception:
                 continue
 

@@ -18,7 +18,7 @@ from __future__ import annotations
 import importlib
 import pkgutil
 import sys
-from typing import Callable
+from collections.abc import Callable
 
 from llm_reliability.benchmarks.adapters.base_adapter import BaseBenchmarkAdapter
 
@@ -41,7 +41,10 @@ class BenchmarkRegistry:
         cls,
         name: str,
         adapter_cls: type[BaseBenchmarkAdapter] | None = None,
-    ) -> type[BaseBenchmarkAdapter] | Callable[[type[BaseBenchmarkAdapter]], type[BaseBenchmarkAdapter]]:
+    ) -> (
+        type[BaseBenchmarkAdapter]
+        | Callable[[type[BaseBenchmarkAdapter]], type[BaseBenchmarkAdapter]]
+    ):
         """Register a benchmark adapter by name.
 
         Can be used as a direct call::
@@ -54,6 +57,7 @@ class BenchmarkRegistry:
             class MyAdapter(BaseBenchmarkAdapter):
                 ...
         """
+
         def _do_register(adapter_cls: type[BaseBenchmarkAdapter]) -> type[BaseBenchmarkAdapter]:
             if name in cls._adapters:
                 raise ValueError(f"Adapter '{name}' is already registered.")
@@ -136,9 +140,7 @@ class BenchmarkRegistry:
                 if not is_sub:
                     continue
                 # Check if this class is already registered
-                already = any(
-                    v is attr for v in cls._adapters.values()
-                )
+                already = any(v is attr for v in cls._adapters.values())
                 if not already:
                     names = getattr(attr, "_benchmark_registry_names", None) or [attr.__name__]
                     for n in names:
@@ -163,6 +165,7 @@ class BenchmarkRegistry:
         """
         if package is None:
             from llm_reliability.benchmarks import adapters as _adapters_pkg
+
             package = _adapters_pkg
 
         package_name = package.__name__ if hasattr(package, "__name__") else str(package)

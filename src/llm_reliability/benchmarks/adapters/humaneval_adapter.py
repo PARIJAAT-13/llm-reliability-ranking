@@ -53,7 +53,7 @@ class HumanEvalAdapter(BaseBenchmarkAdapter):
 
         if path_obj.exists() and path_obj.is_file():
             try:
-                with open(path_obj, "r", encoding="utf-8") as f:
+                with open(path_obj, encoding="utf-8") as f:
                     data = json.load(f)
             except Exception as e:
                 logger.error("Failed to load dataset from %s: %s", dataset_path, e)
@@ -79,7 +79,7 @@ class HumanEvalAdapter(BaseBenchmarkAdapter):
             self._tasks = {
                 f"HumanEval/{i}": {
                     "task_id": f"HumanEval/{i}",
-                    "prompt": f"def add_{i}(a: int, b: int) -> int:\n    \"\"\"Return sum of a and b.\"\"\"\n",
+                    "prompt": f'def add_{i}(a: int, b: int) -> int:\n    """Return sum of a and b."""\n',
                     "entry_point": f"add_{i}",
                     "test": f"assert add_{i}(1, 2) == 3\nassert add_{i}(0, 0) == 0\n",
                     "canonical_solution": "    return a + b\n",

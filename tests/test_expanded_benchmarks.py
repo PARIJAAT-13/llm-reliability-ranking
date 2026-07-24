@@ -3,6 +3,7 @@ Unit tests for expanded benchmark adapters (MMLU, HellaSwag, HumanEval, MBPP, Tr
 """
 
 import pytest
+
 from llm_reliability.benchmarks.adapters import (
     ARCAdapter,
     BenchmarkRegistry,

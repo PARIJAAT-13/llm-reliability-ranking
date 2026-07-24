@@ -6,13 +6,15 @@ from pathlib import Path
 
 import pytest
 
+from llm_reliability.benchmarks.mock_benchmark import MockBenchmark
 from llm_reliability.cache.backend import CacheBackend, FileSystemCacheBackend
 from llm_reliability.cache.experiment_cache import ExperimentCache
-from llm_reliability.benchmarks.mock_benchmark import MockBenchmark
 from llm_reliability.configs.config import Configuration
-from llm_reliability.pipeline.experiment_pipeline import ExperimentPipeline, ExperimentResult
+from llm_reliability.pipeline.experiment_pipeline import (
+    ExperimentPipeline,
+    ExperimentResult,
+)
 from tests.test_mock_benchmark import DummyAgent
-
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -122,11 +124,21 @@ class TestCacheBackend:
         custom_backend = FileSystemCacheBackend(cache_dir=tmp_cache_dir / "custom")
         assert (tmp_cache_dir / "custom").exists()
         key = "testkey"
-        custom_backend.set(key, _run_pipeline(Configuration(
-            experiment_name="custom_dir_test",
-            benchmark="mock", agent="dummy", llm="t", prompt_version="1",
-            dataset_version="1", seed=0, repetitions=1,
-        )))
+        custom_backend.set(
+            key,
+            _run_pipeline(
+                Configuration(
+                    experiment_name="custom_dir_test",
+                    benchmark="mock",
+                    agent="dummy",
+                    llm="t",
+                    prompt_version="1",
+                    dataset_version="1",
+                    seed=0,
+                    repetitions=1,
+                )
+            ),
+        )
         assert custom_backend.exists(key)
 
 
@@ -136,12 +148,16 @@ class TestCacheBackend:
 
 
 class TestExperimentCache:
-    def test_generate_key_deterministic(self, experiment_cache: ExperimentCache, config: Configuration):
+    def test_generate_key_deterministic(
+        self, experiment_cache: ExperimentCache, config: Configuration
+    ):
         k1 = experiment_cache.generate_key(config)
         k2 = experiment_cache.generate_key(config)
         assert k1 == k2
 
-    def test_generate_key_differs(self, experiment_cache: ExperimentCache, config: Configuration, config_v2: Configuration):
+    def test_generate_key_differs(
+        self, experiment_cache: ExperimentCache, config: Configuration, config_v2: Configuration
+    ):
         k1 = experiment_cache.generate_key(config)
         k2 = experiment_cache.generate_key(config_v2)
         assert k1 != k2
@@ -174,7 +190,9 @@ class TestExperimentCache:
         assert result2.configuration == result1.configuration
         assert len(result2.execution_records) == len(result1.execution_records)
 
-    def test_invalidate_forces_reexecution(self, experiment_cache: ExperimentCache, config: Configuration):
+    def test_invalidate_forces_reexecution(
+        self, experiment_cache: ExperimentCache, config: Configuration
+    ):
         call_count = 0
 
         def execute():
@@ -191,7 +209,9 @@ class TestExperimentCache:
         experiment_cache.get_or_execute(config, execute)
         assert call_count == 2  # Re-executed after invalidation
 
-    def test_clear_forces_reexecution(self, experiment_cache: ExperimentCache, config: Configuration):
+    def test_clear_forces_reexecution(
+        self, experiment_cache: ExperimentCache, config: Configuration
+    ):
         call_count = 0
 
         def execute():
@@ -219,7 +239,7 @@ class TestExperimentCache:
         result1 = cache.get_or_execute(config, execute)
         assert call_count == 1
 
-        result2 = cache.get_or_execute(config, execute)
+        cache.get_or_execute(config, execute)
         assert call_count == 2  # Still executes because cache is disabled
 
         # get/set/exists/invalidate/clear should all be no-ops
@@ -254,7 +274,9 @@ class TestExperimentCache:
         cache.get_or_execute(config, execute)
         assert call_count == 2  # still in cache from before
 
-    def test_deterministic_cache_key(self, experiment_cache: ExperimentCache, config: Configuration):
+    def test_deterministic_cache_key(
+        self, experiment_cache: ExperimentCache, config: Configuration
+    ):
         key1 = experiment_cache.generate_key(config)
         key2 = experiment_cache.generate_key(config)
         assert key1 == key2
@@ -277,26 +299,34 @@ class TestPipelineCacheIntegration:
     def test_cache_hit_in_pipeline(self, experiment_cache: ExperimentCache, config: Configuration):
         benchmark = MockBenchmark(seed=config.seed)
         agent = DummyAgent()
-        pipeline1 = ExperimentPipeline(config=config, benchmark=benchmark, agent=agent, cache=experiment_cache)
+        pipeline1 = ExperimentPipeline(
+            config=config, benchmark=benchmark, agent=agent, cache=experiment_cache
+        )
         result1 = pipeline1.run()
         assert len(result1.execution_records) > 0
 
         benchmark2 = MockBenchmark(seed=config.seed)
         agent2 = DummyAgent()
-        pipeline2 = ExperimentPipeline(config=config, benchmark=benchmark2, agent=agent2, cache=experiment_cache)
+        pipeline2 = ExperimentPipeline(
+            config=config, benchmark=benchmark2, agent=agent2, cache=experiment_cache
+        )
         result2 = pipeline2.run()
 
         assert len(result2.execution_records) == len(result1.execution_records)
         for e1, e2 in zip(result1.execution_records, result2.execution_records):
             assert e1.sha256() == e2.sha256()
 
-    def test_cache_miss_in_pipeline(self, experiment_cache: ExperimentCache, config: Configuration, config_v2: Configuration):
+    def test_cache_miss_in_pipeline(
+        self, experiment_cache: ExperimentCache, config: Configuration, config_v2: Configuration
+    ):
         """Different configs produce different cache entries."""
         r1 = _run_pipeline(config, cache=experiment_cache)
         r2 = _run_pipeline(config_v2, cache=experiment_cache)
         assert r1.configuration.experiment_name != r2.configuration.experiment_name
 
-    def test_cache_invalidation_in_pipeline(self, experiment_cache: ExperimentCache, config: Configuration):
+    def test_cache_invalidation_in_pipeline(
+        self, experiment_cache: ExperimentCache, config: Configuration
+    ):
         _run_pipeline(config, cache=experiment_cache)
         key = experiment_cache.generate_key(config)
         assert experiment_cache.exists(key)

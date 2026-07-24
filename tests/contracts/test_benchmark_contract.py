@@ -34,11 +34,13 @@ class DummyAgent(Agent):
 
 class BrokenBenchmarkNoInterface(Benchmark):
     """Fails to implement required abstract methods."""
+
     pass
 
 
 class BrokenBenchmarkBadOutputs(MockBenchmark):
     """Intentionally breaks output contracts."""
+
     def get_task(self, task_id: str) -> dict:
         return {}  # Invalid task object
 
@@ -106,10 +108,10 @@ def test_broken_benchmark_contract():
     benchmark = BrokenBenchmarkBadOutputs()
     benchmark.load()
     task = benchmark.get_task("mock-task-0")
-    
+
     # Contract: get_task should return valid task dict. This broken benchmark returns an empty dict.
     assert "task_id" not in task
-    
+
     record = benchmark.run(DummyAgent(), task)
     # Contract: run should return an ExecutionRecord. This broken benchmark returns None.
     assert not isinstance(record, ExecutionRecord)

@@ -1,0 +1,22 @@
+% !TEX root = ../main.tex
+\section{Extended Related Work and Positioning}
+
+\subsection{Ablation and Sensitivity Methodologies in Ranking}
+
+Traditional ablation studies in NLP typically remove architectural components~\cite{michel2019eighteen} or training data subsets~\cite{radford2019language}. In the context of evaluation, we extend this paradigm to metric-level ablation. Our leave-one-metric-out analysis (\S\ref{sec:ablation}) reveals that equal-weight aggregation over success rate, fault tolerance, and perturbation robustness produces rankings robust to single-metric removal for top-tier models (Kendall $\tau \geq 0.90$), but smaller models such as Ollama-based agents exhibit rank displacements of up to 3 positions when success rate is withheld. This finding mirrors observations in multi-task learning where certain task signals dominate gradient dynamics~\cite{chen2018gradnorm}. Weighting scheme sensitivity analysis further demonstrates that while rank order among top models is stable across 9 weighting variants and 100 random trials, the relative scores of mid-ranked agents shift meaningfully (score displacement up to 0.15), motivating transparent reporting of weighting choices.
+
+\subsection{Statistical Validation Practices in Benchmarking}
+
+The benchmarking community has increasingly called for rigorous statistical treatment of results~\cite{deoghare2024statistical}. Previous leaderboards such as GLUE~\cite{wang2018glue}, SuperGLUE~\cite{wang2019superglue}, and HELM~\cite{liang2022holistic} report point estimates without confidence intervals. Our bootstrap resampling analysis (10,000 iterations, \S\ref{sec:statistical}) aligns with recent recommendations~\cite{ulmer2024statistical} to report uncertainty intervals, but also reveals a critical limitation: for highly capable models where all metrics saturate at 1.0, statistical differentiation is impossible regardless of sample size. The 95\% bootstrap CIs for all six top models span [1.0, 1.0] with zero variance, confirming a ceiling effect that existing leaderboard methodologies cannot resolve.
+
+\subsection{Error and Failure Mode Taxonomies}
+
+Taxonomies of LLM failures have been proposed in safety contexts~\cite{weidinger2021harms, zhang2024failures} and reasoning evaluations~\cite{huang2024large}. Our error analysis (\S\ref{sec:error}) contributes an empirical taxonomy derived from 9,720 controlled fault injections across six fault types, distinguishing between recoverable failures (artificial timeout, context truncation, invalid model response, temporary API failure -- 100\% recovery) and catastrophic failures (network interruption, tool failure -- 0\% recovery). This binary recovery pattern extends prior work on LLM serving reliability~\cite{talebirad2023multi} and suggests architectural invariants in how current LLM agents handle error conditions.
+
+\subsection{Benchmark-Specific Reliability Characterization}
+
+Recent work has highlighted that benchmark performance varies substantially across evaluation suites~\cite{ye2024beyond, zhong2023agree}. Our benchmark-specific analysis (\S\ref{sec:benchmark}) extends this finding to reliability metrics: AgentBoard exhibits the highest discriminative variance ($\sigma^2 = 0.15$ for fault tolerance) whereas MockBenchmark, despite containing 27,160 evaluations (85\% of all data), provides near-zero discriminative signal ($\sigma^2 < 0.01$ across all metrics). This suggests that large-scale benchmark evaluations may inflate statistical confidence while contributing minimal ranking signal, echoing concerns about benchmark saturation~\cite{kshitij2021saturation}.
+
+\subsection{Positioning of This Work}
+
+Our framework for multi-dimensional reliability ranking extends existing evaluation approaches in three key directions: (1) we integrate robustness and fault tolerance alongside task completion, moving beyond single-metric leaderboards; (2) we conduct formal ablation and sensitivity analyses to assess ranking stability under methodological variations; and (3) we provide per-benchmark, per-model, and per-fault decompositions that enable targeted reliability improvements. The complete replication package, including all experimental data and analysis scripts, enables direct reproduction and extension by other researchers.

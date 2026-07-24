@@ -51,7 +51,7 @@ class HellaSwagAdapter(BaseBenchmarkAdapter):
 
         if path_obj.exists() and path_obj.is_file():
             try:
-                with open(path_obj, "r", encoding="utf-8") as f:
+                with open(path_obj, encoding="utf-8") as f:
                     data = json.load(f)
             except Exception as e:
                 logger.error("Failed to load dataset from %s: %s", dataset_path, e)
@@ -65,8 +65,16 @@ class HellaSwagAdapter(BaseBenchmarkAdapter):
                 tid = item.get("task_id", f"hellaswag_{len(self._tasks)}")
                 ctx = item.get("ctx", item.get("context", ""))
                 endings = item.get("endings", item.get("choices", []))
-                prompt = f"Context: {ctx}\nWhich ending naturally continues the context?\n" + "\n".join(f"{chr(65+i)}. {end}" for i, end in enumerate(endings)) + "\nAnswer with letter (A, B, C, D):"
-                gt = str(item.get("ground_truth_answer", item.get("label", item.get("target", "0")))).strip().upper()
+                prompt = (
+                    f"Context: {ctx}\nWhich ending naturally continues the context?\n"
+                    + "\n".join(f"{chr(65+i)}. {end}" for i, end in enumerate(endings))
+                    + "\nAnswer with letter (A, B, C, D):"
+                )
+                gt = (
+                    str(item.get("ground_truth_answer", item.get("label", item.get("target", "0"))))
+                    .strip()
+                    .upper()
+                )
                 if gt in ("0", "1", "2", "3"):
                     gt = chr(65 + int(gt))
                 self._tasks[tid] = {

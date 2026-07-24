@@ -14,7 +14,7 @@ from tests.statistics_test_helpers import create_mock_ranking
 def test_correlation_perfect_agreement():
     r1 = create_mock_ranking({"a": 1.0, "b": 2.0, "c": 3.0})
     r2 = create_mock_ranking({"a": 1.0, "b": 2.0, "c": 3.0})
-    
+
     spearman = compute_spearman(r1, r2)
     kendall = compute_kendall_tau(r1, r2)
 
@@ -27,7 +27,7 @@ def test_correlation_perfect_agreement():
 def test_correlation_perfect_disagreement():
     r1 = create_mock_ranking({"a": 1.0, "b": 2.0, "c": 3.0})
     r2 = create_mock_ranking({"a": 3.0, "b": 2.0, "c": 1.0})
-    
+
     spearman = compute_spearman(r1, r2)
     kendall = compute_kendall_tau(r1, r2)
 

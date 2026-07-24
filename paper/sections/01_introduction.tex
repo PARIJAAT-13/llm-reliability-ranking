@@ -1,0 +1,22 @@
+% !TEX root = ../main.tex
+\section{Introduction}
+
+Large Language Models (LLMs) have demonstrated remarkable capabilities across a wide range of natural language processing tasks, from code generation and mathematical reasoning to multi-step agentic workflows. As these models are increasingly deployed in production systems where reliability is critical---such as automated code review, software engineering assistants, and autonomous decision-making---understanding their failure modes and consistency characteristics becomes paramount.
+
+Despite significant progress in evaluating LLM accuracy on static benchmarks, relatively little attention has been paid to the \emph{reliability} of LLM outputs under varying conditions. Reliability in this context encompasses several dimensions: (1) \textbf{consistency} across repeated runs with identical inputs, (2) \textbf{robustness} to perturbations in input formatting and phrasing, (3) \textbf{fault tolerance} in the presence of API failures, network interruptions, and other production-environment anomalies, and (4) \textbf{cross-benchmark generalization} of reliability characteristics.
+
+This paper presents a comprehensive empirical study of LLM reliability across 6 state-of-the-art models and 3 benchmark suites, totaling over 30,000 individual evaluations. We make the following contributions:
+
+\begin{itemize}
+    \item \textbf{Systematic Reliability Framework}: We define a formal reliability metric that decomposes into success rate, perturbation robustness, fault tolerance, and repeated-run consistency, enabling fine-grained comparison across models and benchmarks.
+
+    \item \textbf{Multi-Dimensional Evaluation}: We evaluate models across AgentBoard, GAIA, and SWE-bench Lite, providing the first cross-benchmark reliability analysis that includes both API-based and open-weight models.
+
+    \item \textbf{Fault Injection Analysis}: We introduce controlled fault injection during evaluation---including artificial timeouts, temporary API failures, invalid model responses, tool failures, network interruptions, and context truncation---to measure recovery behavior and robustness under adverse conditions.
+
+    \item \textbf{Perturbation Robustness}: We systematically vary input formatting (whitespace, synonym substitution, reordering, prompt wrappers, and formatting changes) to quantify sensitivity to superficial input variations.
+
+    \item \textbf{Consensus Ranking}: We apply Borda count aggregation across multiple ranking criteria to produce a robust consensus ranking of LLM reliability, revealing significant differences between perceived model capability and actual production reliability.
+\end{itemize}
+
+Our results reveal that while top-tier models achieve near-perfect reliability scores in controlled settings (composite reliability $\approx 1.0$), significant differences emerge under fault injection, where recovery rates range from 0\% (network interruptions, tool failures) to 100\% (artificial timeouts, context truncation). These findings have direct implications for production deployment decisions and highlight the need for reliability-aware model selection.

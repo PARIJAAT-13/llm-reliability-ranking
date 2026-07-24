@@ -4,10 +4,10 @@ Success Ranking Strategy.
 Ranks agents based on their success rate.
 """
 
+from llm_reliability.ranking.ranking_strategy import RankingStrategy
+from llm_reliability.ranking.utils import sort_and_rank, validate_metrics
 from llm_reliability.records.metric import MetricRecord
 from llm_reliability.records.ranking import RankingRecord
-from llm_reliability.ranking.ranking_strategy import RankingStrategy
-from llm_reliability.ranking.utils import validate_metrics, sort_and_rank
 
 
 class SuccessRanker(RankingStrategy):
@@ -29,7 +29,7 @@ class SuccessRanker(RankingStrategy):
             Success-rate based rankings.
         """
         validate_metrics(metrics)
-        
+
         # Ensure success_rate is not missing/None
         for m in metrics:
             if m.success_rate is None:

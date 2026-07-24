@@ -1,8 +1,8 @@
 # Adversarial Risk Assessment Report (Red Team Audit)
 
-**Paper Title**: LLM Reliability Ranking Framework: Benchmarking Local Open-Weights Language Models Under Hardware Memory Constraints  
-**Audit Role**: Senior PC Reviewer / Red Team Lead  
-**Target Venues**: NeurIPS / ICLR / EMNLP / IEEE TSE  
+**Paper Title**: LLM Reliability Ranking Framework: Benchmarking Local Open-Weights Language Models Under Hardware Memory Constraints
+**Audit Role**: Senior PC Reviewer / Red Team Lead
+**Target Venues**: NeurIPS / ICLR / EMNLP / IEEE TSE
 
 ---
 

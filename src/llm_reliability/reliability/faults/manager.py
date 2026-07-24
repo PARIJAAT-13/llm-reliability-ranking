@@ -92,11 +92,7 @@ class FaultManager:
                 else 3
             )
         )
-        self.seed = (
-            seed
-            if seed is not None
-            else (config.seed if config is not None else 0)
-        )
+        self.seed = seed if seed is not None else (config.seed if config is not None else 0)
 
         # Default registered strategies
         self.all_strategies: dict[str, FaultInjectionStrategy] = {
@@ -204,7 +200,9 @@ class FaultManager:
                 evaluation_records.append(base_eval)
             except Exception as eval_exc:
                 logger.error("Baseline evaluation failed for task '%s': %s", task_id, eval_exc)
-                errors.append({"phase": "evaluate_baseline", "task_id": task_id, "error": str(eval_exc)})
+                errors.append(
+                    {"phase": "evaluate_baseline", "task_id": task_id, "error": str(eval_exc)}
+                )
         except Exception as exec_exc:
             logger.error("Baseline execution failed for task '%s': %s", task_id, exec_exc)
             errors.append({"phase": "run_baseline", "task_id": task_id, "error": str(exec_exc)})
@@ -212,15 +210,25 @@ class FaultManager:
         # 2. Execute fault-injected runs
         for run_idx, strategy in enumerate(self.enabled_strategies, start=1):
             if strategy.fault_name in self.disabled_strategies:
-                logger.warning("Strategy '%s' is disabled due to previous errors — skipping.", strategy.fault_name)
+                logger.warning(
+                    "Strategy '%s' is disabled due to previous errors — skipping.",
+                    strategy.fault_name,
+                )
                 continue
 
             # Probability check
             if rng.random() > self.fault_probability:
-                logger.info("Skipping fault '%s' based on probability threshold.", strategy.fault_name)
+                logger.info(
+                    "Skipping fault '%s' based on probability threshold.", strategy.fault_name
+                )
                 continue
 
-            logger.info("Injecting fault '%s' (injection_point='%s') on task '%s'.", strategy.fault_name, strategy.injection_point, task_id)
+            logger.info(
+                "Injecting fault '%s' (injection_point='%s') on task '%s'.",
+                strategy.fault_name,
+                strategy.injection_point,
+                task_id,
+            )
             strat_seed = effective_seed + run_idx * 500
 
             t_start = time.perf_counter()
@@ -234,9 +242,20 @@ class FaultManager:
                 if strategy.injection_point == "prompt":
                     active_task = strategy.inject(task, seed=strat_seed)
             except Exception as strat_exc:
-                logger.error("Fault strategy '%s' failed during prompt injection: %s", strategy.fault_name, strat_exc, exc_info=True)
+                logger.error(
+                    "Fault strategy '%s' failed during prompt injection: %s",
+                    strategy.fault_name,
+                    strat_exc,
+                    exc_info=True,
+                )
                 self.disabled_strategies.add(strategy.fault_name)
-                errors.append({"phase": "strategy_inject", "fault_name": strategy.fault_name, "error": str(strat_exc)})
+                errors.append(
+                    {
+                        "phase": "strategy_inject",
+                        "fault_name": strategy.fault_name,
+                        "error": str(strat_exc),
+                    }
+                )
                 continue
 
             # Retry loop attempting execution under fault
@@ -260,7 +279,13 @@ class FaultManager:
                         exec_error = raw_exec.error
                 except Exception as run_exc:
                     exec_error = str(run_exc)
-                    logger.warning("Attempt %d failed for fault '%s' on task '%s': %s", attempt + 1, strategy.fault_name, task_id, run_exc)
+                    logger.warning(
+                        "Attempt %d failed for fault '%s' on task '%s': %s",
+                        attempt + 1,
+                        strategy.fault_name,
+                        task_id,
+                        run_exc,
+                    )
 
             elapsed_sec = time.perf_counter() - t_start
 
@@ -268,7 +293,9 @@ class FaultManager:
             try:
                 strategy.cleanup()
             except Exception as clean_exc:
-                logger.warning("Cleanup failed for strategy '%s': %s", strategy.fault_name, clean_exc)
+                logger.warning(
+                    "Cleanup failed for strategy '%s': %s", strategy.fault_name, clean_exc
+                )
 
             # Build final ExecutionRecord with fault_injected=True
             if raw_exec is not None:
@@ -289,9 +316,7 @@ class FaultManager:
                     else benchmark.__class__.__name__
                 )
                 agent_name = (
-                    effective_config.agent
-                    if self.config is not None
-                    else agent.__class__.__name__
+                    effective_config.agent if self.config is not None else agent.__class__.__name__
                 )
                 f_exec = ExecutionRecord(
                     configuration_hash=effective_config.sha256(),
@@ -317,8 +342,20 @@ class FaultManager:
                 f_eval = benchmark.evaluate(f_exec)
                 evaluation_records.append(f_eval)
             except Exception as eval_exc:
-                logger.error("Evaluation failed for fault '%s' on task '%s': %s", strategy.fault_name, task_id, eval_exc)
-                errors.append({"phase": "evaluate_faulted", "task_id": task_id, "fault_name": strategy.fault_name, "error": str(eval_exc)})
+                logger.error(
+                    "Evaluation failed for fault '%s' on task '%s': %s",
+                    strategy.fault_name,
+                    task_id,
+                    eval_exc,
+                )
+                errors.append(
+                    {
+                        "phase": "evaluate_faulted",
+                        "task_id": task_id,
+                        "fault_name": strategy.fault_name,
+                        "error": str(eval_exc),
+                    }
+                )
 
             # Classify recovery status
             if f_eval is not None and f_eval.success and f_eval.score >= 1.0:

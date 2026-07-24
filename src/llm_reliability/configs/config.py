@@ -58,12 +58,10 @@ class ReliabilityWeightsConfig(SerializableModel):
     fault_tolerance: float = Field(default=1 / 3, ge=0.0, le=1.0)
 
     @model_validator(mode="after")
-    def _validate_sum(self) -> "ReliabilityWeightsConfig":
+    def _validate_sum(self) -> ReliabilityWeightsConfig:
         total = self.success_rate + self.consistency + self.robustness + self.fault_tolerance
         if abs(total - 1.0) > 1e-6:
-            raise ValueError(
-                f"reliability_weights must sum to 1.0, got {total:.6f}."
-            )
+            raise ValueError(f"reliability_weights must sum to 1.0, got {total:.6f}.")
         return self
 
 
@@ -84,7 +82,6 @@ class StatisticalOptions(SerializableModel):
     bootstrap_iterations: int = Field(default=1000, ge=100)
     alpha: float = Field(default=0.05, ge=0.001, le=0.5)
     compute_divergence: bool = Field(default=True)
-
 
 
 class Configuration(SerializableModel):

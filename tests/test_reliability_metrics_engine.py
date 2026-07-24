@@ -1,6 +1,5 @@
 """Tests for the Reliability Metrics Engine and individual metric calculators."""
 
-
 from llm_reliability.agents.mock_agent import MockAgent
 from llm_reliability.benchmarks.mock_benchmark import MockBenchmark
 from llm_reliability.configs.config import Configuration
@@ -56,8 +55,12 @@ def test_consistency_metric_calculation():
     ]
 
     evals = [
-        EvaluationRecord.from_execution(execs[0], success=True, score=1.0, evaluated_at="2026-01-01T00:00:02+00:00"),
-        EvaluationRecord.from_execution(execs[1], success=True, score=1.0, evaluated_at="2026-01-01T00:00:03+00:00"),
+        EvaluationRecord.from_execution(
+            execs[0], success=True, score=1.0, evaluated_at="2026-01-01T00:00:02+00:00"
+        ),
+        EvaluationRecord.from_execution(
+            execs[1], success=True, score=1.0, evaluated_at="2026-01-01T00:00:03+00:00"
+        ),
     ]
 
     res = metric.compute(execs, evals)
@@ -100,8 +103,12 @@ def test_robustness_metric_calculation():
         agent_output="Answer 1",
     )
 
-    eval_base = EvaluationRecord.from_execution(exec_base, success=True, score=1.0, evaluated_at="2026-01-01T00:00:02+00:00")
-    eval_pert = EvaluationRecord.from_execution(exec_pert, success=True, score=1.0, evaluated_at="2026-01-01T00:00:03+00:00")
+    eval_base = EvaluationRecord.from_execution(
+        exec_base, success=True, score=1.0, evaluated_at="2026-01-01T00:00:02+00:00"
+    )
+    eval_pert = EvaluationRecord.from_execution(
+        exec_pert, success=True, score=1.0, evaluated_at="2026-01-01T00:00:03+00:00"
+    )
 
     res = metric.compute([exec_base, exec_pert], [eval_base, eval_pert])
     assert isinstance(res, RobustnessMetricResult)
@@ -139,11 +146,21 @@ def test_fault_tolerance_metric_calculation():
         runtime_seconds=1.5,
         timestamp="2026-01-01T00:00:01+00:00",
         status="success",
-        environment_metadata={"fault_injection": {"retry_count": 1, "recovery_status": "success", "latency_seconds": 1.5}},
+        environment_metadata={
+            "fault_injection": {
+                "retry_count": 1,
+                "recovery_status": "success",
+                "latency_seconds": 1.5,
+            }
+        },
     )
 
-    eval_base = EvaluationRecord.from_execution(exec_base, success=True, score=1.0, evaluated_at="2026-01-01T00:00:02+00:00")
-    eval_fault = EvaluationRecord.from_execution(exec_fault, success=True, score=1.0, evaluated_at="2026-01-01T00:00:03+00:00")
+    eval_base = EvaluationRecord.from_execution(
+        exec_base, success=True, score=1.0, evaluated_at="2026-01-01T00:00:02+00:00"
+    )
+    eval_fault = EvaluationRecord.from_execution(
+        exec_fault, success=True, score=1.0, evaluated_at="2026-01-01T00:00:03+00:00"
+    )
 
     res = metric.compute([exec_base, exec_fault], [eval_base, eval_fault])
     assert isinstance(res, FaultToleranceMetricResult)
@@ -166,7 +183,9 @@ def test_engine_handles_missing_records_gracefully():
         timestamp="2026-01-01T00:00:00+00:00",
         status="success",
     )
-    eval_base = EvaluationRecord.from_execution(exec_base, success=True, score=1.0, evaluated_at="2026-01-01T00:00:02+00:00")
+    eval_base = EvaluationRecord.from_execution(
+        exec_base, success=True, score=1.0, evaluated_at="2026-01-01T00:00:02+00:00"
+    )
 
     # Only baseline records, no perturbation or fault records
     out = engine.compute_all([exec_base], [eval_base])
@@ -207,7 +226,9 @@ def test_end_to_end_engine_to_ranking_pipeline():
     fault_res = fault_manager.run_fault_injected_task(agent, benchmark, task)
 
     all_execs = rep_res.execution_records + pert_res.execution_records + fault_res.execution_records
-    all_evals = rep_res.evaluation_records + pert_res.evaluation_records + fault_res.evaluation_records
+    all_evals = (
+        rep_res.evaluation_records + pert_res.evaluation_records + fault_res.evaluation_records
+    )
 
     engine = ReliabilityMetricsEngine()
     out = engine.compute_all(all_execs, all_evals)

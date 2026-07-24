@@ -8,6 +8,7 @@ Responsibilities
 - Normalize generated patches for resilient evaluations
 """
 
+
 def normalize_patch(patch: str) -> str:
     """
     Normalize a code patch to ensure consistent comparison.

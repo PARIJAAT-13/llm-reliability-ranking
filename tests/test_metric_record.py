@@ -1,8 +1,10 @@
 """Tests for the new MetricRecord model (Artifact 6)."""
 
 import json
+
 import pytest
 from pydantic import ValidationError
+
 from records.metric_record import MetricRecord
 
 
@@ -19,7 +21,7 @@ def test_metric_record_instantiation() -> None:
         perturbation_robustness=0.7,
         fault_tolerance=0.6,
         composite_reliability=0.75,
-        metadata={"notes": "good performance"}
+        metadata={"notes": "good performance"},
     )
     assert record.metric_id == "metric-123"
     assert record.evaluation_ids == ["eval-1", "eval-2"]
@@ -47,7 +49,7 @@ def test_metric_record_immutability() -> None:
         perturbation_robustness=0.7,
         fault_tolerance=0.6,
         composite_reliability=0.75,
-        metadata={}
+        metadata={},
     )
     with pytest.raises(ValidationError):
         record.success_rate = 0.5  # type: ignore[misc]
@@ -71,7 +73,7 @@ def test_metric_record_rejects_unknown_fields() -> None:
             fault_tolerance=0.6,
             composite_reliability=0.75,
             metadata={},
-            extra_field="invalid"  # type: ignore[call-arg]
+            extra_field="invalid",  # type: ignore[call-arg]
         )
 
 
@@ -89,7 +91,7 @@ def test_metric_record_empty_evaluation_ids() -> None:
             perturbation_robustness=0.7,
             fault_tolerance=0.6,
             composite_reliability=0.75,
-            metadata={}
+            metadata={},
         )
 
 
@@ -114,7 +116,7 @@ def test_metric_record_invalid_metric_values() -> None:
         "fault_tolerance": 0.6,
         "composite_reliability": 0.75,
     }
-    
+
     for metric in metrics_to_test:
         # Test negative value
         invalid_args = base_args.copy()
@@ -142,7 +144,7 @@ def test_metric_record_deterministic_hash() -> None:
         perturbation_robustness=0.7,
         fault_tolerance=0.6,
         composite_reliability=0.75,
-        metadata={"a": 1, "b": 2}
+        metadata={"a": 1, "b": 2},
     )
     record2 = MetricRecord(
         metric_id="metric-123",
@@ -155,7 +157,7 @@ def test_metric_record_deterministic_hash() -> None:
         perturbation_robustness=0.7,
         fault_tolerance=0.6,
         composite_reliability=0.75,
-        metadata={"b": 2, "a": 1}
+        metadata={"b": 2, "a": 1},
     )
     assert record1.sha256() == record2.sha256()
 
@@ -170,7 +172,7 @@ def test_metric_record_deterministic_hash() -> None:
         perturbation_robustness=0.7,
         fault_tolerance=0.6,
         composite_reliability=0.749,  # slightly different
-        metadata={"a": 1, "b": 2}
+        metadata={"a": 1, "b": 2},
     )
     assert record1.sha256() != record3.sha256()
 
@@ -188,9 +190,9 @@ def test_metric_record_round_trip() -> None:
         perturbation_robustness=0.7,
         fault_tolerance=0.6,
         composite_reliability=0.75,
-        metadata={"details": {"a": 100}}
+        metadata={"details": {"a": 100}},
     )
-    
+
     # Test dictionary round trip
     dumped_dict = record.canonical_dict()
     assert isinstance(dumped_dict, dict)
@@ -218,10 +220,10 @@ def test_metric_record_canonical_json() -> None:
         perturbation_robustness=0.7,
         fault_tolerance=0.6,
         composite_reliability=0.75,
-        metadata={"b": 2, "a": 1}
+        metadata={"b": 2, "a": 1},
     )
     json_str = record.canonical_json()
-    
+
     # Compact format: no whitespace outside values
     assert " " not in json_str
 

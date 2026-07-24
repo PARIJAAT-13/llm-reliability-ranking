@@ -1,0 +1,16 @@
+\begin{table}[t]
+\centering
+\caption{Pearson correlation matrix across reliability metrics. Values show correlation coefficient $r$ (p-value in parentheses).}
+\label{tab:metric_correlation}
+\begin{tabular}{lccccc}
+\toprule
+ & success rate & repeated run consistency & fault tolerance & perturbation robustness & composite reliability \\
+\midrule
+success rate & $1.00$ (0.00) & $-0.07$ (0.78) & $0.47$ (0.28) & --- & $-0.09$ (0.70) \\
+repeated run consistency & $-0.07$ (0.78) & $1.00$ (0.00) & --- & --- & $0.76$ (0.00) \\
+fault tolerance & $0.47$ (0.28) & --- & $1.00$ (0.00) & --- & $1.00$ (0.00) \\
+perturbation robustness & --- & --- & --- & --- & --- \\
+composite reliability & $-0.09$ (0.70) & $0.76$ (0.00) & $1.00$ (0.00) & --- & $1.00$ (0.00) \\
+\bottomrule
+\end{tabular}
+\end{table}

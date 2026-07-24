@@ -78,23 +78,15 @@ def compute_composite(
             )
         missing = set(available) - set(weights)
         if missing:
-            raise ValueError(
-                f"Weights missing for available metrics: {missing}."
-            )
+            raise ValueError(f"Weights missing for available metrics: {missing}.")
         for key, val in weights.items():
             if val < 0:
-                raise ValueError(
-                    f"Weight for '{key}' cannot be negative: {val}."
-                )
+                raise ValueError(f"Weight for '{key}' cannot be negative: {val}.")
         total = sum(weights.values())
         if total <= 0:
-            raise ValueError(
-                f"Weights must sum to a positive value, got {total:.6f}."
-            )
+            raise ValueError(f"Weights must sum to a positive value, got {total:.6f}.")
         effective_weights = {k: v / total for k, v in weights.items()}
 
-    composite = float(
-        np.sum([effective_weights[k] * v for k, v in available.items()])
-    )
+    composite = float(np.sum([effective_weights[k] * v for k, v in available.items()]))
     composite = float(np.clip(composite, 0.0, 1.0))
     return composite, effective_weights

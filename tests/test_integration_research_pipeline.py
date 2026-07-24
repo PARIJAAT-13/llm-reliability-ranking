@@ -33,31 +33,30 @@ import pytest
 from llm_reliability.configs.config import (
     Configuration,
     ReliabilityWeightsConfig,
-    VisualizationOptions,
     StatisticalOptions,
+    VisualizationOptions,
 )
+from llm_reliability.ranking.ranking_engine import RankingEngine
 from llm_reliability.records.evaluation import EvaluationRecord
 from llm_reliability.records.execution import ExecutionRecord
 from llm_reliability.records.metric import MetricRecord
 from llm_reliability.records.ranking import RankingRecord
-from llm_reliability.ranking.ranking_engine import RankingEngine
 from llm_reliability.reliability.metrics.engine import ReliabilityMetricsEngine
 from llm_reliability.reliability.score_calculator import (
     ReliabilityScore,
     ReliabilityScoreCalculator,
     ReliabilityScoreReport,
 )
-from llm_reliability.reporting.summary import ExperimentSummary
 from llm_reliability.reporting.report_generator import ReportGenerator
-from llm_reliability.statistics.statistical_engine import StatisticalEngine
+from llm_reliability.reporting.summary import ExperimentSummary
 from llm_reliability.statistics.ranking_divergence import (
-    analyze_ranking_divergence,
-    compute_ranking_overlap,
-    compute_ranking_divergence,
-    compute_rank_displacement,
     RankingDivergenceResult,
+    analyze_ranking_divergence,
+    compute_rank_displacement,
+    compute_ranking_divergence,
+    compute_ranking_overlap,
 )
-
+from llm_reliability.statistics.statistical_engine import StatisticalEngine
 
 # ---------------------------------------------------------------------------
 # Shared fixtures
@@ -138,14 +137,8 @@ def benchmark_level_metric_records(
     now = datetime.now(timezone.utc).isoformat()
     records = []
     for agent in (AGENT_A, AGENT_B):
-        agent_evals = [
-            ev
-            for ev in two_agent_evaluations["evaluations"]
-            if ev.agent == agent
-        ]
-        records.append(
-            MetricRecord.from_evaluations(agent_evals, computed_at=now)
-        )
+        agent_evals = [ev for ev in two_agent_evaluations["evaluations"] if ev.agent == agent]
+        records.append(MetricRecord.from_evaluations(agent_evals, computed_at=now))
     return records
 
 
@@ -193,9 +186,7 @@ class TestConfigurationExtension:
     def test_invalid_reliability_weights_raise(self):
         """Weights that don't sum to 1.0 are rejected."""
         with pytest.raises(Exception):
-            ReliabilityWeightsConfig(
-                consistency=0.5, robustness=0.5, fault_tolerance=0.5
-            )
+            ReliabilityWeightsConfig(consistency=0.5, robustness=0.5, fault_tolerance=0.5)
 
     def test_visualization_options_defaults(self):
         """VisualizationOptions defaults are populated."""

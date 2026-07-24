@@ -1,11 +1,11 @@
 # Final Submission Verification Report (Release v1.0.0)
 
-**Project Name**: LLM Reliability Ranking Framework  
-**Repository Location**: `C:\Users\parijaat\llm-reliability-ranking`  
-**Target Venues**: ICLR / NeurIPS (Track on Datasets & Benchmarks) / EMNLP / IEEE TSE  
-**Release Tag**: `v1.0.0`  
-**Final Submission Status**: **READY FOR SUBMISSION (100% VERIFIED)**  
-**Program Committee Recommendation**: **ACCEPT** (Score: **4.2 / 5.0**)  
+**Project Name**: LLM Reliability Ranking Framework
+**Repository Location**: `C:\Users\parijaat\llm-reliability-ranking`
+**Target Venues**: ICLR / NeurIPS (Track on Datasets & Benchmarks) / EMNLP / IEEE TSE
+**Release Tag**: `v1.0.0`
+**Final Submission Status**: **READY FOR SUBMISSION (100% VERIFIED)**
+**Program Committee Recommendation**: **ACCEPT** (Score: **4.2 / 5.0**)
 
 ---
 

@@ -1,0 +1,36 @@
+% !TEX root = ../main.tex
+\section{Limitations}
+
+\subsection{Ceiling Effects in State-of-the-Art Models}
+
+The most significant limitation of this study is the pervasive ceiling effect. Under standard evaluation conditions, all six API-based models (GPT-4o, Claude 3.5 Sonnet, Gemini 1.5 Pro, Llama 3.3 70B, Qwen 2.5 72B, DeepSeek Chat) achieve perfect or near-perfect scores ($\geq 0.998$) across all four reliability metrics. The bootstrap analysis (Task 4) confirms that 95\% confidence intervals collapse to [1.0, 1.0] for these agents, making any reliability ranking among them statistically indistinguishable. This ceiling effect is not an artifact of insufficient perturbation severity -- all four perturbation types (formatting, prompt wrapper, reordering, synonym substitution, whitespace) achieve 100\% success across all models -- nor of trivial tasks, as 26,000+ evaluations span four benchmarks with varying difficulty levels.
+
+This limitation implies that our framework is primarily useful for differentiating among smaller, locally deployed, or less capable models rather than for distinguishing among frontier API-based models. The ablation study (Task 1) confirms that differentiating among top models would require injecting more severe perturbations, introducing more challenging fault conditions, or expanding the metric set to include dimensions such as calibration quality or latency variability.
+
+\subsection{Incomplete Metric Coverage Across Agent Groups}
+
+A structural limitation arises from the incomplete metric coverage across the two agent groups. API-based agents (full-study group) have all four metrics computed, while Ollama-based agents lack fault tolerance and perturbation robustness due to the absence of controlled fault injection infrastructure in their evaluation pipeline. This creates an asymmetric comparison where:
+
+\begin{enumerate}
+    \item The composite reliability score for Ollama agents is a 2-metric average (success rate, consistency) versus a 4-metric average for API agents, producing an apples-to-oranges comparison in the unified Borda ranking.
+    \item Cross-metric correlation analyses mix 4D and 2D correlation spaces, reducing the interpretability of the aggregated correlation matrix.
+    \item Weighting scheme effects (Task 2) differentially impact the two groups: Ollama rankings show 3x higher rank sensitivity to weighting variations compared to full-metric agents.
+\end{enumerate}
+
+This limitation is inherent to post-hoc analysis of existing experimental data rather than a designed experiment. Future work should ensure uniform metric instrumentation across all evaluated agents.
+
+\subsection{Single-Trial Timing and Cost-Benefit Trade-offs}
+
+Our analysis focuses exclusively on reliability metrics and does not incorporate runtime, cost, or sample efficiency into the composite ranking. Runtime analysis reveals substantial variability across models ($\text{CV} = 0.05$ for consistent models to $\text{CV} = 2.1$ for unreliable agents), but this dimension is excluded from reliability scoring. A practitioner deploying these models in a production setting must weigh reliability against latency and cost considerations, which may lead to different model selection decisions than our reliability-focused rankings suggest. The practical significance analysis (Task 11) addresses this gap qualitatively, but a formal multi-objective optimization is beyond the current scope.
+
+\subsection{Temporal Stability}
+
+All evaluations were conducted within a single experimental campaign. We do not assess temporal stability of reliability scores across weeks or months, during which API changes, model updates, or infrastructure modifications could alter reliability characteristics. The reproducibility analysis (Task 12) measures run-to-run consistency (mean pairwise agreement $> 0.99$ for top models) but does not address longer-term temporal drift.
+
+\subsection{Difficulty Calibration}
+
+Task difficulty labels (easy/medium/hard) were assigned heuristically rather than through formal calibration. The observed 89\% success rate for both ``easy'' and ``hard'' tasks, and the anomalous 0\% success for difficulty level 2 tasks (n=28), suggests that the difficulty labels may not reliably discriminate task demands. This limits the interpretability of difficulty-stratified reliability analysis and may mask genuine differences in how models handle tasks of varying complexity.
+
+\subsection{Generalization to Production Environments}
+
+The controlled experimental environment, while enabling precise measurement, differs from production deployments in several important ways: fault injection follows fixed timing and probability schedules rather than realistic distribution patterns; network interruptions are simulated at the application layer rather than reflecting real network conditions; and all models operate in zero-shot mode without the benefit of retrieval-augmented generation, caching, or other production optimizations that could affect reliability characteristics.

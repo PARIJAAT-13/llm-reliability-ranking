@@ -75,7 +75,7 @@ class TestMemoryProfiler:
     def test_snapshot_before_and_after(self):
         m = MemoryProfiler()
         m.snapshot_before()
-        x = [i * i for i in range(1000)]
+        [i * i for i in range(1000)]
         m.snapshot_after()
         d = m.delta()
         # RAM values may be None on systems without psutil
@@ -87,9 +87,14 @@ class TestMemoryProfiler:
         m = MemoryProfiler()
         d = m.delta()
         expected_keys = {
-            "ram_before_gb", "ram_after_gb", "ram_delta_gb",
-            "vram_before_gb", "vram_after_gb", "vram_delta_gb",
-            "peak_ram_gb", "peak_vram_gb",
+            "ram_before_gb",
+            "ram_after_gb",
+            "ram_delta_gb",
+            "vram_before_gb",
+            "vram_after_gb",
+            "vram_delta_gb",
+            "peak_ram_gb",
+            "peak_vram_gb",
         }
         assert set(d.keys()) == expected_keys
 

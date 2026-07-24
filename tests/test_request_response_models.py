@@ -5,8 +5,8 @@ import pytest
 from llm_reliability.agents.adapters.request_models import LLMRequest
 from llm_reliability.agents.adapters.response_models import LLMResponse
 
-
 # ── LLMRequest ───────────────────────────────────────────────────────────────
+
 
 def test_request_valid():
     req = LLMRequest(prompt="Hello")
@@ -41,6 +41,7 @@ def test_request_serialization_roundtrip():
 
 
 # ── LLMResponse ──────────────────────────────────────────────────────────────
+
 
 def test_response_valid():
     resp = LLMResponse(

@@ -1,10 +1,17 @@
-"""
-Unit tests for multi-runtime adapters (llama.cpp, vLLM, HuggingFace Transformers).
-"""
+"""Unit tests for multi-runtime adapters (llama.cpp, vLLM, HuggingFace Transformers)."""
 
 import pytest
+
 from llm_reliability.agents.agent_factory import AgentFactory
 from llm_reliability.configs.config import Configuration
+from llm_reliability.runtime.registry import RuntimeRegistry
+
+
+@pytest.fixture(autouse=True)
+def discover_runtimes():
+    """Ensure the RuntimeRegistry is populated before each test."""
+    RuntimeRegistry.discover()
+    yield
 
 
 @pytest.fixture

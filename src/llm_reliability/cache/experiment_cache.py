@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-import hashlib
-import json
 import logging
-from typing import TYPE_CHECKING, Any, Callable
+from collections.abc import Callable
+from typing import TYPE_CHECKING
 
 from llm_reliability.cache.backend import CacheBackend, FileSystemCacheBackend
 from llm_reliability.configs.config import Configuration
@@ -114,27 +113,39 @@ class ExperimentCache:
         cached = self.get(key)
         if cached is not None:
             logger.info("Cache HIT for key '%s' — returning cached result", key)
-            log.info("Cache hit",
-                     extra={"event": "cache_hit",
-                            "cache_key": key,
-                            "benchmark": config.benchmark,
-                            "agent": config.agent,
-                            "seed": config.seed})
+            log.info(
+                "Cache hit",
+                extra={
+                    "event": "cache_hit",
+                    "cache_key": key,
+                    "benchmark": config.benchmark,
+                    "agent": config.agent,
+                    "seed": config.seed,
+                },
+            )
             return cached
 
         logger.info("Cache MISS for key '%s' — executing", key)
-        log.info("Cache miss",
-                 extra={"event": "cache_miss",
-                        "cache_key": key,
-                        "benchmark": config.benchmark,
-                        "agent": config.agent,
-                        "seed": config.seed})
+        log.info(
+            "Cache miss",
+            extra={
+                "event": "cache_miss",
+                "cache_key": key,
+                "benchmark": config.benchmark,
+                "agent": config.agent,
+                "seed": config.seed,
+            },
+        )
         result = execute_fn()
         self.set(key, result)
-        log.info("Cache set",
-                 extra={"event": "cache_set",
-                        "cache_key": key,
-                        "benchmark": config.benchmark,
-                        "agent": config.agent,
-                        "seed": config.seed})
+        log.info(
+            "Cache set",
+            extra={
+                "event": "cache_set",
+                "cache_key": key,
+                "benchmark": config.benchmark,
+                "agent": config.agent,
+                "seed": config.seed,
+            },
+        )
         return result

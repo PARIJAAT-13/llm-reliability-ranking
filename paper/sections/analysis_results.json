@@ -1,0 +1,1191 @@
+{
+  "descriptive_statistics": {
+    "agent_summary": {
+      "OfflineLlamaAgent": {
+        "composite_reliability": {
+          "mean": 1.0,
+          "std": 0,
+          "min": 1.0,
+          "max": 1.0,
+          "n": 1
+        },
+        "success_rate": {
+          "mean": 1.0,
+          "std": 0
+        },
+        "fault_tolerance": {
+          "mean": null,
+          "std": 0
+        },
+        "perturbation_robustness": {
+          "mean": null
+        },
+        "total_evaluations": 10
+      },
+      "OfflineQwenAgent": {
+        "composite_reliability": {
+          "mean": 1.0,
+          "std": 0,
+          "min": 1.0,
+          "max": 1.0,
+          "n": 1
+        },
+        "success_rate": {
+          "mean": 1.0,
+          "std": 0
+        },
+        "fault_tolerance": {
+          "mean": null,
+          "std": 0
+        },
+        "perturbation_robustness": {
+          "mean": null
+        },
+        "total_evaluations": 10
+      },
+      "anthropic:claude-3-5-sonnet": {
+        "composite_reliability": {
+          "mean": 1.0,
+          "std": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "n": 3
+        },
+        "success_rate": {
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "fault_tolerance": {
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "perturbation_robustness": {
+          "mean": 1.0
+        },
+        "total_evaluations": 2700
+      },
+      "deepseek": {
+        "composite_reliability": {
+          "mean": 1.0,
+          "std": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "n": 3
+        },
+        "success_rate": {
+          "mean": 0.0,
+          "std": 0.0
+        },
+        "fault_tolerance": {
+          "mean": null,
+          "std": 0
+        },
+        "perturbation_robustness": {
+          "mean": null
+        },
+        "total_evaluations": 15
+      },
+      "deepseek:deepseek-chat": {
+        "composite_reliability": {
+          "mean": 1.0,
+          "std": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "n": 4
+        },
+        "success_rate": {
+          "mean": 0.75,
+          "std": 0.4330127018922193
+        },
+        "fault_tolerance": {
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "perturbation_robustness": {
+          "mean": 1.0
+        },
+        "total_evaluations": 2705
+      },
+      "google": {
+        "composite_reliability": {
+          "mean": 1.0,
+          "std": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "n": 6
+        },
+        "success_rate": {
+          "mean": 0.0,
+          "std": 0.0
+        },
+        "fault_tolerance": {
+          "mean": null,
+          "std": 0
+        },
+        "perturbation_robustness": {
+          "mean": null
+        },
+        "total_evaluations": 26
+      },
+      "google:gemini-1.5-pro": {
+        "composite_reliability": {
+          "mean": 1.0,
+          "std": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "n": 3
+        },
+        "success_rate": {
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "fault_tolerance": {
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "perturbation_robustness": {
+          "mean": 1.0
+        },
+        "total_evaluations": 2700
+      },
+      "llama": {
+        "composite_reliability": {
+          "mean": 0.9818181818181819,
+          "std": 0.05749595745760688,
+          "min": 0.8,
+          "max": 1.0,
+          "n": 11
+        },
+        "success_rate": {
+          "mean": 0.38181818181818183,
+          "std": 0.47062469474708307
+        },
+        "fault_tolerance": {
+          "mean": null,
+          "std": 0
+        },
+        "perturbation_robustness": {
+          "mean": null
+        },
+        "total_evaluations": 125
+      },
+      "llama:llama-3.3-70b": {
+        "composite_reliability": {
+          "mean": 1.0,
+          "std": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "n": 3
+        },
+        "success_rate": {
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "fault_tolerance": {
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "perturbation_robustness": {
+          "mean": 1.0
+        },
+        "total_evaluations": 2700
+      },
+      "mock": {
+        "composite_reliability": {
+          "mean": 1.0,
+          "std": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "n": 2
+        },
+        "success_rate": {
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "fault_tolerance": {
+          "mean": null,
+          "std": 0
+        },
+        "perturbation_robustness": {
+          "mean": null
+        },
+        "total_evaluations": 20
+      },
+      "mock_agent": {
+        "composite_reliability": {
+          "mean": 1.0,
+          "std": 0,
+          "min": 1.0,
+          "max": 1.0,
+          "n": 1
+        },
+        "success_rate": {
+          "mean": 1.0,
+          "std": 0
+        },
+        "fault_tolerance": {
+          "mean": null,
+          "std": 0
+        },
+        "perturbation_robustness": {
+          "mean": null
+        },
+        "total_evaluations": 10
+      },
+      "ollama:gemma2:9b": {
+        "composite_reliability": {
+          "mean": 1.0,
+          "std": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "n": 7
+        },
+        "success_rate": {
+          "mean": 0.8571428571428571,
+          "std": 0.3499271061118826
+        },
+        "fault_tolerance": {
+          "mean": null,
+          "std": 0
+        },
+        "perturbation_robustness": {
+          "mean": null
+        },
+        "total_evaluations": 1920
+      },
+      "ollama:llama3.1:8b": {
+        "composite_reliability": {
+          "mean": 1.0,
+          "std": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "n": 7
+        },
+        "success_rate": {
+          "mean": 0.5714285714285714,
+          "std": 0.4948716593053935
+        },
+        "fault_tolerance": {
+          "mean": null,
+          "std": 0
+        },
+        "perturbation_robustness": {
+          "mean": null
+        },
+        "total_evaluations": 1925
+      },
+      "ollama:mistral:7b": {
+        "composite_reliability": {
+          "mean": 1.0,
+          "std": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "n": 8
+        },
+        "success_rate": {
+          "mean": 0.75,
+          "std": 0.4330127018922193
+        },
+        "fault_tolerance": {
+          "mean": null,
+          "std": 0
+        },
+        "perturbation_robustness": {
+          "mean": null
+        },
+        "total_evaluations": 1930
+      },
+      "ollama:phi3:mini": {
+        "composite_reliability": {
+          "mean": 1.0,
+          "std": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "n": 2
+        },
+        "success_rate": {
+          "mean": 0.5,
+          "std": 0.5
+        },
+        "fault_tolerance": {
+          "mean": null,
+          "std": 0
+        },
+        "perturbation_robustness": {
+          "mean": null
+        },
+        "total_evaluations": 1845
+      },
+      "ollama:qwen2.5:7b": {
+        "composite_reliability": {
+          "mean": 1.0,
+          "std": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "n": 8
+        },
+        "success_rate": {
+          "mean": 0.875,
+          "std": 0.33071891388307384
+        },
+        "fault_tolerance": {
+          "mean": null,
+          "std": 0
+        },
+        "perturbation_robustness": {
+          "mean": null
+        },
+        "total_evaluations": 1930
+      },
+      "ollama:tinyllama:latest": {
+        "composite_reliability": {
+          "mean": 0.9,
+          "std": 0.09999999999999998,
+          "min": 0.8,
+          "max": 1.0,
+          "n": 2
+        },
+        "success_rate": {
+          "mean": 0.9,
+          "std": 0.09999999999999998
+        },
+        "fault_tolerance": {
+          "mean": null,
+          "std": 0
+        },
+        "perturbation_robustness": {
+          "mean": null
+        },
+        "total_evaluations": 1845
+      },
+      "openai": {
+        "composite_reliability": {
+          "mean": 1.0,
+          "std": 0,
+          "min": 1.0,
+          "max": 1.0,
+          "n": 1
+        },
+        "success_rate": {
+          "mean": 0.0,
+          "std": 0
+        },
+        "fault_tolerance": {
+          "mean": null,
+          "std": 0
+        },
+        "perturbation_robustness": {
+          "mean": null
+        },
+        "total_evaluations": 15
+      },
+      "openai:gpt-4o": {
+        "composite_reliability": {
+          "mean": 1.0,
+          "std": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "n": 3
+        },
+        "success_rate": {
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "fault_tolerance": {
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "perturbation_robustness": {
+          "mean": 1.0
+        },
+        "total_evaluations": 2700
+      },
+      "qwen:qwen-2.5-72b": {
+        "composite_reliability": {
+          "mean": 1.0,
+          "std": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "n": 3
+        },
+        "success_rate": {
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "fault_tolerance": {
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "perturbation_robustness": {
+          "mean": 1.0
+        },
+        "total_evaluations": 2700
+      }
+    },
+    "benchmark_summary": {
+      "AgentBoard": {
+        "mean_composite": 1.0,
+        "std_composite": 0.0,
+        "n_agents": 1,
+        "n_observations": 10
+      },
+      "GAIA": {
+        "mean_composite": 0.9885714285714287,
+        "std_composite": 0.04642307659791976,
+        "n_agents": 11,
+        "n_observations": 655
+      },
+      "MockBenchmark": {
+        "mean_composite": 1.0,
+        "std_composite": 0.0,
+        "n_agents": 16,
+        "n_observations": 27160
+      },
+      "SWEBenchLite": {
+        "mean_composite": 1.0,
+        "std_composite": 0.0,
+        "n_agents": 1,
+        "n_observations": 6
+      }
+    },
+    "eval_summary": {
+      "total_evaluations": 31981,
+      "success_rate": 0.8901222600919296,
+      "fault_rate": 0.30393045870985896,
+      "n_experiments": 142,
+      "n_agents": 21,
+      "n_benchmarks": 4
+    },
+    "perturbation_analysis": {
+      "formatting": {
+        "n": 1620,
+        "success_rate": 1.0,
+        "count": 1620
+      },
+      "none": {
+        "n": 23881,
+        "success_rate": 0.8528537330932541,
+        "count": 23881
+      },
+      "prompt_wrapper": {
+        "n": 1620,
+        "success_rate": 1.0,
+        "count": 1620
+      },
+      "reordering": {
+        "n": 1620,
+        "success_rate": 1.0,
+        "count": 1620
+      },
+      "synonym": {
+        "n": 1620,
+        "success_rate": 1.0,
+        "count": 1620
+      },
+      "whitespace": {
+        "n": 1620,
+        "success_rate": 1.0,
+        "count": 1620
+      }
+    },
+    "difficulty_analysis": {
+      "1": {
+        "n": 7,
+        "success_rate": 0.14285714285714285
+      },
+      "2": {
+        "n": 28,
+        "success_rate": 0.0
+      },
+      "easy": {
+        "n": 16030,
+        "success_rate": 0.8903306300686213
+      },
+      "hard": {
+        "n": 15656,
+        "success_rate": 0.895503321410322
+      },
+      "medium": {
+        "n": 260,
+        "success_rate": 0.6692307692307692
+      }
+    }
+  },
+  "aggregated_rankings": {
+    "success": {
+      "MockAgent": {
+        "mean_rank": 2.0,
+        "median_rank": 2.0,
+        "std_rank": 0.0,
+        "min_rank": 2,
+        "max_rank": 2,
+        "n_rankings": 18,
+        "rank_consistency": 1.0
+      },
+      "OfflineLlamaAgent": {
+        "mean_rank": 1.0,
+        "median_rank": 1.0,
+        "std_rank": 0,
+        "min_rank": 1,
+        "max_rank": 1,
+        "n_rankings": 1,
+        "rank_consistency": 1.0
+      },
+      "OfflineQwenAgent": {
+        "mean_rank": 2.0,
+        "median_rank": 2.0,
+        "std_rank": 0,
+        "min_rank": 2,
+        "max_rank": 2,
+        "n_rankings": 1,
+        "rank_consistency": 1.0
+      },
+      "anthropic:claude-3-5-sonnet": {
+        "mean_rank": 1.0,
+        "median_rank": 1.0,
+        "std_rank": 0.0,
+        "min_rank": 1,
+        "max_rank": 1,
+        "n_rankings": 3,
+        "rank_consistency": 1.0
+      },
+      "deepseek:deepseek-chat": {
+        "mean_rank": 1.0,
+        "median_rank": 1.0,
+        "std_rank": 0.0,
+        "min_rank": 1,
+        "max_rank": 1,
+        "n_rankings": 3,
+        "rank_consistency": 1.0
+      },
+      "google:gemini-1.5-pro": {
+        "mean_rank": 1.0,
+        "median_rank": 1.0,
+        "std_rank": 0.0,
+        "min_rank": 1,
+        "max_rank": 1,
+        "n_rankings": 3,
+        "rank_consistency": 1.0
+      },
+      "llama:llama-3.3-70b": {
+        "mean_rank": 1.0,
+        "median_rank": 1.0,
+        "std_rank": 0.0,
+        "min_rank": 1,
+        "max_rank": 1,
+        "n_rankings": 3,
+        "rank_consistency": 1.0
+      },
+      "mock": {
+        "mean_rank": 1.0,
+        "median_rank": 1.0,
+        "std_rank": 0,
+        "min_rank": 1,
+        "max_rank": 1,
+        "n_rankings": 1,
+        "rank_consistency": 1.0
+      },
+      "mock_agent": {
+        "mean_rank": 2.0,
+        "median_rank": 2.0,
+        "std_rank": 0,
+        "min_rank": 2,
+        "max_rank": 2,
+        "n_rankings": 1,
+        "rank_consistency": 1.0
+      },
+      "ollama:gemma2:9b": {
+        "mean_rank": 1.0,
+        "median_rank": 1.0,
+        "std_rank": 0.0,
+        "min_rank": 1,
+        "max_rank": 1,
+        "n_rankings": 7,
+        "rank_consistency": 1.0
+      },
+      "ollama:llama3.1:8b": {
+        "mean_rank": 2.2857142857142856,
+        "median_rank": 2.0,
+        "std_rank": 0.6998542122237652,
+        "min_rank": 2,
+        "max_rank": 4,
+        "n_rankings": 7,
+        "rank_consistency": 0.6500728939056137
+      },
+      "ollama:mistral:7b": {
+        "mean_rank": 2.75,
+        "median_rank": 3.0,
+        "std_rank": 0.4330127018922193,
+        "min_rank": 2,
+        "max_rank": 3,
+        "n_rankings": 8,
+        "rank_consistency": 0.566987298151082
+      },
+      "ollama:phi3:mini": {
+        "mean_rank": 5.0,
+        "median_rank": 5.0,
+        "std_rank": 1.0,
+        "min_rank": 4,
+        "max_rank": 6,
+        "n_rankings": 2,
+        "rank_consistency": 0.500000000025
+      },
+      "ollama:qwen2.5:7b": {
+        "mean_rank": 3.5,
+        "median_rank": 4.0,
+        "std_rank": 1.118033988749895,
+        "min_rank": 1,
+        "max_rank": 5,
+        "n_rankings": 8,
+        "rank_consistency": 0.720491502819514
+      },
+      "ollama:tinyllama:latest": {
+        "mean_rank": 5.5,
+        "median_rank": 5.5,
+        "std_rank": 0.5,
+        "min_rank": 5,
+        "max_rank": 6,
+        "n_rankings": 2,
+        "rank_consistency": 0.50000000005
+      },
+      "openai:gpt-4o": {
+        "mean_rank": 1.0,
+        "median_rank": 1.0,
+        "std_rank": 0.0,
+        "min_rank": 1,
+        "max_rank": 1,
+        "n_rankings": 3,
+        "rank_consistency": 1.0
+      },
+      "qwen:qwen-2.5-72b": {
+        "mean_rank": 1.0,
+        "median_rank": 1.0,
+        "std_rank": 0.0,
+        "min_rank": 1,
+        "max_rank": 1,
+        "n_rankings": 3,
+        "rank_consistency": 1.0
+      }
+    },
+    "reliability": {
+      "MockAgent": {
+        "mean_rank": 2.0,
+        "median_rank": 2.0,
+        "std_rank": 0.0,
+        "min_rank": 2,
+        "max_rank": 2,
+        "n_rankings": 18,
+        "rank_consistency": 1.0
+      },
+      "OfflineLlamaAgent": {
+        "mean_rank": 1.0,
+        "median_rank": 1.0,
+        "std_rank": 0,
+        "min_rank": 1,
+        "max_rank": 1,
+        "n_rankings": 1,
+        "rank_consistency": 1.0
+      },
+      "OfflineQwenAgent": {
+        "mean_rank": 2.0,
+        "median_rank": 2.0,
+        "std_rank": 0,
+        "min_rank": 2,
+        "max_rank": 2,
+        "n_rankings": 1,
+        "rank_consistency": 1.0
+      },
+      "anthropic:claude-3-5-sonnet": {
+        "mean_rank": 1.0,
+        "median_rank": 1.0,
+        "std_rank": 0.0,
+        "min_rank": 1,
+        "max_rank": 1,
+        "n_rankings": 3,
+        "rank_consistency": 1.0
+      },
+      "deepseek:deepseek-chat": {
+        "mean_rank": 1.0,
+        "median_rank": 1.0,
+        "std_rank": 0.0,
+        "min_rank": 1,
+        "max_rank": 1,
+        "n_rankings": 3,
+        "rank_consistency": 1.0
+      },
+      "google:gemini-1.5-pro": {
+        "mean_rank": 1.0,
+        "median_rank": 1.0,
+        "std_rank": 0.0,
+        "min_rank": 1,
+        "max_rank": 1,
+        "n_rankings": 3,
+        "rank_consistency": 1.0
+      },
+      "llama:llama-3.3-70b": {
+        "mean_rank": 1.0,
+        "median_rank": 1.0,
+        "std_rank": 0.0,
+        "min_rank": 1,
+        "max_rank": 1,
+        "n_rankings": 3,
+        "rank_consistency": 1.0
+      },
+      "mock": {
+        "mean_rank": 1.0,
+        "median_rank": 1.0,
+        "std_rank": 0,
+        "min_rank": 1,
+        "max_rank": 1,
+        "n_rankings": 1,
+        "rank_consistency": 1.0
+      },
+      "mock_agent": {
+        "mean_rank": 2.0,
+        "median_rank": 2.0,
+        "std_rank": 0,
+        "min_rank": 2,
+        "max_rank": 2,
+        "n_rankings": 1,
+        "rank_consistency": 1.0
+      },
+      "ollama:gemma2:9b": {
+        "mean_rank": 1.0,
+        "median_rank": 1.0,
+        "std_rank": 0.0,
+        "min_rank": 1,
+        "max_rank": 1,
+        "n_rankings": 7,
+        "rank_consistency": 1.0
+      },
+      "ollama:llama3.1:8b": {
+        "mean_rank": 1.8571428571428572,
+        "median_rank": 2.0,
+        "std_rank": 0.34992710611188266,
+        "min_rank": 1,
+        "max_rank": 2,
+        "n_rankings": 7,
+        "rank_consistency": 0.6500728939231101
+      },
+      "ollama:mistral:7b": {
+        "mean_rank": 2.75,
+        "median_rank": 3.0,
+        "std_rank": 0.4330127018922193,
+        "min_rank": 2,
+        "max_rank": 3,
+        "n_rankings": 8,
+        "rank_consistency": 0.566987298151082
+      },
+      "ollama:phi3:mini": {
+        "mean_rank": 4.0,
+        "median_rank": 4.0,
+        "std_rank": 0.0,
+        "min_rank": 4,
+        "max_rank": 4,
+        "n_rankings": 2,
+        "rank_consistency": 1.0
+      },
+      "ollama:qwen2.5:7b": {
+        "mean_rank": 4.0,
+        "median_rank": 4.0,
+        "std_rank": 0.7071067811865476,
+        "min_rank": 3,
+        "max_rank": 5,
+        "n_rankings": 8,
+        "rank_consistency": 0.6464466094244039
+      },
+      "ollama:tinyllama:latest": {
+        "mean_rank": 6.0,
+        "median_rank": 6.0,
+        "std_rank": 0.0,
+        "min_rank": 6,
+        "max_rank": 6,
+        "n_rankings": 2,
+        "rank_consistency": 1.0
+      },
+      "openai:gpt-4o": {
+        "mean_rank": 1.0,
+        "median_rank": 1.0,
+        "std_rank": 0.0,
+        "min_rank": 1,
+        "max_rank": 1,
+        "n_rankings": 3,
+        "rank_consistency": 1.0
+      },
+      "qwen:qwen-2.5-72b": {
+        "mean_rank": 1.0,
+        "median_rank": 1.0,
+        "std_rank": 0.0,
+        "min_rank": 1,
+        "max_rank": 1,
+        "n_rankings": 3,
+        "rank_consistency": 1.0
+      }
+    }
+  },
+  "fault_analysis": {
+    "artificial_timeout": {
+      "total": 1620,
+      "recovery_rate": 1.0,
+      "fail_count": 0,
+      "avg_retries": 0.0
+    },
+    "context_truncation": {
+      "total": 1620,
+      "recovery_rate": 1.0,
+      "fail_count": 0,
+      "avg_retries": 0.0
+    },
+    "invalid_model_response": {
+      "total": 1620,
+      "recovery_rate": 1.0,
+      "fail_count": 0,
+      "avg_retries": 0.0
+    },
+    "network_interruption": {
+      "total": 1620,
+      "recovery_rate": 0.0,
+      "fail_count": 1620,
+      "avg_retries": 3.0
+    },
+    "temporary_api_failure": {
+      "total": 1620,
+      "recovery_rate": 1.0,
+      "fail_count": 0,
+      "avg_retries": 1.0
+    },
+    "tool_failure": {
+      "total": 1620,
+      "recovery_rate": 0.0,
+      "fail_count": 1620,
+      "avg_retries": 3.0
+    }
+  },
+  "borda_rankings": {
+    "ollama:gemma2:9b": 1.0,
+    "ollama:llama3.1:8b": 0.6875,
+    "ollama:mistral:7b": 0.5,
+    "ollama:qwen2.5:7b": 0.16666666666666666,
+    "anthropic:claude-3-5-sonnet": 0.125,
+    "llama:llama-3.3-70b": 0.125,
+    "google:gemini-1.5-pro": 0.125,
+    "qwen:qwen-2.5-72b": 0.125,
+    "openai:gpt-4o": 0.125,
+    "deepseek:deepseek-chat": 0.125,
+    "ollama:phi3:mini": 0.125,
+    "mock": 0.041666666666666664,
+    "OfflineLlamaAgent": 0.041666666666666664,
+    "ollama:tinyllama:latest": 0.020833333333333332,
+    "MockAgent": 0.0,
+    "mock_agent": 0.0,
+    "OfflineQwenAgent": 0.0
+  },
+  "runtime_analysis": {
+    "MockAgent": {
+      "mean_runtime": 0.7967646126265121,
+      "median_runtime": 0.00017120000120485201,
+      "std_runtime": 1.557293740451262,
+      "min_runtime": 0.00010739999561337754,
+      "max_runtime": 4.9,
+      "n_runs": 4150,
+      "success_rate": 0.21927710843373494
+    },
+    "OfflineLlamaAgent": {
+      "mean_runtime": 3.1900000000000004,
+      "median_runtime": 3.1,
+      "std_runtime": 0.734098086089318,
+      "min_runtime": 1.8,
+      "max_runtime": 4.3,
+      "n_runs": 10,
+      "success_rate": 1.0
+    },
+    "OfflineQwenAgent": {
+      "mean_runtime": 2.1900000000000004,
+      "median_runtime": 2.2,
+      "std_runtime": 0.8324061508662703,
+      "min_runtime": 1.0,
+      "max_runtime": 3.8,
+      "n_runs": 10,
+      "success_rate": 1.0
+    },
+    "anthropic:claude-3-5-sonnet": {
+      "mean_runtime": 1.8447172146296538,
+      "median_runtime": 1.5,
+      "std_runtime": 1.684041996798396,
+      "min_runtime": 1.8499995348975062e-05,
+      "max_runtime": 4.9,
+      "n_runs": 2700,
+      "success_rate": 1.0
+    },
+    "deepseek": {
+      "mean_runtime": 2.26,
+      "median_runtime": 2.2,
+      "std_runtime": 1.1128342194594845,
+      "min_runtime": 1.0,
+      "max_runtime": 3.8,
+      "n_runs": 15,
+      "success_rate": 0.0
+    },
+    "deepseek:deepseek-chat": {
+      "mean_runtime": 1.8343451488354625,
+      "median_runtime": 1.7,
+      "std_runtime": 1.639286456368376,
+      "min_runtime": 1.8999999156221747e-05,
+      "max_runtime": 4.9,
+      "n_runs": 2705,
+      "success_rate": 0.9981515711645101
+    },
+    "google": {
+      "mean_runtime": 2.769230769230769,
+      "median_runtime": 2.6,
+      "std_runtime": 1.029850336687973,
+      "min_runtime": 1.1,
+      "max_runtime": 4.8,
+      "n_runs": 26,
+      "success_rate": 0.46153846153846156
+    },
+    "google:gemini-1.5-pro": {
+      "mean_runtime": 1.8688489812592113,
+      "median_runtime": 1.7,
+      "std_runtime": 1.6631052732648306,
+      "min_runtime": 1.8300001102034003e-05,
+      "max_runtime": 4.9,
+      "n_runs": 2700,
+      "success_rate": 1.0
+    },
+    "llama": {
+      "mean_runtime": 3.2408,
+      "median_runtime": 3.0,
+      "std_runtime": 1.24161804110604,
+      "min_runtime": 1.1,
+      "max_runtime": 4.8,
+      "n_runs": 125,
+      "success_rate": 0.792
+    },
+    "llama:llama-3.3-70b": {
+      "mean_runtime": 1.839985746962905,
+      "median_runtime": 1.6,
+      "std_runtime": 1.6543333442398898,
+      "min_runtime": 1.8699996871873736e-05,
+      "max_runtime": 4.9,
+      "n_runs": 2700,
+      "success_rate": 1.0
+    },
+    "mock": {
+      "mean_runtime": 3.0199999999999996,
+      "median_runtime": 3.3,
+      "std_runtime": 1.2110326172320875,
+      "min_runtime": 1.0,
+      "max_runtime": 4.8,
+      "n_runs": 20,
+      "success_rate": 1.0
+    },
+    "mock_agent": {
+      "mean_runtime": 2.46,
+      "median_runtime": 2.0,
+      "std_runtime": 0.9308061022576076,
+      "min_runtime": 1.3,
+      "max_runtime": 4.1,
+      "n_runs": 10,
+      "success_rate": 1.0
+    },
+    "ollama:gemma2:9b": {
+      "mean_runtime": 2.9407812499999997,
+      "median_runtime": 3.0,
+      "std_runtime": 1.1551147192588438,
+      "min_runtime": 1.0,
+      "max_runtime": 4.9,
+      "n_runs": 1920,
+      "success_rate": 1.0
+    },
+    "ollama:llama3.1:8b": {
+      "mean_runtime": 2.856623376623377,
+      "median_runtime": 2.8,
+      "std_runtime": 1.2347665118046864,
+      "min_runtime": 0.0,
+      "max_runtime": 4.9,
+      "n_runs": 1925,
+      "success_rate": 0.9688311688311688
+    },
+    "ollama:mistral:7b": {
+      "mean_runtime": 2.9576683937823836,
+      "median_runtime": 2.9,
+      "std_runtime": 1.1907048262695357,
+      "min_runtime": 0.0,
+      "max_runtime": 4.9,
+      "n_runs": 1930,
+      "success_rate": 0.9922279792746114
+    },
+    "ollama:phi3:mini": {
+      "mean_runtime": 2.8926287262872625,
+      "median_runtime": 2.9,
+      "std_runtime": 1.2132823518900548,
+      "min_runtime": 0.0,
+      "max_runtime": 4.9,
+      "n_runs": 1845,
+      "success_rate": 0.975609756097561
+    },
+    "ollama:qwen2.5:7b": {
+      "mean_runtime": 2.909170984455959,
+      "median_runtime": 2.9,
+      "std_runtime": 1.1618298221044059,
+      "min_runtime": 1.0,
+      "max_runtime": 4.9,
+      "n_runs": 1930,
+      "success_rate": 1.0
+    },
+    "ollama:tinyllama:latest": {
+      "mean_runtime": 2.973929539295393,
+      "median_runtime": 3.0,
+      "std_runtime": 1.1477221486651916,
+      "min_runtime": 1.0,
+      "max_runtime": 4.9,
+      "n_runs": 1845,
+      "success_rate": 1.0
+    },
+    "openai": {
+      "mean_runtime": 3.4733333333333336,
+      "median_runtime": 3.6,
+      "std_runtime": 1.0754637242707084,
+      "min_runtime": 1.1,
+      "max_runtime": 4.9,
+      "n_runs": 15,
+      "success_rate": 0.0
+    },
+    "openai:gpt-4o": {
+      "mean_runtime": 1.80488129781483,
+      "median_runtime": 1.55,
+      "std_runtime": 1.6314291876095954,
+      "min_runtime": 1.9099999917671084e-05,
+      "max_runtime": 4.9,
+      "n_runs": 2700,
+      "success_rate": 1.0
+    },
+    "qwen:qwen-2.5-72b": {
+      "mean_runtime": 1.7842020655925497,
+      "median_runtime": 1.6,
+      "std_runtime": 1.6305777608327012,
+      "min_runtime": 1.870000414783135e-05,
+      "max_runtime": 4.9,
+      "n_runs": 2700,
+      "success_rate": 1.0
+    }
+  },
+  "consistency_analysis": {
+    "MockAgent": {
+      "mean_consistency": 0.7726076429097799,
+      "std_consistency": 0.16079067768848748,
+      "min_consistency": 0.65891146436467,
+      "n_tasks": 15
+    },
+    "anthropic:claude-3-5-sonnet": {
+      "mean_consistency": 1.0,
+      "std_consistency": 0.0,
+      "min_consistency": 1.0,
+      "n_tasks": 60
+    },
+    "deepseek": {
+      "mean_consistency": 1.0,
+      "std_consistency": 0.0,
+      "min_consistency": 1.0,
+      "n_tasks": 5
+    },
+    "deepseek:deepseek-chat": {
+      "mean_consistency": 1.0,
+      "std_consistency": 0.0,
+      "min_consistency": 1.0,
+      "n_tasks": 60
+    },
+    "google": {
+      "mean_consistency": 1.0,
+      "std_consistency": 0.0,
+      "min_consistency": 1.0,
+      "n_tasks": 13
+    },
+    "google:gemini-1.5-pro": {
+      "mean_consistency": 1.0,
+      "std_consistency": 0.0,
+      "min_consistency": 1.0,
+      "n_tasks": 60
+    },
+    "llama": {
+      "mean_consistency": 0.6391304347826087,
+      "std_consistency": 0.32539056073161143,
+      "min_consistency": 0.0,
+      "n_tasks": 10
+    },
+    "llama:llama-3.3-70b": {
+      "mean_consistency": 1.0,
+      "std_consistency": 0.0,
+      "min_consistency": 1.0,
+      "n_tasks": 60
+    },
+    "mock": {
+      "mean_consistency": 1.0,
+      "std_consistency": 0.0,
+      "min_consistency": 1.0,
+      "n_tasks": 10
+    },
+    "ollama:gemma2:9b": {
+      "mean_consistency": 1.0,
+      "std_consistency": 0.0,
+      "min_consistency": 1.0,
+      "n_tasks": 15
+    },
+    "ollama:llama3.1:8b": {
+      "mean_consistency": 0.8162434372656165,
+      "std_consistency": 0.24441513726645261,
+      "min_consistency": 0.47058823529411764,
+      "n_tasks": 15
+    },
+    "ollama:mistral:7b": {
+      "mean_consistency": 0.9927140255009107,
+      "std_consistency": 0.005151961975858275,
+      "min_consistency": 0.9890710382513661,
+      "n_tasks": 15
+    },
+    "ollama:phi3:mini": {
+      "mean_consistency": 1.0,
+      "std_consistency": 0.0,
+      "min_consistency": 1.0,
+      "n_tasks": 15
+    },
+    "ollama:qwen2.5:7b": {
+      "mean_consistency": 1.0,
+      "std_consistency": 0.0,
+      "min_consistency": 1.0,
+      "n_tasks": 15
+    },
+    "ollama:tinyllama:latest": {
+      "mean_consistency": 1.0,
+      "std_consistency": 0.0,
+      "min_consistency": 1.0,
+      "n_tasks": 15
+    },
+    "openai": {
+      "mean_consistency": 1.0,
+      "std_consistency": 0.0,
+      "min_consistency": 1.0,
+      "n_tasks": 5
+    },
+    "openai:gpt-4o": {
+      "mean_consistency": 1.0,
+      "std_consistency": 0.0,
+      "min_consistency": 1.0,
+      "n_tasks": 60
+    },
+    "qwen:qwen-2.5-72b": {
+      "mean_consistency": 1.0,
+      "std_consistency": 0.0,
+      "min_consistency": 1.0,
+      "n_tasks": 60
+    }
+  },
+  "correlation_analysis": {
+    "GAIA_vs_MockBenchmark": {
+      "pearson_r": NaN,
+      "p_value": NaN,
+      "n": 7
+    }
+  }
+}

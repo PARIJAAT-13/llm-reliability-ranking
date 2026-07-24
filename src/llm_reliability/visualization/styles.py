@@ -41,12 +41,12 @@ PALETTE: Final[list[str]] = [
 ]
 
 #: Semantic colour assignments.
-COLOR_SUCCESS: Final[str] = PALETTE[0]   # blue  — success-based ranking
+COLOR_SUCCESS: Final[str] = PALETTE[0]  # blue  — success-based ranking
 COLOR_RELIABILITY: Final[str] = PALETTE[1]  # orange — reliability-based ranking
-COLOR_WEIGHTED: Final[str] = PALETTE[2]   # green  — weighted ranking
+COLOR_WEIGHTED: Final[str] = PALETTE[2]  # green  — weighted ranking
 COLOR_DIVERGE_LOW: Final[str] = PALETTE[5]  # vermilion — negative divergence
 COLOR_DIVERGE_HIGH: Final[str] = PALETTE[0]  # blue      — positive divergence
-COLOR_NEUTRAL: Final[str] = "#888888"        # grey      — neutral / reference
+COLOR_NEUTRAL: Final[str] = "#888888"  # grey      — neutral / reference
 
 #: Heatmap diverging colormap (does not rely on rainbow).
 CMAP_DIVERGING: Final[str] = "RdBu_r"
@@ -158,7 +158,7 @@ def apply_publication_style() -> None:
                 "savefig.facecolor": "white",
                 "savefig.edgecolor": "none",
                 # PDF backend
-                "pdf.fonttype": 42,   # TrueType fonts in PDF
+                "pdf.fonttype": 42,  # TrueType fonts in PDF
                 "ps.fonttype": 42,
             }
         )

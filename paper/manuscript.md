@@ -1,8 +1,8 @@
 # Benchmarking Local Open-Weights Language Models Under Hardware Memory Constraints: A Reliability Ranking Framework
 
-**Authors**: Parijaat Srivastava, Pooja Mourya  
-**Affiliation**: Independent Researcher  
-**Date**: July 2026  
+**Authors**: Parijaat Srivastava, Pooja Mourya
+**Affiliation**: Independent Researcher
+**Date**: July 2026
 
 ---
 

@@ -18,12 +18,12 @@ def compute_cohens_d(
 ) -> EffectSizeResult:
     """Compute Cohen's d for the difference between two rankings."""
     x, y = _align_ranking_scores(ranking1, ranking2)
-    
+
     mean_x, mean_y = np.mean(x), np.mean(y)
     var_x, var_y = np.var(x, ddof=1), np.var(y, ddof=1)
-    
+
     pooled_std = np.sqrt((var_x + var_y) / 2.0)
-    
+
     if pooled_std == 0.0:
         d = 0.0
     else:
@@ -53,7 +53,7 @@ def compute_rank_biserial(
     """Compute Rank-biserial correlation for paired rankings."""
     x, y = _align_ranking_scores(ranking1, ranking2)
     diffs = np.array(x) - np.array(y)
-    
+
     # Exclude zero differences
     non_zero = diffs[diffs != 0.0]
     if len(non_zero) == 0:
@@ -69,7 +69,7 @@ def compute_rank_biserial(
 
     r_plus = np.sum(signed_ranks[signed_ranks > 0])
     r_minus = np.sum(np.abs(signed_ranks[signed_ranks < 0]))
-    
+
     total_ranks = r_plus + r_minus
     if total_ranks == 0.0:
         r = 0.0
@@ -100,7 +100,7 @@ def compute_cliffs_delta(
     """Compute Cliff's Delta between two rankings."""
     x, y = _align_ranking_scores(ranking1, ranking2)
     n_x, n_y = len(x), len(y)
-    
+
     greater = 0
     less = 0
     for val_x in x:

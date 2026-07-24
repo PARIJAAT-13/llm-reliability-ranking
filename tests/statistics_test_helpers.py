@@ -16,7 +16,7 @@ def create_mock_ranking(
     # Sort rankings by score desc, then name asc to match standard structure
     sorted_rankings = sorted(rankings_list, key=lambda x: (-x[1], x[0]))
     rankings_tuple = tuple(sorted_rankings)
-    
+
     # Create rank_map
     rank_map = {agent: idx + 1 for idx, (agent, _) in enumerate(rankings_tuple)}
 

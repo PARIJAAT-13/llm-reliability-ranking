@@ -7,11 +7,16 @@ from tests.metrics_helpers import make_eval
 
 
 def _all_success(n: int = 5, n_tasks: int = 1):
-    return [make_eval(task_id=f"t{i % n_tasks}", success=True, score=1.0, run_index=i) for i in range(n)]
+    return [
+        make_eval(task_id=f"t{i % n_tasks}", success=True, score=1.0, run_index=i) for i in range(n)
+    ]
 
 
 def _all_failure(n: int = 5, n_tasks: int = 1):
-    return [make_eval(task_id=f"t{i % n_tasks}", success=False, score=0.0, run_index=i) for i in range(n)]
+    return [
+        make_eval(task_id=f"t{i % n_tasks}", success=False, score=0.0, run_index=i)
+        for i in range(n)
+    ]
 
 
 def test_engine_requires_evaluations():

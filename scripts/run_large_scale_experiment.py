@@ -18,24 +18,22 @@ import time
 _REPO_ROOT = pathlib.Path(__file__).parent.parent
 sys.path.insert(0, str(_REPO_ROOT / "src"))
 
-from llm_reliability.experiments import (
-    ExperimentRunner,
-    ExperimentSpec,
-    BenchmarkSpec,
-    AgentSpec,
-)
-from llm_reliability.benchmarks.dataset_manager import DatasetManager
-from llm_reliability.agents.agent_factory import AgentFactory
-from llm_reliability.agents.mock_agent import MockAgent
-from llm_reliability.benchmarks.mock_benchmark import MockBenchmark
-from llm_reliability.utils.hardware_profile import detect_hardware_profile
-
 # Import all 12 benchmark adapters to register them
 import llm_reliability.benchmarks.adapters  # noqa: F401
-
+from llm_reliability.agents.agent_factory import AgentFactory
+from llm_reliability.agents.mock_agent import MockAgent
+from llm_reliability.benchmarks.dataset_manager import DatasetManager
+from llm_reliability.benchmarks.mock_benchmark import MockBenchmark
 from llm_reliability.configs.config import Configuration
-from llm_reliability.interfaces.agent import Agent
+from llm_reliability.experiments import (
+    AgentSpec,
+    BenchmarkSpec,
+    ExperimentRunner,
+    ExperimentSpec,
+)
 from llm_reliability.experiments.experiment_models import AgentSpec as _AgentSpec
+from llm_reliability.interfaces.agent import Agent
+from llm_reliability.utils.hardware_profile import detect_hardware_profile
 
 logging.basicConfig(
     level=logging.INFO,
@@ -57,6 +55,7 @@ def _real_benchmark_factory(name: str, config: Configuration):
     if name_lower in ("mock", "mock_benchmark"):
         return MockBenchmark(config=config)
     from llm_reliability.benchmarks.adapters.registry import BenchmarkRegistry
+
     adapter_cls = BenchmarkRegistry.get(name)
     return adapter_cls(config=config)
 
@@ -108,23 +107,49 @@ def main() -> int:
         logger.error("Configuration file not found: %s", args.config)
         return 1
 
-    with open(args.config, "r", encoding="utf-8") as f:
+    with open(args.config, encoding="utf-8") as f:
         raw_config = json.load(f)
 
     # Detect physical hardware profile for execution manifest provenance
     hw_profile = detect_hardware_profile()
-    logger.info("Hardware Profile Detected: %s (CPU: %s, RAM: %.2f GB, GPU: %s)",
-                hw_profile.profile_id, hw_profile.cpu_architecture, hw_profile.ram_total_gb, hw_profile.gpu_name or "None")
+    logger.info(
+        "Hardware Profile Detected: %s (CPU: %s, RAM: %.2f GB, GPU: %s)",
+        hw_profile.profile_id,
+        hw_profile.cpu_architecture,
+        hw_profile.ram_total_gb,
+        hw_profile.gpu_name or "None",
+    )
 
-    benchmarks_raw = raw_config.get("benchmarks", ["GAIA", "MMLU", "HellaSwag", "HumanEval", "MBPP", "TruthfulQA", "GSM8K", "ARC", "Winogrande", "PIQA", "AgentBoard", "SWEBenchLite"])
-    models_raw = raw_config.get("models", ["ollama:llama3.1:8b", "ollama:qwen2.5:7b", "ollama:mistral:7b", "ollama:gemma2:9b"])
+    benchmarks_raw = raw_config.get(
+        "benchmarks",
+        [
+            "GAIA",
+            "MMLU",
+            "HellaSwag",
+            "HumanEval",
+            "MBPP",
+            "TruthfulQA",
+            "GSM8K",
+            "ARC",
+            "Winogrande",
+            "PIQA",
+            "AgentBoard",
+            "SWEBenchLite",
+        ],
+    )
+    models_raw = raw_config.get(
+        "models",
+        ["ollama:llama3.1:8b", "ollama:qwen2.5:7b", "ollama:mistral:7b", "ollama:gemma2:9b"],
+    )
 
     dataset_paths: dict[str, str] = {}
     dataset_mgr = DatasetManager(cache_dir=_REPO_ROOT / "data" / "cache")
     for bench in benchmarks_raw:
         if bench.lower() == "gaia":
             sample_file = _REPO_ROOT / "data" / "gaia_sample.json"
-            dataset_paths[bench] = str(sample_file) if sample_file.exists() else str(_REPO_ROOT / "data" / "GAIA")
+            dataset_paths[bench] = (
+                str(sample_file) if sample_file.exists() else str(_REPO_ROOT / "data" / "GAIA")
+            )
         else:
             try:
                 info = dataset_mgr.get_dataset(bench)
@@ -176,7 +201,10 @@ def main() -> int:
     )
 
     total_runs = len(spec.benchmarks) * len(spec.agents) * len(spec.seeds) * spec.repetitions
-    logger.info("ExperimentSpec created. Total runs scheduled across 12 benchmarks & 5 seeds: %d", total_runs)
+    logger.info(
+        "ExperimentSpec created. Total runs scheduled across 12 benchmarks & 5 seeds: %d",
+        total_runs,
+    )
 
     if args.demo:
         logger.info("Demo mode: using MockBenchmark + MockAgent.")
@@ -205,7 +233,9 @@ def main() -> int:
     logger.info("Large-scale experiment complete in %.2f seconds.", elapsed)
     logger.info(
         "State: %s | Completed runs: %d | Failed runs: %d",
-        status.state, status.completed_runs, status.failed_runs,
+        status.state,
+        status.completed_runs,
+        status.failed_runs,
     )
     return 0 if status.failed_runs == 0 else 1
 

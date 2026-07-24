@@ -39,9 +39,10 @@ def run_paired_t_test(
 
     # Perform t-test
     res = ttest_rel(x, y)
-    
+
     # Handle NaN or constant arrays where std of diffs is 0
     import math
+
     stat = float(res.statistic) if not math.isnan(res.statistic) else 0.0
     p_val = float(res.pvalue) if not math.isnan(res.pvalue) else 1.0
 
@@ -81,6 +82,7 @@ def run_wilcoxon_test(
     try:
         res = wilcoxon(x, y)
         import math
+
         stat = float(res.statistic) if not math.isnan(res.statistic) else 0.0
         p_val = float(res.pvalue) if not math.isnan(res.pvalue) else 1.0
     except ValueError as e:

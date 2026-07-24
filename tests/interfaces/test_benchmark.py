@@ -23,8 +23,7 @@ def test_benchmark_defines_required_methods() -> None:
         "metadata",
     }
     method_names = {
-        name
-        for name, member in inspect.getmembers(Benchmark, predicate=inspect.isfunction)
+        name for name, member in inspect.getmembers(Benchmark, predicate=inspect.isfunction)
     }
     assert required.issubset(method_names)
     for name in required:

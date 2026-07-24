@@ -125,9 +125,7 @@ class AgentBoardBenchmark(Benchmark):
 
         dataset_path = config.metadata.get("dataset_path")
         if not dataset_path:
-            raise ValueError(
-                "Configuration metadata must contain 'dataset_path' for AgentBoard."
-            )
+            raise ValueError("Configuration metadata must contain 'dataset_path' for AgentBoard.")
 
         self._config = config
         self._tasks: dict[str, Any] = {}
@@ -167,12 +165,10 @@ class AgentBoardBenchmark(Benchmark):
         logger.info("Loading AgentBoard dataset from '%s'.", dataset_path)
 
         try:
-            with open(dataset_path, "r", encoding="utf-8") as fh:
+            with open(dataset_path, encoding="utf-8") as fh:
                 data = json.load(fh)
         except Exception as exc:
-            logger.error(
-                "Failed to load AgentBoard dataset from '%s': %s", dataset_path, exc
-            )
+            logger.error("Failed to load AgentBoard dataset from '%s': %s", dataset_path, exc)
             raise RuntimeError(f"Missing or invalid dataset: {exc}") from exc
 
         if not isinstance(data, list):
@@ -199,8 +195,7 @@ class AgentBoardBenchmark(Benchmark):
 
         if not loaded:
             raise ValueError(
-                "AgentBoard dataset is empty — no tasks were loaded from "
-                f"'{dataset_path}'."
+                "AgentBoard dataset is empty — no tasks were loaded from " f"'{dataset_path}'."
             )
 
         self._tasks = loaded
@@ -304,23 +299,17 @@ class AgentBoardBenchmark(Benchmark):
             agent_output = None
             status = "error"
             error = str(exc)
-            logger.warning(
-                "Agent raised exception on task '%s': %s", task_id, exc
-            )
+            logger.warning("Agent raised exception on task '%s': %s", task_id, exc)
 
         # Use deterministic timing when a seed is configured so that
         # ExecutionRecord.sha256() is reproducible across repeated calls.
         if self._config.seed is not None:
-            h = hashlib.sha256(
-                f"{self._config.seed}_{task_id}".encode("utf-8")
-            )
+            h = hashlib.sha256(f"{self._config.seed}_{task_id}".encode())
             deterministic_int = int(h.hexdigest()[:8], 16)
             runtime_seconds = 1.0 + (deterministic_int % 40) / 10.0
             timestamp = f"2026-01-01T00:{deterministic_int % 60:02d}:00+00:00"
         else:
-            runtime_seconds = (
-                datetime.now(timezone.utc) - start_time
-            ).total_seconds()
+            runtime_seconds = (datetime.now(timezone.utc) - start_time).total_seconds()
             timestamp = start_time.isoformat()
 
         record = ExecutionRecord(
@@ -400,13 +389,9 @@ class AgentBoardBenchmark(Benchmark):
 
         # Deterministic timestamp for reproducible hashing in test runs.
         if self._config.seed is not None:
-            h = hashlib.sha256(
-                f"eval_{self._config.seed}_{execution.task_id}".encode("utf-8")
-            )
+            h = hashlib.sha256(f"eval_{self._config.seed}_{execution.task_id}".encode())
             deterministic_int = int(h.hexdigest()[:8], 16)
-            evaluated_at = (
-                f"2026-01-01T01:{deterministic_int % 60:02d}:00+00:00"
-            )
+            evaluated_at = f"2026-01-01T01:{deterministic_int % 60:02d}:00+00:00"
         else:
             evaluated_at = datetime.now(timezone.utc).isoformat()
 
@@ -474,9 +459,7 @@ class AgentBoardBenchmark(Benchmark):
     def _require_loaded(self) -> None:
         """Raise RuntimeError if the benchmark has not been loaded yet."""
         if not self._loaded:
-            raise RuntimeError(
-                "AgentBoardBenchmark has not been loaded. Call load() first."
-            )
+            raise RuntimeError("AgentBoardBenchmark has not been loaded. Call load() first.")
 
     @staticmethod
     def _parse_task(raw: Any) -> dict[str, Any]:
@@ -500,17 +483,14 @@ class AgentBoardBenchmark(Benchmark):
             If any required field is missing or empty.
         """
         if not isinstance(raw, dict):
-            raise TypeError(
-                f"Each task must be a JSON object (dict), got {type(raw).__name__!r}."
-            )
+            raise TypeError(f"Each task must be a JSON object (dict), got {type(raw).__name__!r}.")
 
         required_fields = ("task_id", "prompt", "expected_output", "difficulty", "category")
         for field in required_fields:
             value = raw.get(field)
             if not value or not str(value).strip():
                 raise ValueError(
-                    f"Task is missing required non-empty field: {field!r}. "
-                    f"Got {value!r}."
+                    f"Task is missing required non-empty field: {field!r}. " f"Got {value!r}."
                 )
 
         # Validate optional progress_rate if present
@@ -523,9 +503,7 @@ class AgentBoardBenchmark(Benchmark):
                     f"'progress_rate' must be a float in [0, 1], got {progress_rate!r}."
                 ) from exc
             if not (0.0 <= pr <= 1.0):
-                raise ValueError(
-                    f"'progress_rate' must be in [0, 1], got {pr}."
-                )
+                raise ValueError(f"'progress_rate' must be in [0, 1], got {pr}.")
 
         # Normalise: keep all original fields, ensure metadata dict exists
         task: dict[str, Any] = dict(raw)

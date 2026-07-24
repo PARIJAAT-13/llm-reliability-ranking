@@ -7,7 +7,11 @@ from unittest.mock import MagicMock, patch
 from llm_reliability.agents.agent_factory import AgentFactory
 from llm_reliability.agents.ollama_agent import OllamaAgent, _OllamaAdapter
 from llm_reliability.configs.config import Configuration
-from llm_reliability.experiments.experiment_models import AgentSpec, BenchmarkSpec, ExperimentSpec
+from llm_reliability.experiments.experiment_models import (
+    AgentSpec,
+    BenchmarkSpec,
+    ExperimentSpec,
+)
 from llm_reliability.experiments.experiment_runner import ExperimentRunner
 
 
@@ -162,7 +166,9 @@ def test_ollama_memory_error_skips_remaining_tasks(caplog):
     cfg = make_config(benchmark="MockBenchmark", agent="ollama", metadata={"model": "llama3.1:8b"})
     bench = MockBenchmark(config=cfg)
     agent = MagicMock()
-    agent.run.side_effect = OllamaMemoryError("Ollama memory error: model requires 26 GiB of system memory")
+    agent.run.side_effect = OllamaMemoryError(
+        "Ollama memory error: model requires 26 GiB of system memory"
+    )
 
     pipeline = ExperimentPipeline(config=cfg, benchmark=bench, agent=agent)
 
@@ -181,5 +187,3 @@ def test_ollama_memory_error_skips_remaining_tasks(caplog):
     assert len(result.evaluation_records) == 10
     assert len(result.metric_records) > 0
     assert len(result.ranking_records) > 0
-
-

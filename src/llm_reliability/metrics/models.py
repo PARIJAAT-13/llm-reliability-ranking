@@ -57,7 +57,5 @@ class ReliabilityResult(SerializableModel):
         if self.weights:
             total = sum(self.weights.values())
             if abs(total - 1.0) > 1e-6:
-                raise ValueError(
-                    f"Metric weights must sum to 1.0, got {total:.6f}."
-                )
+                raise ValueError(f"Metric weights must sum to 1.0, got {total:.6f}.")
         return self

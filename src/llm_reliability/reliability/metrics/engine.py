@@ -181,7 +181,13 @@ class ReliabilityMetricsEngine:
                 elif isinstance(res, FaultToleranceMetricResult):
                     fault_res = res
             except Exception as exc:
-                logger.error("Error computing metric '%s' for scope '%s': %s", metric.name, scope_name, exc, exc_info=True)
+                logger.error(
+                    "Error computing metric '%s' for scope '%s': %s",
+                    metric.name,
+                    scope_name,
+                    exc,
+                    exc_info=True,
+                )
 
         if consistency_res is None:
             consistency_res = ConsistencyMetricResult(

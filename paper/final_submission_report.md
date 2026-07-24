@@ -1,8 +1,8 @@
 # Final Submission Report: LLM Reliability Ranking Framework
 
-**Target Venues**: ICLR / NeurIPS (Track on Datasets & Benchmarks) / EMNLP (Systems) / IEEE TSE  
-**Final Submission Status**: **READY FOR SUBMISSION**  
-**Overall Recommendation**: **ACCEPT** (Score: **4.2 / 5.0**)  
+**Target Venues**: ICLR / NeurIPS (Track on Datasets & Benchmarks) / EMNLP (Systems) / IEEE TSE
+**Final Submission Status**: **READY FOR SUBMISSION**
+**Overall Recommendation**: **ACCEPT** (Score: **4.2 / 5.0**)
 
 ---
 

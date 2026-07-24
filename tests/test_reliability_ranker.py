@@ -2,7 +2,6 @@
 Tests for ReliabilityRanker.
 """
 
-
 from llm_reliability.ranking.reliability_ranker import ReliabilityRanker
 from tests.ranking_test_helpers import create_mock_metric
 

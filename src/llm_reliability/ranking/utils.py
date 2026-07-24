@@ -4,7 +4,10 @@ Utility functions for the Ranking Engine.
 Includes validation, deterministic tie-breaking sorting, and other helper functions.
 """
 
+from collections.abc import Callable
+
 from llm_reliability.records.metric import MetricRecord
+
 
 def validate_metrics(metrics: list[MetricRecord]) -> None:
     """Validate a list of MetricRecords.
@@ -26,7 +29,9 @@ def validate_metrics(metrics: list[MetricRecord]) -> None:
                 f"Benchmark mismatch: expected '{benchmark}', got '{metric.benchmark}'."
             )
         if metric.task_id is not None:
-            raise ValueError("Rankings require benchmark-level MetricRecords (task_id must be None).")
+            raise ValueError(
+                "Rankings require benchmark-level MetricRecords (task_id must be None)."
+            )
         if metric.agent in seen_agents:
             raise ValueError(f"Duplicate agent found: '{metric.agent}'.")
         seen_agents.add(metric.agent)
@@ -34,7 +39,7 @@ def validate_metrics(metrics: list[MetricRecord]) -> None:
 
 def sort_and_rank(
     metrics: list[MetricRecord],
-    score_extractor: callable,
+    score_extractor: Callable,
 ) -> tuple[tuple[str, float], ...]:
     """Sort agents by score descending, breaking ties lexicographically by agent name.
 

@@ -1,6 +1,7 @@
 """Tests for RepeatedRunner."""
 
 import logging
+
 import pytest
 
 from llm_reliability.agents.mock_agent import MockAgent
@@ -8,7 +9,10 @@ from llm_reliability.benchmarks.mock_benchmark import MockBenchmark
 from llm_reliability.configs.config import Configuration
 from llm_reliability.metrics.consistency import compute_consistency
 from llm_reliability.records.metric import MetricRecord
-from llm_reliability.reliability.repeated_runner import RepeatedRunResult, RepeatedRunner
+from llm_reliability.reliability.repeated_runner import (
+    RepeatedRunner,
+    RepeatedRunResult,
+)
 from tests.contracts.test_agent_contract import ValidAgent
 
 
@@ -39,6 +43,7 @@ def agent(config):
 
 
 # ── Tests ────────────────────────────────────────────────────────────────────
+
 
 def test_repeated_runner_instantiation(config, benchmark, agent):
     runner = RepeatedRunner(config=config, benchmark=benchmark, agent=agent)

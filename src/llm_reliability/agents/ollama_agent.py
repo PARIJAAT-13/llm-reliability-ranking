@@ -21,7 +21,11 @@ from typing import Any
 from llm_reliability.agents.adapters.base_llm_adapter import BaseLLMAdapter
 from llm_reliability.agents.adapters.exceptions import (
     AuthenticationError,
+)
+from llm_reliability.agents.adapters.exceptions import (
     ConnectionError as ProviderConnectionError,
+)
+from llm_reliability.agents.adapters.exceptions import (
     OllamaMemoryError,
     OllamaModelNotFoundError,
     OllamaServerNotFoundError,
@@ -141,18 +145,42 @@ class _OllamaAdapter(BaseLLMAdapter):
         except Exception as exc:  # noqa: BLE001
             exc_str = str(exc).lower()
             # 1. Model not found (HTTP 404)
-            if "not found" in exc_str or "404" in exc_str or ("model" in exc_str and "does not exist" in exc_str):
+            if (
+                "not found" in exc_str
+                or "404" in exc_str
+                or ("model" in exc_str and "does not exist" in exc_str)
+            ):
                 installed = list_local_models(self._host_url)
-                raise OllamaModelNotFoundError(format_model_not_found_error([self._model], installed)) from exc
+                raise OllamaModelNotFoundError(
+                    format_model_not_found_error([self._model], installed)
+                ) from exc
             # 2. System memory / VRAM / CUDA allocation failure (HTTP 500 or memory error message)
-            is_memory_err = (
-                any(term in exc_str for term in ("memory", "ram", "vram", "cuda", "alloc", "system memory", "requires", "gib", "mib", "out of memory", "insufficient"))
-                or ("500" in exc_str and any(t in exc_str for t in ("internal", "server", "error", "model", "load")))
+            is_memory_err = any(
+                term in exc_str
+                for term in (
+                    "memory",
+                    "ram",
+                    "vram",
+                    "cuda",
+                    "alloc",
+                    "system memory",
+                    "requires",
+                    "gib",
+                    "mib",
+                    "out of memory",
+                    "insufficient",
+                )
+            ) or (
+                "500" in exc_str
+                and any(t in exc_str for t in ("internal", "server", "error", "model", "load"))
             )
             if is_memory_err:
                 avail_ram = get_available_memory_gb()
                 raise OllamaMemoryError(format_memory_error(self._model, None, avail_ram)) from exc
-            if any(term in exc_str for term in ("connection", "refused", "10061", "111", "closed", "reset")):
+            if any(
+                term in exc_str
+                for term in ("connection", "refused", "10061", "111", "closed", "reset")
+            ):
                 raise OllamaServerNotFoundError(f"Ollama server connection lost: {exc}") from exc
             if "unauthorized" in exc_str or "401" in exc_str:
                 raise AuthenticationError(f"Authentication failed: {exc}") from exc
@@ -239,13 +267,20 @@ class OllamaAgent(Runtime):
             max_tokens=int(self._config.metadata.get("max_tokens", DEFAULT_MAX_TOKENS)),
             system_prompt=self._config.metadata.get("system_prompt"),
         )
-        logger.info("OllamaAgent.run: task_id=%r, prompt_len=%d.",
-                    task.get("task_id", "<unknown>"), len(prompt))
+        logger.info(
+            "OllamaAgent.run: task_id=%r, prompt_len=%d.",
+            task.get("task_id", "<unknown>"),
+            len(prompt),
+        )
         self._rate_limiter.acquire()
-        response = self._adapter.retry(request, max_attempts=self._max_retries,
-                                       backoff_seconds=self._retry_backoff)
-        logger.info("OllamaAgent.run complete: task_id=%r, finish=%s.",
-                    task.get("task_id", "<unknown>"), response.finish_reason)
+        response = self._adapter.retry(
+            request, max_attempts=self._max_retries, backoff_seconds=self._retry_backoff
+        )
+        logger.info(
+            "OllamaAgent.run complete: task_id=%r, finish=%s.",
+            task.get("task_id", "<unknown>"),
+            response.finish_reason,
+        )
         return response.text
 
     def shutdown(self) -> None:

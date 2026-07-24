@@ -4,10 +4,10 @@ Weighted Ranking Strategy.
 Ranks agents based on a user-defined weighted combination of metrics.
 """
 
+from llm_reliability.ranking.ranking_strategy import RankingStrategy
+from llm_reliability.ranking.utils import sort_and_rank, validate_metrics
 from llm_reliability.records.metric import MetricRecord
 from llm_reliability.records.ranking import RankingRecord
-from llm_reliability.ranking.ranking_strategy import RankingStrategy
-from llm_reliability.ranking.utils import validate_metrics, sort_and_rank
 
 
 class WeightedRanker(RankingStrategy):
@@ -63,7 +63,9 @@ class WeightedRanker(RankingStrategy):
             if val is None:
                 # If weight > 0 but the metric score is missing/None, reject it
                 if weight > 0.0:
-                    raise ValueError(f"Agent '{m.agent}' has missing score for weighted metric '{key}'.")
+                    raise ValueError(
+                        f"Agent '{m.agent}' has missing score for weighted metric '{key}'."
+                    )
                 val = 0.0
             score += weight * val
         return score

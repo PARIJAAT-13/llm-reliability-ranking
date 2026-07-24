@@ -1,0 +1,16 @@
+\begin{table}[t]
+\centering
+\caption{Statistical comparison of model success rates. Effect sizes (Cohen's d) and 95\% bootstrap confidence intervals reported.}
+\label{tab:statistical}
+\begin{tabular}{lccccccc}
+\toprule
+Comparison & $\mu_1$ & $\mu_2$ & $\Delta$ & $t$ & $p$ & $d$ & 95\% CI \\
+\midrule
+gpt-4o vs deepseek-cha & 1.0000 & 0.9969 & +0.0031 & -inf & nann.s. & 2.2395 & [0.0006, 0.0055] \\
+claude-3-5-s vs deepseek-cha & 1.0000 & 0.9969 & +0.0031 & -inf & nann.s. & 2.2395 & [0.0006, 0.0062] \\
+gemini-1.5-p vs deepseek-cha & 1.0000 & 0.9969 & +0.0031 & -inf & nann.s. & 2.2395 & [0.0006, 0.0062] \\
+deepseek-cha vs llama-3.3-70 & 0.9969 & 1.0000 & -0.0031 & inf & nann.s. & -2.2395 & [-0.0055, -0.0006] \\
+deepseek-cha vs qwen-2.5-72b & 0.9969 & 1.0000 & -0.0031 & inf & nann.s. & -2.2395 & [-0.0062, -0.0006] \\
+\bottomrule
+\end{tabular}
+\end{table}

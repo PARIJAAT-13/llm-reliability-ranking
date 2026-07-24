@@ -53,7 +53,7 @@ class MMLUAdapter(BaseBenchmarkAdapter):
 
         if path_obj.exists() and path_obj.is_file():
             try:
-                with open(path_obj, "r", encoding="utf-8") as f:
+                with open(path_obj, encoding="utf-8") as f:
                     data = json.load(f)
             except Exception as e:
                 logger.error("Failed to load dataset from %s: %s", dataset_path, e)
@@ -67,13 +67,21 @@ class MMLUAdapter(BaseBenchmarkAdapter):
                 tid = item.get("task_id", f"mmlu_{len(self._tasks)}")
                 question = item.get("question", item.get("input", ""))
                 choices = item.get("choices", item.get("options", []))
-                prompt = f"{question}\n" + "\n".join(f"{chr(65+i)}. {choice}" for i, choice in enumerate(choices)) + "\nAnswer with the correct letter (A, B, C, D)."
+                prompt = (
+                    f"{question}\n"
+                    + "\n".join(f"{chr(65+i)}. {choice}" for i, choice in enumerate(choices))
+                    + "\nAnswer with the correct letter (A, B, C, D)."
+                )
                 self._tasks[tid] = {
                     "task_id": tid,
                     "question": question,
                     "choices": choices,
                     "prompt": prompt,
-                    "ground_truth_answer": str(item.get("ground_truth_answer", item.get("target", item.get("answer", "")))).strip().upper(),
+                    "ground_truth_answer": str(
+                        item.get("ground_truth_answer", item.get("target", item.get("answer", "")))
+                    )
+                    .strip()
+                    .upper(),
                     "subject": item.get("subject", "general"),
                 }
         else:

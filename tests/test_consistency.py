@@ -27,23 +27,35 @@ def test_consistency_all_failure_single_task():
 
 def test_consistency_mixed_tasks_uniform():
     # task A: always success, task B: always success → std=0 → cons = mean = 1.0
-    evs = [make_eval("A", True, 1.0), make_eval("A", True, 1.0),
-           make_eval("B", True, 1.0), make_eval("B", True, 1.0)]
+    evs = [
+        make_eval("A", True, 1.0),
+        make_eval("A", True, 1.0),
+        make_eval("B", True, 1.0),
+        make_eval("B", True, 1.0),
+    ]
     assert compute_consistency(evs) == 1.0
 
 
 def test_consistency_mixed_tasks_divergent():
     # task A: 100%, task B: 0% → std = 0.5, mean = 0.5 → 0.0 clamped
-    evs = [make_eval("A", True, 1.0), make_eval("A", True, 1.0),
-           make_eval("B", False, 0.0), make_eval("B", False, 0.0)]
+    evs = [
+        make_eval("A", True, 1.0),
+        make_eval("A", True, 1.0),
+        make_eval("B", False, 0.0),
+        make_eval("B", False, 0.0),
+    ]
     result = compute_consistency(evs)
     assert result == 0.0
 
 
 def test_consistency_partial():
     # task A: 50%, task B: 100% → per-task rates [0.5, 1.0], mean=0.75, std=0.25 → 0.5
-    evs = [make_eval("A", True, 1.0), make_eval("A", False, 0.0),
-           make_eval("B", True, 1.0), make_eval("B", True, 1.0)]
+    evs = [
+        make_eval("A", True, 1.0),
+        make_eval("A", False, 0.0),
+        make_eval("B", True, 1.0),
+        make_eval("B", True, 1.0),
+    ]
     result = compute_consistency(evs)
     assert abs(result - 0.5) < 1e-9
 

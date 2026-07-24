@@ -20,8 +20,8 @@ controlled variations to prompt texts.
 
 from __future__ import annotations
 
-import re
 import random
+import re
 from typing import Any
 
 from llm_reliability.reliability.perturbation.base import PerturbationStrategy
@@ -186,8 +186,7 @@ class InstructionReorderingPerturbationStrategy(PerturbationStrategy):
 
         # Check for list items first
         list_item_indices = [
-            i for i, line in enumerate(lines)
-            if re.match(r"^\s*([\*\-\+]|\d+[\.\)])\s+", line)
+            i for i, line in enumerate(lines) if re.match(r"^\s*([\*\-\+]|\d+[\.\)])\s+", line)
         ]
 
         if len(list_item_indices) >= 2:
@@ -242,8 +241,22 @@ class SynonymSubstitutionPerturbationStrategy(PerturbationStrategy):
     }
 
     TECHNICAL_RESERVED: set[str] = {
-        "def", "class", "import", "return", "True", "False", "None",
-        "int", "str", "float", "list", "dict", "bool", "json", "http", "https",
+        "def",
+        "class",
+        "import",
+        "return",
+        "True",
+        "False",
+        "None",
+        "int",
+        "str",
+        "float",
+        "list",
+        "dict",
+        "bool",
+        "json",
+        "http",
+        "https",
     }
 
     @property

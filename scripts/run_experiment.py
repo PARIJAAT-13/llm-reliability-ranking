@@ -42,32 +42,28 @@ from __future__ import annotations
 
 import argparse
 import json
-import sys
 import logging
+import sys
 from pathlib import Path
-
 
 # Ensure the project root is on sys.path when run directly.
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from llm_reliability.experiments import (
-    ExperimentRunner,
-    ExperimentSpec,
-    BenchmarkSpec,
-    AgentSpec,
-)
+# Import benchmark adapters to trigger BenchmarkRegistry.register() side-effects
+import llm_reliability.benchmarks.adapters.agentboard_adapter  # noqa: F401
+import llm_reliability.benchmarks.adapters.gaia_adapter  # noqa: F401
+import llm_reliability.benchmarks.adapters.swebench_lite_adapter  # noqa: F401
 from llm_reliability.agents.agent_factory import AgentFactory
 from llm_reliability.agents.mock_agent import MockAgent
 from llm_reliability.benchmarks.mock_benchmark import MockBenchmark
-
-# Import benchmark adapters to trigger BenchmarkRegistry.register() side-effects
-import llm_reliability.benchmarks.adapters.agentboard_adapter  # noqa: F401
-import llm_reliability.benchmarks.adapters.gaia_adapter         # noqa: F401
-import llm_reliability.benchmarks.adapters.swebench_lite_adapter  # noqa: F401
-
 from llm_reliability.configs.config import Configuration
+from llm_reliability.experiments import (
+    AgentSpec,
+    BenchmarkSpec,
+    ExperimentRunner,
+    ExperimentSpec,
+)
 from llm_reliability.interfaces.agent import Agent
-
 
 logging.basicConfig(
     level=logging.INFO,
@@ -80,6 +76,7 @@ log = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 # Schema detection
 # ---------------------------------------------------------------------------
+
 
 def _is_orchestrator_config(raw: dict) -> bool:
     """Return True if *raw* is an orchestrator config rather than a canonical ExperimentSpec.
@@ -95,6 +92,7 @@ def _is_orchestrator_config(raw: dict) -> bool:
 # ---------------------------------------------------------------------------
 # Agent factory — resolves name → Agent instance
 # ---------------------------------------------------------------------------
+
 
 def _real_agent_factory(aspec: AgentSpec, config: Configuration) -> Agent:
     """Instantiate an Agent from AgentSpec using AgentFactory.
@@ -114,6 +112,7 @@ def _demo_agent_factory(aspec: AgentSpec, config: Configuration) -> Agent:
 # Benchmark factory — resolves name → Benchmark instance
 # ---------------------------------------------------------------------------
 
+
 def _real_benchmark_factory(name: str, config: Configuration):
     """Instantiate a real benchmark from BenchmarkRegistry.
 
@@ -124,6 +123,7 @@ def _real_benchmark_factory(name: str, config: Configuration):
         return MockBenchmark(config=config)
 
     from llm_reliability.benchmarks.adapters.registry import BenchmarkRegistry
+
     adapter_cls = BenchmarkRegistry.get(name)
     return adapter_cls(config=config)
 
@@ -137,19 +137,22 @@ def _demo_benchmark_factory(name: str, config: Configuration):
 # Orchestrator routing
 # ---------------------------------------------------------------------------
 
+
 def _run_via_orchestrator(args: argparse.Namespace, is_demo: bool) -> int:
     """Route an orchestrator-format config file through ExperimentOrchestrator.
 
     This preserves all orchestration logic (matrix expansion, retry, multi-spec
     batch runs) without duplicating it in run_experiment.py.
     """
-    from llm_reliability.orchestration.experiment_orchestrator import ExperimentOrchestrator
+    from llm_reliability.orchestration.experiment_orchestrator import (
+        ExperimentOrchestrator,
+    )
 
     raw = json.loads(args.spec.read_text(encoding="utf-8"))
     output_dir = raw.get("output_dir", args.output)
 
-    agent_factory   = _demo_agent_factory   if is_demo else None
-    bench_factory   = _demo_benchmark_factory if is_demo else None
+    agent_factory = _demo_agent_factory if is_demo else None
+    bench_factory = _demo_benchmark_factory if is_demo else None
 
     orchestrator = ExperimentOrchestrator(
         output_dir=output_dir,
@@ -175,6 +178,7 @@ def _run_via_orchestrator(args: argparse.Namespace, is_demo: bool) -> int:
 # CLI
 # ---------------------------------------------------------------------------
 
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="run_experiment",
@@ -185,16 +189,19 @@ def build_parser() -> argparse.ArgumentParser:
 
     parser.add_argument("--name", default="cli_experiment", help="Experiment name.")
     parser.add_argument(
-        "--benchmark", default="mock",
+        "--benchmark",
+        default="mock",
         help="Benchmark name: AgentBoard | GAIA | SWEBenchLite | mock",
     )
     parser.add_argument(
-        "--agent", default="mock",
+        "--agent",
+        default="mock",
         help="Agent name: openai | anthropic | google | deepseek | qwen | llama | "
-             "provider:model | mock",
+        "provider:model | mock",
     )
     parser.add_argument(
-        "--dataset", default="",
+        "--dataset",
+        default="",
         help="Path to dataset JSON file (required for real benchmarks).",
     )
     parser.add_argument("--llm", default="", help="LLM model identifier (e.g. gpt-4o).")
@@ -205,7 +212,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--output", default="results", help="Output directory.")
     parser.add_argument("--resume", action="store_true", help="Resume from checkpoint.")
     parser.add_argument(
-        "--demo", action="store_true",
+        "--demo",
+        action="store_true",
         help="Use mock agent + benchmark (no API keys or dataset required).",
     )
     return parser
@@ -229,7 +237,11 @@ def load_or_build_spec(args: argparse.Namespace) -> ExperimentSpec:
             args.benchmark,
         )
 
-    llm = args.llm if args.llm else (args.agent if ":" not in args.agent else args.agent.split(":")[1])
+    llm = (
+        args.llm
+        if args.llm
+        else (args.agent if ":" not in args.agent else args.agent.split(":")[1])
+    )
 
     return ExperimentSpec(
         experiment_name=args.name,
@@ -314,7 +326,9 @@ def main(argv: list[str] | None = None) -> int:
 
     log.info(
         "Experiment finished: state=%s, completed=%d, failed=%d",
-        status.state, status.completed_runs, status.failed_runs,
+        status.state,
+        status.completed_runs,
+        status.failed_runs,
     )
     log.info("Results saved to: %s/", runner._result_manager.experiment_dir)
     return 0 if status.failed_runs == 0 else 1

@@ -54,7 +54,9 @@ class FaultToleranceMetric(ReliabilityMetric):
         faulted_execs = [rec for rec in execution_records if rec.fault_injected]
 
         if not faulted_evals:
-            logger.warning("No fault injection evaluation records found for fault tolerance metric computation.")
+            logger.warning(
+                "No fault injection evaluation records found for fault tolerance metric computation."
+            )
             return FaultToleranceMetricResult(
                 recovery_rate=0.0,
                 retry_success_rate=0.0,

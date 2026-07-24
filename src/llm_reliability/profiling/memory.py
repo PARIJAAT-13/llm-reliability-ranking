@@ -36,10 +36,12 @@ class MemoryProfiler:
     def _get_ram_gb() -> float | None:
         """Return current process RAM usage in GB, or None."""
         try:
-            import psutil
             import os
+
+            import psutil
+
             proc = psutil.Process(os.getpid())
-            return round(proc.memory_info().rss / (1024 ** 3), 3)
+            return round(proc.memory_info().rss / (1024**3), 3)
         except Exception:
             return None
 
@@ -48,8 +50,9 @@ class MemoryProfiler:
         """Return current GPU VRAM usage in GB, or None."""
         try:
             import torch
+
             if torch.cuda.is_available():
-                return round(torch.cuda.memory_allocated() / (1024 ** 3), 3)
+                return round(torch.cuda.memory_allocated() / (1024**3), 3)
         except Exception:
             pass
         return None
@@ -59,8 +62,9 @@ class MemoryProfiler:
         """Return peak GPU VRAM since last reset, or None."""
         try:
             import torch
+
             if torch.cuda.is_available():
-                return round(torch.cuda.max_memory_allocated() / (1024 ** 3), 3)
+                return round(torch.cuda.max_memory_allocated() / (1024**3), 3)
         except Exception:
             pass
         return None
@@ -69,8 +73,7 @@ class MemoryProfiler:
         """Capture memory state before execution."""
         self._ram_before = self._get_ram_gb()
         self._vram_before = self._get_vram_gb()
-        logger.debug("Memory before — RAM: %s GB, VRAM: %s GB",
-                      self._ram_before, self._vram_before)
+        logger.debug("Memory before — RAM: %s GB, VRAM: %s GB", self._ram_before, self._vram_before)
 
     def snapshot_after(self) -> None:
         """Capture memory state after execution and compute peaks."""
@@ -79,8 +82,7 @@ class MemoryProfiler:
         self._peak_vram = self._get_peak_vram_gb()
         if self._ram_before is not None and self._ram_after is not None:
             self._peak_ram = max(self._ram_before, self._ram_after)
-        logger.debug("Memory after — RAM: %s GB, VRAM: %s GB",
-                      self._ram_after, self._vram_after)
+        logger.debug("Memory after — RAM: %s GB, VRAM: %s GB", self._ram_after, self._vram_after)
 
     def delta(self) -> dict[str, Any]:
         """Return a snapshot of memory deltas.
@@ -93,6 +95,7 @@ class MemoryProfiler:
             ``peak_ram_gb``, ``peak_vram_gb``.
             Missing/unavailable values are ``None``.
         """
+
         def _diff(a: float | None, b: float | None) -> float | None:
             if a is not None and b is not None:
                 return round(b - a, 3)

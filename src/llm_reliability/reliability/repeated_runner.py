@@ -245,7 +245,7 @@ class RepeatedRunner:
                 execution = raw_execution.model_copy(update={"run_index": run_idx})
                 execution_records.append(execution)
 
-                elapsed_sec = (time.perf_counter() - t_start)
+                elapsed_sec = time.perf_counter() - t_start
                 logger.info(
                     "Run %d/%d completed in %.3fs for task '%s'. status=%s",
                     run_idx + 1,
@@ -257,7 +257,9 @@ class RepeatedRunner:
 
                 # Check if benchmark returned an error execution record
                 if execution.status == "error" or execution.error:
-                    logger.warning("Run %d/%d recorded error: %s", run_idx + 1, num_reps, execution.error)
+                    logger.warning(
+                        "Run %d/%d recorded error: %s", run_idx + 1, num_reps, execution.error
+                    )
                     errors.append(
                         {
                             "run_index": run_idx,
@@ -290,7 +292,7 @@ class RepeatedRunner:
                     )
 
             except Exception as run_exc:
-                elapsed_sec = (time.perf_counter() - t_start)
+                elapsed_sec = time.perf_counter() - t_start
                 logger.error(
                     "Execution failed on Run %d/%d for task '%s': %s",
                     run_idx + 1,
@@ -330,8 +332,8 @@ class RepeatedRunner:
                 try:
                     eval_record = active_benchmark.evaluate(error_record)
                     evaluation_records.append(eval_record)
-                except Exception:
-                    pass
+                except Exception as exc:
+                    logger.warning("Error record evaluation also failed: %s", exc)
 
         logger.info(
             "Repeated run complete for task '%s': %d/%d runs successful.",

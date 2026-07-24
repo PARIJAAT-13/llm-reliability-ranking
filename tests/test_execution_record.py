@@ -2,8 +2,10 @@
 
 import json
 from datetime import datetime, timezone
+
 import pytest
 from pydantic import ValidationError
+
 from records.execution_record import ExecutionRecord
 
 
@@ -25,7 +27,7 @@ def test_execution_record_instantiation() -> None:
         stderr="",
         error_message=None,
         raw_output={"result": 42},
-        metadata={"run": 1}
+        metadata={"run": 1},
     )
     assert record.execution_id == "exec-123"
     assert record.configuration_hash == "a" * 64
@@ -61,7 +63,7 @@ def test_execution_record_immutability() -> None:
         stderr="",
         error_message=None,
         raw_output={},
-        metadata={}
+        metadata={},
     )
     with pytest.raises(ValidationError):
         record.status = "FAILED"  # type: ignore[misc]
@@ -90,7 +92,7 @@ def test_execution_record_rejects_unknown_fields() -> None:
             error_message=None,
             raw_output={},
             metadata={},
-            extra_field="forbidden"  # type: ignore[call-arg]
+            extra_field="forbidden",  # type: ignore[call-arg]
         )
 
 
@@ -114,7 +116,7 @@ def test_execution_record_invalid_status() -> None:
                 stderr="",
                 error_message=None,
                 raw_output={},
-                metadata={}
+                metadata={},
             )
 
 
@@ -137,7 +139,7 @@ def test_execution_record_negative_runtime() -> None:
             stderr="",
             error_message=None,
             raw_output={},
-            metadata={}
+            metadata={},
         )
 
 
@@ -159,7 +161,7 @@ def test_execution_record_deterministic_hash() -> None:
         stderr="",
         error_message=None,
         raw_output={"x": 1, "y": 2},
-        metadata={"tag": "test"}
+        metadata={"tag": "test"},
     )
     record2 = ExecutionRecord(
         execution_id="exec-123",
@@ -175,7 +177,7 @@ def test_execution_record_deterministic_hash() -> None:
         stderr="",
         error_message=None,
         raw_output={"y": 2, "x": 1},
-        metadata={"tag": "test"}
+        metadata={"tag": "test"},
     )
     assert record1.sha256() == record2.sha256()
 
@@ -193,7 +195,7 @@ def test_execution_record_deterministic_hash() -> None:
         stderr="",
         error_message=None,
         raw_output={"x": 1, "y": 2},
-        metadata={"tag": "test"}
+        metadata={"tag": "test"},
     )
     assert record1.sha256() != record3.sha256()
 
@@ -216,14 +218,14 @@ def test_execution_record_round_trip() -> None:
         stderr="stderr",
         error_message="some error info",
         raw_output={"result": "value"},
-        metadata={"nested": {"data": 123}}
+        metadata={"nested": {"data": 123}},
     )
-    
+
     # Dict serialization
     dumped_dict = record.canonical_dict()
     assert isinstance(dumped_dict, dict)
     assert isinstance(dumped_dict["start_time"], str)
-    
+
     # Deserialization from dict
     restored_from_dict = ExecutionRecord.model_validate(dumped_dict)
     assert record == restored_from_dict
@@ -231,7 +233,7 @@ def test_execution_record_round_trip() -> None:
     # JSON serialization
     json_str = record.canonical_json()
     assert isinstance(json_str, str)
-    
+
     # Deserialization from JSON
     restored_from_json = ExecutionRecord.from_canonical_json(json_str)
     assert record == restored_from_json
@@ -256,10 +258,10 @@ def test_execution_record_canonical_json() -> None:
         stderr="",
         error_message=None,
         raw_output={},
-        metadata={"b": 2, "a": 1}
+        metadata={"b": 2, "a": 1},
     )
     json_str = record.canonical_json()
-    
+
     # Compact format: no whitespace outside of values/keys
     assert " " not in json_str
 

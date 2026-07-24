@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import contextvars
-import logging
 from typing import Any
 
 _log_context_var: contextvars.ContextVar[dict[str, Any]] = contextvars.ContextVar(
@@ -23,16 +22,19 @@ class LogContext:
     def __init__(self, **kwargs: Any) -> None:
         self._fields = kwargs
         self._previous: dict[str, Any] = {}
+        self._token: contextvars.Token[dict[str, Any]] | None = None
 
     def __enter__(self) -> LogContext:
         token = _log_context_var.set({})
-        ctx = _log_context_var.get()
-        self._previous = dict(ctx)
-        ctx.update(self._fields)
+        orig = _log_context_var.get()
+        self._previous = dict(orig)
+        self._token = token
+        orig.update(self._fields)
         return self
 
     def __exit__(self, *args: Any) -> None:
-        _log_context_var.set({})
+        if self._token is not None:
+            _log_context_var.reset(self._token)
 
 
 def get_log_context() -> dict[str, Any]:

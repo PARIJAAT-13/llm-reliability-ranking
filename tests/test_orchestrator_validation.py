@@ -3,6 +3,7 @@ Tests for ExperimentOrchestrator pre-flight matrix validation and dual model con
 """
 
 from unittest.mock import patch
+
 import pytest
 
 from llm_reliability.orchestration.experiment_orchestrator import ExperimentOrchestrator
@@ -83,7 +84,10 @@ def test_preflight_validation_ollama_server_check_offline():
     specs = ExperimentOrchestrator.generate_specs(raw_def)
 
     orch = ExperimentOrchestrator()
-    with patch("llm_reliability.agents.utils.ollama_utils.check_ollama_server", return_value=(False, "Connection refused")):
+    with patch(
+        "llm_reliability.agents.utils.ollama_utils.check_ollama_server",
+        return_value=(False, "Connection refused"),
+    ):
         with pytest.raises(ValueError, match="Ollama server reachable check failed"):
             orch.validate_specs(specs, check_ollama_server=True)
 

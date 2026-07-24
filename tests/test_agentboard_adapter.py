@@ -181,7 +181,7 @@ def test_agentboard_missing_dataset(tmp_path):
         repetitions=1,
         metadata={"dataset_path": str(path)},
     )
-    
+
     adapter = AgentBoardAdapter(config)
     with pytest.raises(RuntimeError, match="Missing or invalid dataset"):
         adapter.load()

@@ -65,9 +65,7 @@ class ExperimentSummary(BaseModel):
 
     experiment_id: str = Field(min_length=1)
     experiment_name: str = Field(min_length=1)
-    generated_at: str = Field(
-        default_factory=lambda: datetime.now(timezone.utc).isoformat()
-    )
+    generated_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     metrics: list[Any] = Field(default_factory=list)
     rankings: list[Any] = Field(default_factory=list)
     executions: list[Any] = Field(default_factory=list)
@@ -131,7 +129,7 @@ class ExperimentSummary(BaseModel):
         statistical_report: Any | None = None,
         config_snapshot: dict[str, Any] | None = None,
         metadata: dict[str, Any] | None = None,
-    ) -> "ExperimentSummary":
+    ) -> ExperimentSummary:
         """Build from a completed ``ExperimentRunner`` instance.
 
         Parameters

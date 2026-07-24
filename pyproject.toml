@@ -4,9 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "llm-reliability-ranking"
-version = "0.1.0"
+version = "1.0.0"
 description = "Research framework for comparing success-based and reliability-based LLM agent rankings"
 readme = "README.md"
+authors = [{name = "Parijaat", email = "parijaat@antigravity.team"}]
+license = {text = "MIT"}
 requires-python = ">=3.10"
 dependencies = [
     "pydantic>=2.0",
@@ -56,6 +58,50 @@ providers = [
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[project.scripts]
+llm-reliability = "llm_reliability.cli:main"
+llm-reliability-reproduce = "llm_reliability.reproducibility.reproduce:main"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
+
+[tool.black]
+line-length = 100
+target-version = ["py310"]
+extend-exclude = '(^|/)(data|legacy)/'
+
+[tool.isort]
+profile = "black"
+skip_glob = ["data/**", "legacy/**"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+extend-exclude = ["data", "legacy"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "N", "UP"]
+ignore = [
+    "E501",  # line-too-long — black handles formatting
+    "N802",  # function names may contain underscores (not all are snake_case)
+    "N803",  # argument names
+    "N806",  # variable names
+    "N815",  # mixed case vars in class scope
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["F401", "F811", "S101", "N814"]
+"src/llm_reliability/benchmarks/adapters/__init__.py" = ["E402"]
+"src/llm_reliability/runtime/__init__.py" = ["E402"]
+"scripts/run_large_scale_experiment.py" = ["E402"]
+"scripts/run_pilot_experiment.py" = ["E402"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = false
+ignore_missing_imports = true
+follow_imports = "skip"
+disallow_untyped_defs = false
+check_untyped_defs = false
+warn_unused_ignores = false

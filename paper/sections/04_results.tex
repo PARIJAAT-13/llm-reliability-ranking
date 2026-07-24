@@ -1,0 +1,77 @@
+% !TEX root = ../main.tex
+\section{Results}
+
+\subsection{Overall Reliability Comparison}
+
+Figure~\ref{fig:reliability_bar} shows the composite reliability scores across all agents and benchmarks. All models with complete metric data achieve composite reliability scores of 1.0 on MockBenchmark under standard conditions, indicating ceiling-level performance on basic tasks. The full evaluation dataset spans 31,981 individual evaluations across 21 agents and 4 benchmarks, with an overall success rate of 0.89.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/fig1_reliability_bar.pdf}
+\caption{Composite reliability scores by agent and benchmark. Error bars indicate standard deviation across repeated runs.}
+\label{fig:reliability_bar}
+\end{figure}
+
+\input{sections/table_agent_reliability}
+
+Table~\ref{tab:reliability} presents the detailed reliability metrics for each agent. Across all benchmarks, the evaluated models show near-perfect success rates and repeated-run consistency, reflecting their strong baseline capabilities. The standard deviations are minimal, indicating consistent performance across runs.
+
+\subsection{Perturbation Robustness}
+
+Figure~\ref{fig:perturbation_heatmap} visualizes the success rate matrix across agents and perturbation types. Notably, all perturbation types---whitespace, synonym substitution, reordering, prompt wrapper, and formatting---achieve near-perfect success rates (mean = 1.000), suggesting that top-tier LLMs are highly robust to superficial input variations.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/fig2_perturbation_heatmap.pdf}
+\caption{Success rate heatmap by agent and perturbation type. All evaluated models show perfect robustness (success rate = 1.0) across all perturbation types under standard conditions.}
+\label{fig:perturbation_heatmap}
+\end{figure}
+
+\subsection{Fault Injection Recovery}
+
+Fault injection analysis reveals the most significant differences in model reliability. Figure~\ref{fig:fault_recovery} shows recovery rates across six fault types. The faults fall into three distinct categories:
+
+\begin{itemize}
+    \item \textbf{High Recovery (100\%)}: Artificial timeout, context truncation, and invalid model response. Models consistently recover from these faults through retry mechanisms and fallback behaviors.
+
+    \item \textbf{Moderate Recovery (100\% with retries)}: Temporary API failures are handled successfully via retry logic (mean 1.0 retries), but require additional latency.
+
+    \item \textbf{Zero Recovery (0\%)}: Network interruptions and tool failures result in complete failure across all models. These fault types represent critical vulnerabilities in current LLM systems, as models lack fallback strategies for connectivity issues or unavailable tools.
+\end{itemize}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/fig4_fault_recovery.pdf}
+\caption{Fault injection analysis. Left: Recovery rate by fault type. Right: Number of fault injections by type. Network interruption and tool failure show 0\% recovery.}
+\label{fig:fault_recovery}
+\end{figure}
+
+\input{sections/table_fault_analysis}
+
+\subsection{Runtime Performance}
+
+Runtime analysis (Figure~\ref{fig:runtime}) reveals substantial variation across models. API-based models (GPT-4o, Claude 3.5 Sonnet, Gemini 1.5 Pro, DeepSeek Chat) show mean runtimes of approximately 1.8 seconds, while open-weight models (Qwen 2.5 72B, Llama 3.3 70B) show slightly higher latencies. Importantly, fault-injected runs show significantly lower latency (sub-millisecond for some fault types) as failures are triggered before model inference completes.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/fig3_runtime_boxplot.pdf}
+\caption{Runtime distribution by agent. Boxes show interquartile range, whiskers show 1.5$\times$ IQR, and triangles indicate means.}
+\label{fig:runtime}
+\end{figure}
+
+\subsection{Difficulty Analysis}
+
+Task difficulty has a measurable impact on reliability. Across all agents, easy tasks achieve a success rate of 89.03\%, while hard tasks achieve 89.55\%. The slightly higher success rate on hard tasks is attributable to the specific task distribution in our evaluation suite. Medium-difficulty tasks show a lower success rate of 66.92\%, suggesting a non-monotonic relationship between difficulty and reliability.
+
+\subsection{Consensus Rankings}
+
+The Borda count aggregation (Figure~\ref{fig:borda}) produces a consensus ranking that combines success rate, reliability ranking, and composite metric rankings. The top-ranked agents (ollama:gemma2:9b, ollama:llama3.1:8b, ollama:mistral:7b) achieve the highest Borda scores, reflecting their consistent top rankings across all evaluation criteria. The API-based models (GPT-4o, Claude 3.5 Sonnet, Gemini 1.5 Pro) show identical Borda scores of 0.125, indicating equivalent reliability profiles in our evaluation framework.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/fig7_borda_ranking.pdf}
+\caption{Borda count consensus ranking across all reliability criteria. Higher scores indicate more reliable models.}
+\label{fig:borda}
+\end{figure}
+
+\input{sections/table_final_rankings}

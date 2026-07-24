@@ -10,7 +10,8 @@ from __future__ import annotations
 
 import math
 import random
-from typing import Any, Sequence
+from collections.abc import Sequence
+from typing import Any
 
 from llm_reliability.utils.serialization import SerializableModel
 
@@ -39,12 +40,29 @@ class StatisticalEngine:
     @staticmethod
     def analyze(ranking1: Any, ranking2: Any) -> Any:
         """Backward-compatible full statistical analysis on two rankings."""
-        from llm_reliability.statistics.correlation import compute_kendall_tau, compute_spearman, _align_ranking_scores
-        from llm_reliability.statistics.hypothesis_tests import run_paired_t_test, run_wilcoxon_test
-        from llm_reliability.statistics.effect_sizes import compute_cohens_d as calc_cohen, compute_cliffs_delta
-        from llm_reliability.statistics.confidence_intervals import compute_bootstrap_ci
-        from llm_reliability.statistics.result_models import StatisticalReport, SummaryStatistics, ConfidenceIntervalResult
         import numpy as np
+
+        from llm_reliability.statistics.confidence_intervals import compute_bootstrap_ci
+        from llm_reliability.statistics.correlation import (
+            _align_ranking_scores,
+            compute_kendall_tau,
+            compute_spearman,
+        )
+        from llm_reliability.statistics.effect_sizes import (
+            compute_cliffs_delta,
+        )
+        from llm_reliability.statistics.effect_sizes import (
+            compute_cohens_d as calc_cohen,
+        )
+        from llm_reliability.statistics.hypothesis_tests import (
+            run_paired_t_test,
+            run_wilcoxon_test,
+        )
+        from llm_reliability.statistics.result_models import (
+            ConfidenceIntervalResult,
+            StatisticalReport,
+            SummaryStatistics,
+        )
 
         spearman = compute_spearman(ranking1, ranking2)
         kendall = compute_kendall_tau(ranking1, ranking2)
@@ -56,20 +74,51 @@ class StatisticalEngine:
         x, y = _align_ranking_scores(ranking1, ranking2)
         diffs = (np.array(x) - np.array(y)).tolist()
 
-        ci_diff = compute_bootstrap_ci(diffs) if len(diffs) > 0 else ConfidenceIntervalResult(lower=0.0, upper=0.0, confidence_level=0.95)
+        ci_diff = (
+            compute_bootstrap_ci(diffs)
+            if len(diffs) > 0
+            else ConfidenceIntervalResult(lower=0.0, upper=0.0, confidence_level=0.95)
+        )
 
         s1 = compute_statistical_summary(x)
         s2 = compute_statistical_summary(y)
 
+        def _quartiles(sorted_data: list[float]) -> tuple[float, float]:
+            n = len(sorted_data)
+            if n == 0:
+                return 0.0, 0.0
+
+            def _q(p: float) -> float:
+                idx = p * (n - 1)
+                lo = int(idx)
+                hi = min(lo + 1, n - 1)
+                return sorted_data[lo] + (idx - lo) * (sorted_data[hi] - sorted_data[lo])
+
+            return _q(0.25), _q(0.75)
+
+        q1_x, q3_x = _quartiles(sorted(x))
         sum1 = SummaryStatistics(
-            mean=s1.mean, median=s1.median, variance=s1.variance, std_dev=s1.std_dev,
-            min_val=min(x) if x else 0.0, max_val=max(x) if x else 0.0,
-            q1=s1.median, q3=s1.median, count=s1.sample_size
+            mean=s1.mean,
+            median=s1.median,
+            variance=s1.variance,
+            std_dev=s1.std_dev,
+            min_val=min(x) if x else 0.0,
+            max_val=max(x) if x else 0.0,
+            q1=q1_x,
+            q3=q3_x,
+            count=s1.sample_size,
         )
+        q1_y, q3_y = _quartiles(sorted(y))
         sum2 = SummaryStatistics(
-            mean=s2.mean, median=s2.median, variance=s2.variance, std_dev=s2.std_dev,
-            min_val=min(y) if y else 0.0, max_val=max(y) if y else 0.0,
-            q1=s2.median, q3=s2.median, count=s2.sample_size
+            mean=s2.mean,
+            median=s2.median,
+            variance=s2.variance,
+            std_dev=s2.std_dev,
+            min_val=min(y) if y else 0.0,
+            max_val=max(y) if y else 0.0,
+            q1=q1_y,
+            q3=q3_y,
+            count=s2.sample_size,
         )
 
         return StatisticalReport(

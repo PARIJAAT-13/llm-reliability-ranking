@@ -1,12 +1,12 @@
 """Tests for reproducibility manifest generation."""
 
-import tempfile
-import pathlib
 import json
+import pathlib
+import tempfile
 
-from llm_reliability.reproducibility.manifest import ManifestGenerator
-from llm_reliability.reproducibility.environment import EnvironmentCapture
 from llm_reliability.reporting.summary import ExperimentSummary
+from llm_reliability.reproducibility.environment import EnvironmentCapture
+from llm_reliability.reproducibility.manifest import ManifestGenerator
 from tests.ranking_test_helpers import create_mock_metric
 
 
@@ -21,31 +21,31 @@ def test_manifest_generation():
         metrics=metrics,
         config_snapshot={"base_seed": 42},
     )
-    
+
     # Capture environment
     env = EnvironmentCapture.capture()
-    
+
     # Generate manifest
     gen = ManifestGenerator()
     manifest = gen.build(summary, environment=env)
-    
+
     assert manifest.experiment_id == "test-exp-123"
     assert manifest.experiment_name == "Reproducibility Test"
     assert manifest.config_hash != ""
     assert len(manifest.record_hashes.metrics) == 1
-    
+
     # Save and reload
     with tempfile.TemporaryDirectory() as tmpdir:
         dest_path = pathlib.Path(tmpdir) / "manifest.json"
         saved_path = gen.save(manifest, dest_path)
         assert saved_path.exists()
-        
+
         # Verify JSON
-        with open(saved_path, "r", encoding="utf-8") as f:
+        with open(saved_path, encoding="utf-8") as f:
             data = json.load(f)
             assert data["experiment_id"] == "test-exp-123"
             assert "config_hash" in data
-            
+
         reloaded = gen.load(saved_path)
         assert reloaded.experiment_id == manifest.experiment_id
         assert reloaded.config_hash == manifest.config_hash

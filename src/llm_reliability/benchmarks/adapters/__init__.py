@@ -17,17 +17,19 @@ BenchmarkRegistry.discover()
 # Re-export for backward compatibility with existing imports.
 # Third-party code should prefer ``BenchmarkRegistry.get("name")``.
 from llm_reliability.benchmarks.adapters.agentboard_adapter import AgentBoardAdapter
+from llm_reliability.benchmarks.adapters.arc_adapter import ARCAdapter
 from llm_reliability.benchmarks.adapters.gaia_adapter import GAIAAdapter
-from llm_reliability.benchmarks.adapters.swebench_lite_adapter import SWEBenchLiteAdapter
-from llm_reliability.benchmarks.adapters.mmlu_adapter import MMLUAdapter
+from llm_reliability.benchmarks.adapters.gsm8k_adapter import GSM8KAdapter
 from llm_reliability.benchmarks.adapters.hellaswag_adapter import HellaSwagAdapter
 from llm_reliability.benchmarks.adapters.humaneval_adapter import HumanEvalAdapter
 from llm_reliability.benchmarks.adapters.mbpp_adapter import MBPPAdapter
-from llm_reliability.benchmarks.adapters.truthfulqa_adapter import TruthfulQAAdapter
-from llm_reliability.benchmarks.adapters.gsm8k_adapter import GSM8KAdapter
-from llm_reliability.benchmarks.adapters.arc_adapter import ARCAdapter
-from llm_reliability.benchmarks.adapters.winogrande_adapter import WinograndeAdapter
+from llm_reliability.benchmarks.adapters.mmlu_adapter import MMLUAdapter
 from llm_reliability.benchmarks.adapters.piqa_adapter import PIQAAdapter
+from llm_reliability.benchmarks.adapters.swebench_lite_adapter import (
+    SWEBenchLiteAdapter,
+)
+from llm_reliability.benchmarks.adapters.truthfulqa_adapter import TruthfulQAAdapter
+from llm_reliability.benchmarks.adapters.winogrande_adapter import WinograndeAdapter
 
 __all__ = [
     "BaseBenchmarkAdapter",

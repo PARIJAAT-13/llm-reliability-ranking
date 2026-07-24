@@ -21,6 +21,7 @@ class RecordExporter:
     def _records_to_dataframe(cls, records: list[Any]) -> Any:
         """Convert a list of SerializableModel records to a pandas DataFrame."""
         import pandas as pd
+
         rows = [r.canonical_dict() for r in records]
         return pd.DataFrame(rows)
 

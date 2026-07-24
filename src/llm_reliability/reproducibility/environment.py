@@ -30,12 +30,15 @@ and ``os``.  The result is a Pydantic model that can be serialised to JSON.
 
 from __future__ import annotations
 
+import logging
 import os
 import platform
 from datetime import datetime, timezone
 from typing import Any
 
 from pydantic import BaseModel, Field
+
+logger = logging.getLogger(__name__)
 
 
 class EnvironmentCapture(BaseModel):
@@ -65,9 +68,7 @@ class EnvironmentCapture(BaseModel):
 
     model_config = {"arbitrary_types_allowed": True}
 
-    captured_at: str = Field(
-        default_factory=lambda: datetime.now(timezone.utc).isoformat()
-    )
+    captured_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     python_version: str
     python_implementation: str
     platform_system: str
@@ -82,7 +83,7 @@ class EnvironmentCapture(BaseModel):
         return self.model_dump()
 
     @classmethod
-    def capture(cls, include_all_packages: bool = False) -> "EnvironmentCapture":
+    def capture(cls, include_all_packages: bool = False) -> EnvironmentCapture:
         """Capture the current execution environment.
 
         Parameters
@@ -113,13 +114,23 @@ class EnvironmentCapture(BaseModel):
     def _capture_packages(include_all: bool) -> dict[str, str]:
         """Return a mapping of package name → version."""
         _relevant = {
-            "pydantic", "numpy", "pandas", "matplotlib", "seaborn",
-            "scipy", "statsmodels", "plotly", "openpyxl", "tabulate",
-            "pytest", "llm-reliability-ranking",
+            "pydantic",
+            "numpy",
+            "pandas",
+            "matplotlib",
+            "seaborn",
+            "scipy",
+            "statsmodels",
+            "plotly",
+            "openpyxl",
+            "tabulate",
+            "pytest",
+            "llm-reliability-ranking",
         }
         packages: dict[str, str] = {}
         try:
             import importlib.metadata as meta
+
             for dist in meta.distributions():
                 name = dist.metadata.get("Name", "")
                 version = dist.metadata.get("Version", "")
@@ -135,6 +146,7 @@ class EnvironmentCapture(BaseModel):
         """Return the current HEAD commit hash, or None if git is unavailable."""
         try:
             import subprocess
+
             result = subprocess.run(
                 ["git", "rev-parse", "HEAD"],
                 capture_output=True,
@@ -143,6 +155,6 @@ class EnvironmentCapture(BaseModel):
             )
             if result.returncode == 0:
                 return result.stdout.strip()
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.debug("Could not capture git commit: %s", exc)
         return None

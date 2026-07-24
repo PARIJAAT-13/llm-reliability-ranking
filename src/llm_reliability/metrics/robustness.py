@@ -50,9 +50,7 @@ def compute_robustness(evaluations: list[EvaluationRecord]) -> float:
     perturbed = [ev for ev in evaluations if ev.perturbation is not None]
 
     if not perturbed:
-        raise ValueError(
-            "No perturbed evaluations found. Cannot compute robustness."
-        )
+        raise ValueError("No perturbed evaluations found. Cannot compute robustness.")
 
     baseline_sr = float(np.mean([ev.score for ev in baseline])) if baseline else 0.0
     perturbed_sr = float(np.mean([ev.score for ev in perturbed]))

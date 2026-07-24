@@ -112,12 +112,20 @@ class TestHardwareRegistry:
 
     def test_duplicate_overwrites(self) -> None:
         p1 = HardwareProfile(
-            profile_id="dup", os_name="Linux", os_version="A",
-            cpu_architecture="x86_64", cpu_cores_logical=4, ram_total_gb=16.0,
+            profile_id="dup",
+            os_name="Linux",
+            os_version="A",
+            cpu_architecture="x86_64",
+            cpu_cores_logical=4,
+            ram_total_gb=16.0,
         )
         p2 = HardwareProfile(
-            profile_id="dup", os_name="Windows", os_version="B",
-            cpu_architecture="x86_64", cpu_cores_logical=8, ram_total_gb=32.0,
+            profile_id="dup",
+            os_name="Windows",
+            os_version="B",
+            cpu_architecture="x86_64",
+            cpu_cores_logical=8,
+            ram_total_gb=32.0,
         )
         HardwareRegistry.register(p1)
         HardwareRegistry.register(p2)

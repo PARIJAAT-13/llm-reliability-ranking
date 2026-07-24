@@ -4,9 +4,10 @@ Assumption checking module.
 Validates statistical assumptions before running hypothesis tests.
 """
 
+from collections.abc import Sequence
+
 import numpy as np
 from scipy.stats import shapiro
-from typing import Sequence
 
 
 def check_normality(differences: Sequence[float]) -> tuple[bool, str | None]:

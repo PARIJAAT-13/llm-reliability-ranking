@@ -16,6 +16,7 @@ import logging
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
 from llm_reliability.benchmarks.adapters.base_adapter import BaseBenchmarkAdapter
 from llm_reliability.benchmarks.adapters.gaia_models import (
     GAIAMetadata,
@@ -36,9 +37,7 @@ class GAIAAdapter(BaseBenchmarkAdapter):
     def validate_configuration(self) -> None:
         super().validate_configuration()
         if not self.config.metadata.get("dataset_path"):
-            raise ValueError(
-                "Configuration metadata must contain 'dataset_path' for GAIA."
-            )
+            raise ValueError("Configuration metadata must contain 'dataset_path' for GAIA.")
 
     def _load_tasks(self) -> None:
         """Load the GAIA dataset from a local JSON file or HuggingFace hub."""
@@ -47,7 +46,7 @@ class GAIAAdapter(BaseBenchmarkAdapter):
 
         if path_obj.suffix.lower() == ".json" or path_obj.is_file():
             try:
-                with open(dataset_path, "r", encoding="utf-8") as f:
+                with open(dataset_path, encoding="utf-8") as f:
                     data = json.load(f)
             except Exception as e:
                 logger.error("Failed to load dataset from %s: %s", dataset_path, e)
@@ -70,7 +69,9 @@ class GAIAAdapter(BaseBenchmarkAdapter):
                 try:
                     from datasets import load_dataset
                 except ImportError as exc:
-                    raise RuntimeError("The 'datasets' package is required to load GAIA from HuggingFace hub. Install with: pip install datasets") from exc
+                    raise RuntimeError(
+                        "The 'datasets' package is required to load GAIA from HuggingFace hub. Install with: pip install datasets"
+                    ) from exc
                 ds = load_dataset(
                     dataset_path,
                     "2023_all",
@@ -85,7 +86,9 @@ class GAIAAdapter(BaseBenchmarkAdapter):
                 task = {
                     "task_id": item["task_id"],
                     "question": item.get("Question", item.get("question", "")),
-                    "ground_truth_answer": item.get("Final answer", item.get("ground_truth_answer", "")),
+                    "ground_truth_answer": item.get(
+                        "Final answer", item.get("ground_truth_answer", "")
+                    ),
                     "difficulty": int(item.get("Level", item.get("difficulty", 1))),
                     "file_name": item.get("file_name", ""),
                     "file_path": item.get("file_path", ""),
@@ -141,7 +144,7 @@ class GAIAAdapter(BaseBenchmarkAdapter):
             software_versions={"gaia": "1.0"},
             environment_metadata={},
         )
-        
+
         self._logs.append({"event": "run", "task_id": task_id, "status": status})
         return record
 
@@ -151,7 +154,6 @@ class GAIAAdapter(BaseBenchmarkAdapter):
         expected = task.get("ground_truth_answer")
         agent_output = execution.agent_output
 
-
         if execution.status == "error":
             success = False
             score = 0.0
@@ -159,13 +161,9 @@ class GAIAAdapter(BaseBenchmarkAdapter):
             expected_norm = normalize_gaia_answer(str(expected))
             output_norm = normalize_gaia_answer(str(agent_output))
 
-            success = (
-                output_norm == expected_norm
-                or expected_norm in output_norm
-            )
+            success = output_norm == expected_norm or expected_norm in output_norm
 
             score = 1.0 if success else 0.0
-
 
         if self.config.seed is not None:
             h = hashlib.sha256(f"eval_{self.config.seed}_{execution.task_id}".encode())
@@ -181,7 +179,7 @@ class GAIAAdapter(BaseBenchmarkAdapter):
             metrics={"difficulty": task.get("difficulty")},
             evaluated_at=evaluated_at,
         )
-        
+
         self._logs.append({"event": "evaluate", "task_id": execution.task_id, "success": success})
         return eval_record
 
