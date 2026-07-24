@@ -13,7 +13,12 @@ and only non-None metrics are included.
 
 If a caller provides custom weights they must:
   • Cover every non-None metric key.
-  • Sum to exactly 1.0 (within 1e-6 tolerance).
+  • Be non-negative.
+  • Have a total > 0.
+
+Weights are normalised internally so they sum to 1.0 before computing
+the composite.  This allows callers to pass e.g. {"success_rate": 2,
+"consistency": 1} and have it treated as (⅔, ⅓).
 
 Intuition: the composite score provides a single sortable number for
 leaderboard rankings while remaining transparent about its constituent
@@ -41,14 +46,16 @@ def compute_composite(
         weights:         Optional custom weight mapping.  Keys must be drawn
                          from {'success_rate', 'consistency', 'robustness',
                          'fault_tolerance'} and must cover every non-None
-                         metric.  Values must sum to 1.0.
+                         metric.  Values must be non-negative and sum > 0.
+                         They will be normalised to sum to 1.0.
 
     Returns:
         A tuple of (composite_score, effective_weights) where
         effective_weights is the normalised weight dict that was used.
 
     Raises:
-        ValueError: If weights don't sum to 1.0 or reference unknown metrics.
+        ValueError: If weights reference unknown metrics, miss available
+                    metrics, contain negative values, or have zero total.
     """
     available: dict[str, float] = {
         "success_rate": success_rate,
@@ -60,7 +67,6 @@ def compute_composite(
         available["fault_tolerance"] = fault_tolerance
 
     if weights is None:
-        # Equal weights across all available metrics
         n = len(available)
         effective_weights = {k: 1.0 / n for k in available}
     else:
@@ -75,12 +81,17 @@ def compute_composite(
             raise ValueError(
                 f"Weights missing for available metrics: {missing}."
             )
+        for key, val in weights.items():
+            if val < 0:
+                raise ValueError(
+                    f"Weight for '{key}' cannot be negative: {val}."
+                )
         total = sum(weights.values())
-        if abs(total - 1.0) > 1e-6:
+        if total <= 0:
             raise ValueError(
-                f"Weights must sum to 1.0, got {total:.6f}."
+                f"Weights must sum to a positive value, got {total:.6f}."
             )
-        effective_weights = dict(weights)
+        effective_weights = {k: v / total for k, v in weights.items()}
 
     composite = float(
         np.sum([effective_weights[k] * v for k, v in available.items()])

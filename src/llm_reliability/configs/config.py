@@ -47,18 +47,19 @@ CONFIG_VERSION = "1.1.0"
 
 
 class ReliabilityWeightsConfig(SerializableModel):
-    """Configurable weights for the three reliability dimensions.
+    """Configurable weights for all four reliability dimensions.
 
     All weights must be non-negative and sum to 1.0.
     """
 
+    success_rate: float = Field(default=0.0, ge=0.0, le=1.0)
     consistency: float = Field(default=1 / 3, ge=0.0, le=1.0)
     robustness: float = Field(default=1 / 3, ge=0.0, le=1.0)
     fault_tolerance: float = Field(default=1 / 3, ge=0.0, le=1.0)
 
     @model_validator(mode="after")
     def _validate_sum(self) -> "ReliabilityWeightsConfig":
-        total = self.consistency + self.robustness + self.fault_tolerance
+        total = self.success_rate + self.consistency + self.robustness + self.fault_tolerance
         if abs(total - 1.0) > 1e-6:
             raise ValueError(
                 f"reliability_weights must sum to 1.0, got {total:.6f}."
