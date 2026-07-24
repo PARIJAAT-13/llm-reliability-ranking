@@ -323,7 +323,7 @@ To reproduce the 270-trial benchmark evaluation reported in this paper:
 
 1. Clone the repository and install dependencies:
    ```bash
-   git clone https://github.com/user/llm-reliability-ranking.git
+   git clone https://github.com/parijaat/llm-reliability-ranking.git
    cd llm-reliability-ranking
    pip install -e .
    ```
@@ -339,7 +339,7 @@ To reproduce the 270-trial benchmark evaluation reported in this paper:
    ```
 4. Execute experiment suite using configuration spec:
    ```bash
-   python -m llm_reliability.cli run --config configs/full_study_config.json
+   python scripts/run_large_scale_experiment.py --config configs/full_experiment_config.json --output-dir results/full_study
    ```
 
 All output payloads are serialized with deterministic Pydantic v2 schemas and SHA-256 configuration hashes.
