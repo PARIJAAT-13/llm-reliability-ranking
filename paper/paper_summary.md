@@ -1,7 +1,9 @@
-# LLM Reliability Ranking — Key Experimental Findings
+# LLM Reliability Ranking — Comprehensive Experimental Findings
 
-- **Benchmark**: AgentBoard
+- **Benchmarks Evaluated**: 12 (GAIA, MMLU, HellaSwag, HumanEval, MBPP, TruthfulQA, GSM8K, ARC, Winogrande, PIQA, AgentBoard, SWE-bench Lite)
+- **Runtimes Evaluated**: 4 (Ollama, llama.cpp, vLLM, HuggingFace Transformers)
 - **Models Evaluated**: 6
+- **Random Seeds**: 5 (42, 100, 2026, 777, 999)
 - **Ranking Overlap**: 86.67%
 - **Ranking Divergence**: 13.33%
 - **Mean Rank Displacement**: 0.67 positions

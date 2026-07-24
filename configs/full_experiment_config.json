@@ -1,22 +1,44 @@
 {
   "name": "full_llm_reliability_ranking_study",
   "output_dir": "results/full_study",
-  "system_prompt": "You are solving a GAIA benchmark task.\nReturn ONLY the final answer.\nDo not explain your reasoning.\nDo not use markdown.\nOutput exactly the final answer.",
-
-
+  "system_prompt": "You are solving a benchmark task.\nReturn ONLY the final answer.\nDo not explain your reasoning.\nDo not use markdown.\nOutput exactly the final answer.",
   "models": [
-    "ollama:tinyllama:latest",
-    "ollama:phi3:mini",
+    "ollama:llama3.1:8b",
     "ollama:qwen2.5:7b",
     "ollama:mistral:7b",
     "ollama:gemma2:9b",
-    "ollama:llama3.1:8b"
+    "ollama:phi3:mini",
+    "ollama:tinyllama:latest"
+  ],
+  "quantizations": [
+    "Q4_K_M",
+    "Q4_0",
+    "Q5_K_M",
+    "Q6_K",
+    "Q8_0",
+    "FP16"
+  ],
+  "runtimes": [
+    "ollama",
+    "llamacpp",
+    "vllm",
+    "huggingface"
   ],
   "benchmarks": [
-    "GAIA"
-
+    "GAIA",
+    "MMLU",
+    "HellaSwag",
+    "HumanEval",
+    "MBPP",
+    "TruthfulQA",
+    "GSM8K",
+    "ARC",
+    "Winogrande",
+    "PIQA",
+    "AgentBoard",
+    "SWEBenchLite"
   ],
-  "seeds": [42, 100, 2026],
+  "seeds": [42, 100, 2026, 777, 999],
   "repetitions": 3,
   "perturbations": [
     "whitespace",

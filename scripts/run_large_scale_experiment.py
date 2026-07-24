@@ -2,21 +2,8 @@
 """
 run_large_scale_experiment.py — Large-Scale Production Experiment Runner.
 
-Executes multi-benchmark, multi-model, multi-repetition experiment specifications
-with full checkpointing, progress tracking, failure recovery, resume support,
-and estimated time remaining (ETA) calculations.
-
-Usage
------
-    # Real production run:
-    python scripts/run_large_scale_experiment.py \\
-        --config configs/full_experiment_config.json \\
-        --output-dir results/full_study \\
-        [--download-datasets] \\
-        [--resume]
-
-    # Dry run with mocks (no API keys required):
-    python scripts/run_large_scale_experiment.py --demo
+Executes multi-benchmark (12 benchmarks), multi-runtime (4 runtimes),
+multi-seed (5 seeds), and multi-quantization experiment specifications.
 """
 
 from __future__ import annotations
@@ -28,7 +15,6 @@ import pathlib
 import sys
 import time
 
-# Ensure src/ is on sys.path
 _REPO_ROOT = pathlib.Path(__file__).parent.parent
 sys.path.insert(0, str(_REPO_ROOT / "src"))
 
@@ -42,11 +28,10 @@ from llm_reliability.benchmarks.dataset_manager import DatasetManager
 from llm_reliability.agents.agent_factory import AgentFactory
 from llm_reliability.agents.mock_agent import MockAgent
 from llm_reliability.benchmarks.mock_benchmark import MockBenchmark
+from llm_reliability.utils.hardware_profile import detect_hardware_profile
 
-# Import benchmark adapters to trigger BenchmarkRegistry.register() side-effects
-import llm_reliability.benchmarks.adapters.agentboard_adapter   # noqa: F401
-import llm_reliability.benchmarks.adapters.gaia_adapter          # noqa: F401
-import llm_reliability.benchmarks.adapters.swebench_lite_adapter  # noqa: F401
+# Import all 12 benchmark adapters to register them
+import llm_reliability.benchmarks.adapters  # noqa: F401
 
 from llm_reliability.configs.config import Configuration
 from llm_reliability.interfaces.agent import Agent
@@ -59,23 +44,13 @@ logging.basicConfig(
 logger = logging.getLogger("run_large_scale_experiment")
 
 
-# ---------------------------------------------------------------------------
-# Agent factory — dispatches name → Agent via AgentFactory
-# ---------------------------------------------------------------------------
-
 def _real_agent_factory(aspec: _AgentSpec, config: Configuration) -> Agent:
-    """Instantiate a real Agent using AgentFactory dispatch."""
     return AgentFactory.create(aspec.name, config)
 
 
 def _demo_agent_factory(aspec: _AgentSpec, config: Configuration) -> Agent:
-    """Demo mode: always return MockAgent."""
     return MockAgent(config=config)
 
-
-# ---------------------------------------------------------------------------
-# Benchmark factory
-# ---------------------------------------------------------------------------
 
 def _real_benchmark_factory(name: str, config: Configuration):
     name_lower = name.lower()
@@ -89,10 +64,6 @@ def _real_benchmark_factory(name: str, config: Configuration):
 def _demo_benchmark_factory(name: str, config: Configuration):
     return MockBenchmark(config=config)
 
-
-# ---------------------------------------------------------------------------
-# CLI
-# ---------------------------------------------------------------------------
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -140,41 +111,28 @@ def main() -> int:
     with open(args.config, "r", encoding="utf-8") as f:
         raw_config = json.load(f)
 
-    benchmarks_raw = raw_config.get("benchmarks", ["AgentBoard", "GAIA", "SWEBenchLite"])
-    models_raw = raw_config.get("models", ["gpt-4o", "claude-3-5-sonnet", "gemini-1.5-pro"])
+    # Detect physical hardware profile for execution manifest provenance
+    hw_profile = detect_hardware_profile()
+    logger.info("Hardware Profile Detected: %s (CPU: %s, RAM: %.2f GB, GPU: %s)",
+                hw_profile.profile_id, hw_profile.cpu_architecture, hw_profile.ram_total_gb, hw_profile.gpu_name or "None")
 
-    # ------------------------------------------------------------------
-    # Optional dataset pre-download
-    # ------------------------------------------------------------------
+    benchmarks_raw = raw_config.get("benchmarks", ["GAIA", "MMLU", "HellaSwag", "HumanEval", "MBPP", "TruthfulQA", "GSM8K", "ARC", "Winogrande", "PIQA", "AgentBoard", "SWEBenchLite"])
+    models_raw = raw_config.get("models", ["ollama:llama3.1:8b", "ollama:qwen2.5:7b", "ollama:mistral:7b", "ollama:gemma2:9b"])
+
     dataset_paths: dict[str, str] = {}
-    if args.download_datasets:
-        dataset_mgr = DatasetManager(cache_dir=_REPO_ROOT / "data" / "cache")
-        for bench in benchmarks_raw:
-            logger.info("Checking dataset for benchmark: %s", bench)
+    dataset_mgr = DatasetManager(cache_dir=_REPO_ROOT / "data" / "cache")
+    for bench in benchmarks_raw:
+        if bench.lower() == "gaia":
+            sample_file = _REPO_ROOT / "data" / "gaia_sample.json"
+            dataset_paths[bench] = str(sample_file) if sample_file.exists() else str(_REPO_ROOT / "data" / "GAIA")
+        else:
             try:
                 info = dataset_mgr.get_dataset(bench)
                 dataset_paths[bench] = info.file_path
-                logger.info(
-                    "Dataset ready: %s (hash=%s)", info.file_path, info.sha256_hash[:8]
-                )
             except Exception as e:
-                logger.warning("Could not pre-download dataset for %s: %s", bench, e)
-    else:
-        # Use default cache paths (may not exist; benchmarks will raise if missing)
-        for bench in benchmarks_raw:
-            if bench.lower() == "gaia":
-                sample_file = _REPO_ROOT / "data" / "gaia_sample.json"
-                dataset_paths[bench] = str(sample_file) if sample_file.exists() else str(_REPO_ROOT / "data" / "GAIA")
-            else:
-                norm = bench.lower().replace("-", "_").replace(" ", "_")
-                dataset_paths[bench] = str(
-                    _REPO_ROOT / "data" / "cache" / f"{norm}.json"
-                )
+                logger.warning("Using fallback cache path for %s: %s", bench, e)
+                dataset_paths[bench] = str(_REPO_ROOT / "data" / "cache" / f"{bench.lower()}.json")
 
-
-    # ------------------------------------------------------------------
-    # Build ExperimentSpec
-    # ------------------------------------------------------------------
     bench_specs = [
         BenchmarkSpec(
             name=b,
@@ -209,7 +167,7 @@ def main() -> int:
         experiment_name=raw_config.get("name", "large_scale_study"),
         benchmarks=bench_specs,
         agents=agent_specs,
-        seeds=raw_config.get("seeds", [42, 100, 2026]),
+        seeds=raw_config.get("seeds", [42, 100, 2026, 777, 999]),
         repetitions=raw_config.get("repetitions", 3),
         parallel=raw_config.get("parallel", False),
         max_workers=raw_config.get("max_workers", 4),
@@ -217,16 +175,11 @@ def main() -> int:
         llm=models_raw[0] if models_raw else "mock",
     )
 
-    total_runs = (
-        len(spec.benchmarks) * len(spec.agents) * len(spec.seeds) * spec.repetitions
-    )
-    logger.info("ExperimentSpec created. Total runs scheduled: %d", total_runs)
+    total_runs = len(spec.benchmarks) * len(spec.agents) * len(spec.seeds) * spec.repetitions
+    logger.info("ExperimentSpec created. Total runs scheduled across 12 benchmarks & 5 seeds: %d", total_runs)
 
-    # ------------------------------------------------------------------
-    # Factories
-    # ------------------------------------------------------------------
     if args.demo:
-        logger.info("Demo mode: using MockBenchmark + MockAgent (no API keys required).")
+        logger.info("Demo mode: using MockBenchmark + MockAgent.")
         agent_factory = _demo_agent_factory
         benchmark_factory = _demo_benchmark_factory
     else:

@@ -1,0 +1,28 @@
+warning: in the working copy of 'paper/figures/fig1_ranking_bump_chart.svg', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'paper/figures/fig2_success_vs_reliability_scatter.svg', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'paper/paper_summary.md', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'paper/tables/table1_agent_reliability_matrix.tex', CRLF will be replaced by LF the next time Git touches it
+ configs/full_experiment_config.json                |   40 [32m+[m[31m-[m
+ paper/abstract.md                                  |    6 [32m+[m[31m-[m
+ paper/conclusion.md                                |   41 [32m+[m[31m-[m
+ paper/discussion.md                                |   47 [32m+[m[31m-[m
+ paper/figures/fig1_ranking_bump_chart.pdf          |  Bin [31m24355[m -> [32m24270[m bytes
+ paper/figures/fig1_ranking_bump_chart.png          |  Bin [31m115967[m -> [32m131385[m bytes
+ paper/figures/fig1_ranking_bump_chart.svg          | 2061 [32m+++[m[31m---[m
+ .../fig2_success_vs_reliability_scatter.pdf        |  Bin [31m24209[m -> [32m35212[m bytes
+ .../fig2_success_vs_reliability_scatter.png        |  Bin [31m116307[m -> [32m553962[m bytes
+ .../fig2_success_vs_reliability_scatter.svg        | 6756 [32m++++++++++++++++[m[31m----[m
+ paper/introduction.md                              |   26 [32m+[m[31m-[m
+ paper/manuscript.md                                |  307 [32m+[m[31m-[m
+ paper/methodology.md                               |  183 [32m+[m[31m-[m
+ paper/paper_summary.md                             |    6 [32m+[m[31m-[m
+ paper/related_work.md                              |   30 [32m+[m[31m-[m
+ paper/results.md                                   |  115 [32m+[m[31m-[m
+ paper/tables/table1_agent_reliability_matrix.tex   |   16 [32m+[m[31m-[m
+ scripts/generate_paper_artifacts.py                |   89 [32m+[m[31m-[m
+ scripts/run_large_scale_experiment.py              |   97 [32m+[m[31m-[m
+ src/llm_reliability/agents/agent_factory.py        |   62 [32m+[m[31m-[m
+ .../benchmarks/adapters/__init__.py                |   41 [32m+[m[31m-[m
+ src/llm_reliability/benchmarks/dataset_manager.py  |   88 [32m+[m[31m-[m
+ .../statistics/statistical_engine.py               |  330 [32m+[m[31m-[m
+ 23 files changed, 7312 insertions(+), 3029 deletions(-)
