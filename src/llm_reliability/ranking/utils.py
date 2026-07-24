@@ -4,7 +4,6 @@ Utility functions for the Ranking Engine.
 Includes validation, deterministic tie-breaking sorting, and other helper functions.
 """
 
-from typing import Iterable
 from llm_reliability.records.metric import MetricRecord
 
 def validate_metrics(metrics: list[MetricRecord]) -> None:

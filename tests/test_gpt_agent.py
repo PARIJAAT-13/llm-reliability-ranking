@@ -73,12 +73,23 @@ def _stub_openai_module() -> ModuleType:
     openai_mock = ModuleType("openai")
 
     # Exception hierarchy mirrors the real openai package
-    class _APIError(Exception): pass
-    class _AuthenticationError(_APIError): pass
-    class _RateLimitError(_APIError): pass
-    class _APIConnectionError(_APIError): pass
-    class _APITimeoutError(_APIConnectionError): pass
-    class _BadRequestError(_APIError): pass
+    class _APIError(Exception):
+        pass
+
+    class _AuthenticationError(_APIError):
+        pass
+
+    class _RateLimitError(_APIError):
+        pass
+
+    class _APIConnectionError(_APIError):
+        pass
+
+    class _APITimeoutError(_APIConnectionError):
+        pass
+
+    class _BadRequestError(_APIError):
+        pass
 
     openai_mock.APIError = _APIError
     openai_mock.AuthenticationError = _AuthenticationError
@@ -107,7 +118,7 @@ def config() -> Configuration:
 
 
 @pytest.fixture
-def agent_with_mock_openai(config, openai_mod, monkeypatch) -> "GPTAgent":
+def agent_with_mock_openai(config, openai_mod, monkeypatch):
     """Return a GPTAgent with initialize() already called using a mocked OpenAI."""
     monkeypatch.setenv("OPENAI_API_KEY", "sk-test-key")
     # Import after patch so _OpenAIAdapter.initialize picks up the stub module

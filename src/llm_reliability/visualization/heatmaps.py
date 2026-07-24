@@ -29,7 +29,6 @@ at zero.  Annotations are formatted to two decimal places.
 
 from __future__ import annotations
 
-import pathlib
 from typing import Any
 
 from llm_reliability.visualization.plotter import BasePlotter

@@ -145,8 +145,8 @@ class BaseLLMAdapter(ABC):
     ) -> LLMResponse:
         """Invoke generate() with exponential back-off retry.
 
-        Retries on any ProviderError subclass.
-        Raises the final exception if all attempts are exhausted.
+        Retries only on transient errors (connection timeout, rate limits, network resets).
+        Fails fast without retrying on non-transient errors (missing models, memory errors, auth).
         """
         last_exc: Exception | None = None
         for attempt in range(1, max_attempts + 1):
@@ -155,11 +155,21 @@ class BaseLLMAdapter(ABC):
                 return response
             except ProviderError as exc:
                 last_exc = exc
+                exc_type = type(exc).__name__
+                is_non_retryable = (
+                    "Authentication" in exc_type
+                    or "Validation" in exc_type
+                    or "NotFound" in exc_type
+                    or "Memory" in exc_type
+                    or getattr(exc, "is_transient", True) is False
+                )
+                if is_non_retryable or attempt == max_attempts:
+                    raise exc
+
                 wait = backoff_seconds * (2 ** (attempt - 1))
                 logger.warning(
-                    "Provider error on attempt %d/%d: %s — retrying in %.1fs",
+                    "Transient provider error on attempt %d/%d: %s — retrying in %.1fs",
                     attempt, max_attempts, exc, wait,
                 )
-                if attempt < max_attempts:
-                    time.sleep(wait)
+                time.sleep(wait)
         raise last_exc  # type: ignore[misc]

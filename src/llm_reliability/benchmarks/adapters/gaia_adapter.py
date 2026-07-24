@@ -14,8 +14,8 @@ import hashlib
 import json
 import logging
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any
-
 from llm_reliability.benchmarks.adapters.base_adapter import BaseBenchmarkAdapter
 from llm_reliability.benchmarks.adapters.gaia_models import (
     GAIAMetadata,
@@ -34,7 +34,6 @@ class GAIAAdapter(BaseBenchmarkAdapter):
     """Adapter for the GAIA benchmark."""
 
     def validate_configuration(self) -> None:
-        """Validate GAIA specific configuration."""
         super().validate_configuration()
         if not self.config.metadata.get("dataset_path"):
             raise ValueError(
@@ -42,28 +41,61 @@ class GAIAAdapter(BaseBenchmarkAdapter):
             )
 
     def _load_tasks(self) -> None:
-        """Load and validate the GAIA dataset."""
+        """Load the GAIA dataset from a local JSON file or HuggingFace hub."""
         dataset_path = self.config.metadata["dataset_path"]
-        try:
-            with open(dataset_path, "r", encoding="utf-8") as f:
-                data = json.load(f)
-        except Exception as e:
-            logger.error("Failed to load dataset from %s: %s", dataset_path, e)
-            raise RuntimeError(f"Missing or invalid dataset: {e}") from e
+        path_obj = Path(dataset_path)
 
-        if not isinstance(data, list):
-            raise TypeError("GAIA dataset must be a list of tasks.")
-
-        self._tasks = {}
-        for item in data:
+        if path_obj.suffix.lower() == ".json" or path_obj.is_file():
             try:
-                task_obj = GAIATask(**item)
-                if task_obj.task_id in self._tasks:
-                    raise ValueError(f"Duplicate task ID found: {task_obj.task_id}")
-                self._tasks[task_obj.task_id] = task_obj.model_dump()
+                with open(dataset_path, "r", encoding="utf-8") as f:
+                    data = json.load(f)
             except Exception as e:
-                logger.error("Malformed task in dataset: %s", e)
-                raise ValueError(f"Invalid schema: {e}") from e
+                logger.error("Failed to load dataset from %s: %s", dataset_path, e)
+                raise RuntimeError(f"Missing or invalid dataset: {e}") from e
+
+            if not isinstance(data, list):
+                raise TypeError("GAIA dataset must be a list of tasks.")
+
+            self._tasks = {}
+            for item in data:
+                try:
+                    task_obj = GAIATask(**item)
+                except Exception as e:
+                    raise ValueError(f"Invalid schema: {e}") from e
+                if task_obj.task_id in self._tasks:
+                    raise ValueError(f"Duplicate task ID: {task_obj.task_id}")
+                self._tasks[task_obj.task_id] = task_obj.model_dump()
+        else:
+            try:
+                try:
+                    from datasets import load_dataset
+                except ImportError as exc:
+                    raise RuntimeError("The 'datasets' package is required to load GAIA from HuggingFace hub. Install with: pip install datasets") from exc
+                ds = load_dataset(
+                    dataset_path,
+                    "2023_all",
+                    split="validation",
+                )
+            except Exception as e:
+                logger.error("Failed to load GAIA dataset: %s", e)
+                raise RuntimeError(f"Missing or invalid dataset: {e}") from e
+
+            self._tasks = {}
+            for item in ds.select(range(min(5, len(ds)))):
+                task = {
+                    "task_id": item["task_id"],
+                    "question": item.get("Question", item.get("question", "")),
+                    "ground_truth_answer": item.get("Final answer", item.get("ground_truth_answer", "")),
+                    "difficulty": int(item.get("Level", item.get("difficulty", 1))),
+                    "file_name": item.get("file_name", ""),
+                    "file_path": item.get("file_path", ""),
+                    "metadata": item.get("Annotator Metadata", {}),
+                }
+
+                if task["task_id"] in self._tasks:
+                    raise ValueError(f"Duplicate task ID: {task['task_id']}")
+
+                self._tasks[task["task_id"]] = task
 
     def run(self, agent: Agent, task: dict[str, Any]) -> ExecutionRecord:
         """Execute a single GAIA task using the provided agent."""

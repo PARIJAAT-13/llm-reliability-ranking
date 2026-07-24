@@ -44,8 +44,7 @@ from llm_reliability.configs.config import Configuration
 from llm_reliability.interfaces.agent import Agent
 
 logger = logging.getLogger(__name__)
-
-DEFAULT_MODEL: str = "gemini-1.5-pro"
+DEFAULT_MODEL: str = "gemini-2.5-flash"
 DEFAULT_TEMPERATURE: float = 0.0
 DEFAULT_MAX_TOKENS: int = 1024
 DEFAULT_REQUESTS_PER_SECOND: float = 2.0

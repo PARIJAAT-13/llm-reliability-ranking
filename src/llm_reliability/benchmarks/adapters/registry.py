@@ -12,7 +12,6 @@ Responsibilities
 - Prevent duplicate registrations
 """
 
-from typing import Type
 
 from llm_reliability.benchmarks.adapters.base_adapter import BaseBenchmarkAdapter
 

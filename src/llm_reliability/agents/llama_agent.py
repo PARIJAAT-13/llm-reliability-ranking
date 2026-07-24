@@ -72,7 +72,10 @@ class _LlamaAdapter(BaseLLMAdapter):
     def __init__(self, config: Configuration) -> None:
         super().__init__(config)
         self._client = None
-        self._model = config.metadata.get("model", config.llm) or DEFAULT_MODEL
+        configured_model = config.metadata.get("model") or config.llm
+        if configured_model == "llama":
+            configured_model = "llama3.1:8b"
+        self._model = configured_model
         # Accept short names like "llama-3.3-70b" and expand to full HF path
        
         raw_temp = float(config.metadata.get("temperature", DEFAULT_TEMPERATURE))

@@ -110,7 +110,6 @@ class DistributionPlotter(BasePlotter):
         -------
         matplotlib.figure.Figure
         """
-        import matplotlib.pyplot as plt
         import numpy as np
 
         agents, scores = _extract_scores(metrics, metric)
@@ -264,7 +263,6 @@ class DistributionPlotter(BasePlotter):
         try:
             import seaborn as sns
             import pandas as pd
-            import matplotlib.pyplot as plt
 
             rows = []
             for label, vals in data.items():

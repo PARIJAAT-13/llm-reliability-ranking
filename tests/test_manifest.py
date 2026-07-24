@@ -2,7 +2,6 @@
 
 import tempfile
 import pathlib
-import pytest
 import json
 
 from llm_reliability.reproducibility.manifest import ManifestGenerator

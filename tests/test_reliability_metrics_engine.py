@@ -1,7 +1,5 @@
 """Tests for the Reliability Metrics Engine and individual metric calculators."""
 
-import pytest
-from typing import Any
 
 from llm_reliability.agents.mock_agent import MockAgent
 from llm_reliability.benchmarks.mock_benchmark import MockBenchmark
@@ -9,7 +7,6 @@ from llm_reliability.configs.config import Configuration
 from llm_reliability.ranking.reliability_ranker import ReliabilityRanker
 from llm_reliability.records.evaluation import EvaluationRecord
 from llm_reliability.records.execution import ExecutionRecord
-from llm_reliability.records.metric import MetricRecord
 from llm_reliability.reliability.faults.manager import FaultManager
 from llm_reliability.reliability.metrics import (
     ConsistencyMetricResult,

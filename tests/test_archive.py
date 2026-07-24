@@ -2,8 +2,6 @@
 
 import tempfile
 import pathlib
-import pytest
-import json
 
 from llm_reliability.reproducibility.archive import ArchiveBuilder
 from llm_reliability.reproducibility.checklist import ReproducibilityChecklist

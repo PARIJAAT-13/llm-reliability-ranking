@@ -211,14 +211,36 @@ class ExperimentRunner:
 
     def _execute_single_run(self, idx: int, run: RunDescriptor) -> None:
         """Execute a single RunDescriptor and collect its artifacts."""
+        if not hasattr(self, "_start_time") or self._start_time is None:
+            import time
+            self._start_time = time.time()
+
+        import time
+        current_num = idx + 1
+        total_runs = self._status.total_runs
+        pct = (current_num / total_runs) * 100.0
+        elapsed_sec = time.time() - self._start_time
+        avg_run_sec = elapsed_sec / current_num if current_num > 0 else 0.0
+        eta_sec = avg_run_sec * (total_runs - current_num)
+
+        model_name = run.agent_name.split(":", 1)[1] if ":" in run.agent_name else run.agent_name
+
+        def _fmt(seconds: float) -> str:
+            s = int(round(seconds))
+            m, sec = divmod(s, 60)
+            h, m = divmod(m, 60)
+            return f"{h:02d}:{m:02d}:{sec:02d}" if h else f"{m:02d}:{sec:02d}"
+
         self._logger.info(
-            "Run %d/%d | benchmark=%s agent=%s seed=%d rep=%d",
-            idx + 1,
-            self._status.total_runs,
+            "Progress: Run %d/%d (%.1f%%) | Benchmark: %s | Model: %s | Seed: %d | Elapsed: %s | ETA: %s",
+            current_num,
+            total_runs,
+            pct,
             run.benchmark_name,
-            run.agent_name,
+            model_name,
             run.derived_seed,
-            run.run_index,
+            _fmt(elapsed_sec),
+            _fmt(eta_sec),
         )
         self._status.current_benchmark = run.benchmark_name
         self._status.current_agent = run.agent_name
@@ -241,11 +263,11 @@ class ExperimentRunner:
                 list(range(self._status.completed_runs))
             )
         except Exception as exc:
-            self._logger.error("Run %d failed: %s", idx, exc, exc_info=True)
+            self._logger.error("Run %d failed for model '%s': %s", current_num, model_name, exc, exc_info=True)
             self._status.failed_runs += 1
             self._status.errors.append(
                 {"run_index": idx, "benchmark": run.benchmark_name,
-                 "agent": run.agent_name, "error": str(exc)}
+                 "agent": run.agent_name, "model": model_name, "error": str(exc)}
             )
 
         self._result_manager.save_status(self._status)
@@ -329,8 +351,27 @@ class ExperimentRunner:
     # Factory helpers
     # ------------------------------------------------------------------
 
+    def _find_agent_spec(self, agent_name: str) -> AgentSpec | None:
+        """Locate an AgentSpec matching either exact name or composite name:model."""
+        for a in self._spec.agents:
+            model = a.metadata.get("model") or a.agent_metadata.get("model")
+            full_name = f"{a.name}:{model}" if model and ":" not in a.name else a.name
+            if a.name == agent_name or full_name == agent_name:
+                return a
+        return None
+
     def _build_config(self, run: RunDescriptor) -> Configuration:
         """Build a Configuration from a RunDescriptor."""
+        aspec = self._find_agent_spec(run.agent_name)
+        agent_meta = {}
+        if aspec:
+            if aspec.agent_metadata:
+                agent_meta.update(aspec.agent_metadata)
+            if aspec.metadata:
+                agent_meta.update(aspec.metadata)
+
+        merged_metadata = {**agent_meta, "dataset_path": run.dataset_path}
+
         return Configuration(
             experiment_name=self._spec.experiment_name,
             benchmark=run.benchmark_name,
@@ -342,7 +383,7 @@ class ExperimentRunner:
             repetitions=1,
             perturbations=tuple(self._spec.perturbations),
             fault_injection=self._spec.fault_injection,
-            metadata={"dataset_path": run.dataset_path},
+            metadata=merged_metadata,
         )
 
     @staticmethod
@@ -357,7 +398,7 @@ class ExperimentRunner:
             raise RuntimeError(
                 f"No agent_factory provided. Cannot instantiate agent '{name}'."
             )
-        aspec = next((a for a in self._spec.agents if a.name == name), None)
+        aspec = self._find_agent_spec(name)
         if aspec is None:
             raise RuntimeError(f"Agent spec not found for '{name}'.")
         return self._agent_factory(aspec, config)

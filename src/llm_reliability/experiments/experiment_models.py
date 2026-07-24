@@ -9,7 +9,6 @@ collected artifacts for a single named experiment.
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, timezone
 from enum import Enum
 from typing import Any
 
@@ -40,6 +39,7 @@ class AgentSpec(SerializableModel):
     """Specification for one agent within an experiment."""
 
     name: str = Field(min_length=1, description="Registered agent class name.")
+    metadata: dict[str, Any] = Field(default_factory=dict)
     agent_metadata: dict[str, Any] = Field(default_factory=dict)
 
 
@@ -78,8 +78,11 @@ class ExperimentSpec(SerializableModel):
 
     @model_validator(mode="after")
     def _no_duplicate_agents(self) -> "ExperimentSpec":
-        names = [a.name for a in self.agents]
-        if len(names) != len(set(names)):
+        keys = []
+        for a in self.agents:
+            model = a.metadata.get("model") or a.agent_metadata.get("model")
+            keys.append(f"{a.name}:{model}" if model else a.name)
+        if len(keys) != len(set(keys)):
             raise ValueError("Duplicate agent names are not allowed.")
         return self
 

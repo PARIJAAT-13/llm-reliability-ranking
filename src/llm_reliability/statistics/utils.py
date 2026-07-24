@@ -5,7 +5,6 @@ Handles input validations and helper functions for summary statistics.
 """
 
 import numpy as np
-import pandas as pd
 from typing import Sequence
 
 from llm_reliability.records.ranking import RankingRecord

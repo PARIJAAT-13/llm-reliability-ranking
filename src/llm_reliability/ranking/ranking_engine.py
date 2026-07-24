@@ -4,7 +4,7 @@ Ranking Engine.
 Coordinates and executes agent rankings based on MetricRecords.
 """
 
-from typing import Any, Callable
+from typing import Callable
 
 from llm_reliability.records.metric import MetricRecord
 from llm_reliability.records.ranking import RankingRecord

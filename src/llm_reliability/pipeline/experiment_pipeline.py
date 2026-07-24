@@ -43,6 +43,22 @@ class ExperimentResult(SerializableModel):
     metadata: dict[str, Any] = Field(default_factory=dict)
 
 
+def classify_failure_reason(error_str: str | None) -> str:
+    """Classify error message string into standard failure reason category."""
+    if not error_str:
+        return "none"
+    err = str(error_str).lower()
+    if any(term in err for term in ("memory", "ram", "vram", "alloc", "gib", "mib", "out of memory", "insufficient")):
+        return "memory"
+    if any(term in err for term in ("not found", "unavailable", "installed", "does not exist")):
+        return "model_unavailable"
+    if "timeout" in err:
+        return "timeout"
+    if any(term in err for term in ("connection", "network", "refused", "reset", "closed")):
+        return "network"
+    return "inference"
+
+
 class ExperimentPipeline:
     """Orchestrates an end-to-end experiment run."""
 
@@ -66,14 +82,34 @@ class ExperimentPipeline:
     def run(self) -> ExperimentResult:
         """Execute the entire experiment pipeline end-to-end."""
         logger.info("experiment start")
-        self.agent.initialize()
+        try:
+            self.agent.initialize()
+        except Exception as init_exc:
+            reason = classify_failure_reason(str(init_exc))
+            self._log_model_skipped(self.config.agent, reason, str(init_exc))
+            self._handle_unrecoverable_model_failure(reason, str(init_exc))
+            self.evaluate()
+            self.compute_metrics()
+            self.compute_rankings()
+            return ExperimentResult(
+                configuration=self.config,
+                execution_records=self.execution_records,
+                evaluation_records=self.evaluation_records,
+                metric_records=self.metric_records,
+                ranking_records=self.ranking_records,
+                metadata={"errors": [{"phase": "initialize", "error": str(init_exc)}]},
+            )
+
         try:
             self.run_all()
             self.evaluate()
             self.compute_metrics()
             self.compute_rankings()
         finally:
-            self.agent.shutdown()
+            try:
+                self.agent.shutdown()
+            except Exception as shutdown_exc:
+                logger.debug("Error during agent shutdown: %s", shutdown_exc)
 
         logger.info("experiment completion")
         return ExperimentResult(
@@ -86,18 +122,48 @@ class ExperimentPipeline:
         )
 
     def run_all(self) -> None:
-        """Run all tasks provided by the benchmark."""
+        """Run all tasks provided by the benchmark with automatic model failure detection."""
         self.benchmark.load()
         tasks = self.benchmark.list_tasks()
 
+        skipped_reason: str | None = None
+        skip_error_msg: str | None = None
+
         for task_id in tasks:
+            if skipped_reason:
+                self._record_skipped_task(task_id, skipped_reason, skip_error_msg)
+                continue
+
             for _ in range(self.config.repetitions):
                 try:
                     task = self.benchmark.get_task(task_id)
                     self.run_task(task)
+                    if self.execution_records:
+                        last_exec = self.execution_records[-1]
+                        if last_exec.task_id == task_id and last_exec.status == "error":
+                            reason = classify_failure_reason(last_exec.error)
+                            if reason in ("memory", "model_unavailable"):
+                                skipped_reason = reason
+                                skip_error_msg = last_exec.error
+                                self._log_model_skipped(self.config.agent, reason, last_exec.error)
+                                break
+                    if self.errors and self.errors[-1].get("phase") == "run_task":
+                        last_err = str(self.errors[-1].get("error", ""))
+                        reason = classify_failure_reason(last_err)
+                        if reason in ("memory", "model_unavailable"):
+                            skipped_reason = reason
+                            skip_error_msg = last_err
+                            self._log_model_skipped(self.config.agent, reason, last_err)
+                            break
                 except Exception as e:
-                    logger.error("errors retrieving task %s: %s", task_id, e, exc_info=True)
+                    reason = classify_failure_reason(str(e))
+                    logger.error("errors executing task %s: %s", task_id, e, exc_info=True)
                     self.errors.append({"phase": "run_all", "task_id": task_id, "error": str(e)})
+                    if reason in ("memory", "model_unavailable"):
+                        skipped_reason = reason
+                        skip_error_msg = str(e)
+                        self._log_model_skipped(self.config.agent, reason, str(e))
+                        break
 
     def run_task(self, task: dict[str, Any]) -> None:
         """Execute a single task and store the ExecutionRecord."""
@@ -111,11 +177,36 @@ class ExperimentPipeline:
             self.agent.reset()
             try:
                 execution = self.benchmark.run(self.agent, task)
+                if execution.status == "error" and execution.error:
+                    reason = classify_failure_reason(execution.error)
+                    meta = dict(execution.environment_metadata or {})
+                    meta["failure_reason"] = reason
+                    execution = execution.model_copy(update={"environment_metadata": meta})
                 self.execution_records.append(execution)
                 logger.info("task completion: %s", task_id)
             except Exception as e:
                 logger.error("errors executing task %s: %s", task_id, e, exc_info=True)
                 self.errors.append({"phase": "run_task", "task_id": task_id, "error": str(e)})
+                reason = classify_failure_reason(str(e))
+                if reason in ("memory", "model_unavailable"):
+                    start_time = datetime.now(timezone.utc).isoformat()
+                    err_record = ExecutionRecord(
+                        configuration_hash=self.config.sha256(),
+                        seed=self.config.seed,
+                        benchmark=self.config.benchmark,
+                        agent=self.config.agent,
+                        task_id=task_id,
+                        run_index=0,
+                        runtime_seconds=0.0,
+                        timestamp=start_time,
+                        stdout="",
+                        stderr=str(e),
+                        status="error",
+                        error=str(e),
+                        agent_output=None,
+                        environment_metadata={"failure_reason": reason},
+                    )
+                    self.execution_records.append(err_record)
         else:
             if use_perturbations:
                 from llm_reliability.reliability.perturbation.manager import PerturbationManager
@@ -136,6 +227,44 @@ class ExperimentPipeline:
                     self.execution_records.extend(fault_res.execution_records)
                 if fault_res.errors:
                     self.errors.extend(fault_res.errors)
+
+    def _log_model_skipped(self, agent_name: str, reason: str, details: str) -> None:
+        model_name = self.config.metadata.get("model") or agent_name
+        reason_desc = "insufficient system memory" if reason == "memory" else f"model un-executable ({reason})"
+        logger.warning("\nModel %s skipped.", model_name)
+        logger.warning("Reason: %s.", reason_desc)
+        logger.info("Continuing with next scheduled model.\n")
+
+    def _handle_unrecoverable_model_failure(self, reason: str, error_msg: str) -> None:
+        try:
+            self.benchmark.load()
+            tasks = self.benchmark.list_tasks()
+        except Exception:
+            tasks = ["unknown_task"]
+        for task_id in tasks:
+            self._record_skipped_task(task_id, reason, error_msg)
+
+    def _record_skipped_task(self, task_id: str, reason: str, error_msg: str | None) -> None:
+        start_time = datetime.now(timezone.utc).isoformat()
+        model_name = self.config.metadata.get("model") or self.config.agent
+        err_text = f"[SKIPPED] Model {model_name} skipped ({reason}): {error_msg or 'unrecoverable model failure'}"
+        exec_record = ExecutionRecord(
+            configuration_hash=self.config.sha256(),
+            seed=self.config.seed,
+            benchmark=self.config.benchmark,
+            agent=self.config.agent,
+            task_id=task_id,
+            run_index=0,
+            runtime_seconds=0.0,
+            timestamp=start_time,
+            stdout="",
+            stderr=err_text,
+            status="error",
+            error=err_text,
+            agent_output=None,
+            environment_metadata={"failure_reason": reason, "skipped": True},
+        )
+        self.execution_records.append(exec_record)
 
     def evaluate(self) -> None:
         """Evaluate all captured execution records."""

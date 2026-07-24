@@ -23,7 +23,7 @@ deterministic ordering across runs and platforms.
 
 from __future__ import annotations
 
-from typing import Any, Literal, TypeVar
+from typing import Literal, TypeVar
 
 from pydantic import Field
 

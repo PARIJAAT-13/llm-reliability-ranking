@@ -225,7 +225,6 @@ class FaultManager:
 
             t_start = time.perf_counter()
             retry_count = 0
-            execution_status = "error"
             exec_error: str | None = None
             raw_exec: ExecutionRecord | None = None
             active_task = task
@@ -255,14 +254,11 @@ class FaultManager:
 
                     raw_exec = benchmark.run(agent, active_task)
                     if raw_exec.status == "success" and not raw_exec.error:
-                        execution_status = "success"
                         exec_error = None
                         break
                     else:
-                        execution_status = raw_exec.status
                         exec_error = raw_exec.error
                 except Exception as run_exc:
-                    execution_status = "error"
                     exec_error = str(run_exc)
                     logger.warning("Attempt %d failed for fault '%s' on task '%s': %s", attempt + 1, strategy.fault_name, task_id, run_exc)
 

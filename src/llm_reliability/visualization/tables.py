@@ -68,7 +68,6 @@ class TableGenerator:
             Perturbation Robustness, Fault Tolerance, Composite Reliability.
         """
         import pandas as pd
-        import numpy as np
 
         if benchmark:
             metrics = [m for m in metrics if m.benchmark == benchmark]

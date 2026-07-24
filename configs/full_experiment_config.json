@@ -1,18 +1,20 @@
 {
   "name": "full_llm_reliability_ranking_study",
   "output_dir": "results/full_study",
+  "system_prompt": "You are solving a GAIA benchmark task.\nReturn ONLY the final answer.\nDo not explain your reasoning.\nDo not use markdown.\nOutput exactly the final answer.",
+
+
   "models": [
-    "openai:gpt-4o",
-    "anthropic:claude-3-5-sonnet",
-    "google:gemini-1.5-pro",
-    "deepseek:deepseek-chat",
-    "qwen:qwen-2.5-72b",
-    "llama:llama-3.3-70b"
+    "ollama:tinyllama:latest",
+    "ollama:phi3:mini",
+    "ollama:qwen2.5:7b",
+    "ollama:mistral:7b",
+    "ollama:gemma2:9b",
+    "ollama:llama3.1:8b"
   ],
   "benchmarks": [
-    "AgentBoard",
-    "GAIA",
-    "SWE-bench Lite"
+    "GAIA"
+
   ],
   "seeds": [42, 100, 2026],
   "repetitions": 3,
@@ -23,7 +25,7 @@
     "wrapper",
     "punctuation"
   ],
-  "fault_injection": true,
+  "fault_injection": false,
   "fault_types": [
     "timeout",
     "rate_limit",

@@ -53,18 +53,23 @@ class Scheduler:
         queue: list[RunDescriptor] = []
         for bspec in self._spec.benchmarks:
             for aspec in self._spec.agents:
+                model = aspec.metadata.get("model") or aspec.agent_metadata.get("model")
+                if model and ":" not in aspec.name:
+                    agent_identifier = f"{aspec.name}:{model}"
+                else:
+                    agent_identifier = aspec.name
                 for base_seed in self._spec.seeds:
                     for run_index in range(self._spec.repetitions):
                         derived = self._seed_manager.derive(
                             base_seed,
                             bspec.name,
-                            aspec.name,
+                            agent_identifier,
                             run_index,
                         )
                         queue.append(
                             RunDescriptor(
                                 benchmark_name=bspec.name,
-                                agent_name=aspec.name,
+                                agent_name=agent_identifier,
                                 base_seed=base_seed,
                                 run_index=run_index,
                                 derived_seed=derived,

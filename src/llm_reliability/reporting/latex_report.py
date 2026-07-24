@@ -32,8 +32,6 @@ Figure paths are embedded as ``\\includegraphics`` with width constraints.
 from __future__ import annotations
 
 import pathlib
-import re
-from typing import Any
 
 from llm_reliability.reporting.summary import ExperimentSummary
 from llm_reliability.visualization.tables import TableGenerator

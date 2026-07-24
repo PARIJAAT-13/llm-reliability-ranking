@@ -2,7 +2,6 @@
 
 import tempfile
 import pathlib
-import pytest
 import pandas as pd
 
 from llm_reliability.visualization.tables import TableGenerator

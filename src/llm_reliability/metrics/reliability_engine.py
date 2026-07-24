@@ -15,7 +15,6 @@ Typical usage::
     result = engine.compute_all()
 """
 
-import numpy as np
 
 from llm_reliability.metrics.composite import compute_composite
 from llm_reliability.metrics.consistency import compute_consistency

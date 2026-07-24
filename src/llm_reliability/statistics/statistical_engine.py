@@ -4,7 +4,6 @@ Statistical Analysis Engine.
 Orchestrates all statistical computations on RankingRecords.
 """
 
-from typing import Any
 
 from llm_reliability.records.ranking import RankingRecord
 from llm_reliability.statistics.correlation import (

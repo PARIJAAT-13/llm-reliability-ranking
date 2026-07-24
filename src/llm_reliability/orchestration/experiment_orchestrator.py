@@ -35,27 +35,20 @@ from __future__ import annotations
 import argparse
 import json
 import logging
-import os
-import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
 
-from llm_reliability.agents.adapters.provider_registry import ProviderRegistry
 from llm_reliability.agents.agent_factory import AgentFactory
-from llm_reliability.agents.gpt_agent import GPTAgent
-from llm_reliability.agents.mock_agent import MockAgent
 from llm_reliability.benchmarks.adapters.registry import BenchmarkRegistry
 from llm_reliability.configs.config import Configuration
 from llm_reliability.experiments.experiment_models import (
     AgentSpec,
     BenchmarkSpec,
     ExperimentSpec,
-    ExperimentStatus,
 )
 from llm_reliability.experiments.experiment_runner import ExperimentRunner
-from llm_reliability.experiments.result_manager import ResultManager
 from llm_reliability.interfaces.agent import Agent
 from llm_reliability.reporting.summary import ExperimentSummary
 
@@ -134,6 +127,8 @@ class ExperimentOrchestrator:
         specs: list[ExperimentSpec],
         batch_name: str = "orchestration_batch",
         resume: bool = True,
+        validate: bool = True,
+        check_ollama: bool = True,
     ) -> dict[str, Any]:
         """Execute a sequence of ExperimentSpec runs sequentially with failure tolerance.
 
@@ -145,12 +140,19 @@ class ExperimentOrchestrator:
             Identifier for this orchestration run.
         resume : bool
             If True, skips already completed runs or resumes from checkpoint.
+        validate : bool
+            If True, performs pre-flight matrix validation before starting execution.
+        check_ollama : bool
+            If True, checks Ollama server reachability during pre-flight validation.
 
         Returns
         -------
         dict[str, Any]
             Master summary report dictionary.
         """
+        if validate:
+            self.validate_specs(specs, check_ollama_server=check_ollama)
+
         total_experiments = len(specs)
         logger.info(
             "Starting orchestration batch '%s' with %d experiment(s).",
@@ -439,16 +441,41 @@ class ExperimentOrchestrator:
 
         # Parse models / agents
         raw_models = definition.get("models") or definition.get("agents") or ["MockAgent"]
+        sys_prompt = definition.get("system_prompt")
         agent_specs: list[AgentSpec] = []
+        seen_models: set[tuple[str, str]] = set()
         for m in raw_models:
             if isinstance(m, str):
-                agent_specs.append(AgentSpec(name=m, agent_metadata={"model": m}))
+                if m.startswith("ollama:"):
+                    provider, model_name = m.split(":", 1)
+                    meta = {"model": model_name}
+                    if sys_prompt:
+                        meta["system_prompt"] = sys_prompt
+                    aspec = AgentSpec(name=provider, metadata=meta, agent_metadata=meta)
+                else:
+                    meta = {"model": m}
+                    if sys_prompt:
+                        meta["system_prompt"] = sys_prompt
+                    aspec = AgentSpec(name=m, metadata=meta, agent_metadata=meta)
             elif isinstance(m, dict):
-                a_name = m["name"]
-                a_meta = m.get("agent_metadata", {})
+                a_name = m.get("provider") or m.get("name") or "ollama"
+                a_meta = dict(m.get("metadata") or m.get("agent_metadata") or {})
                 if "model" not in a_meta and "model" in m:
                     a_meta["model"] = m["model"]
-                agent_specs.append(AgentSpec(name=a_name, agent_metadata=a_meta))
+                for k in ("temperature", "max_tokens", "base_url", "system_prompt"):
+                    if k in m and k not in a_meta:
+                        a_meta[k] = m[k]
+                if sys_prompt and "system_prompt" not in a_meta:
+                    a_meta["system_prompt"] = sys_prompt
+                aspec = AgentSpec(name=a_name, metadata=a_meta, agent_metadata=a_meta)
+            else:
+                raise ValueError(f"Invalid model entry in configuration: {m!r}")
+
+            model_key = (aspec.name, str(aspec.agent_metadata.get("model") or aspec.metadata.get("model") or ""))
+            if model_key in seen_models:
+                logger.warning("Duplicate model specification detected in config: %s", model_key)
+            seen_models.add(model_key)
+            agent_specs.append(aspec)
 
         import uuid
 
@@ -522,6 +549,74 @@ class ExperimentOrchestrator:
                     specs.append(spec)
 
         return specs
+
+    def validate_specs(
+        self,
+        specs: list[ExperimentSpec],
+        check_ollama_server: bool = True,
+    ) -> None:
+        """Perform pre-flight matrix validation before experiment execution begins.
+
+        Validates:
+        - Benchmarks exist in registry (or custom factory) and dataset files exist
+        - Agent providers are registered in AgentFactory (or custom factory)
+        - Ollama server availability and model existence (if Ollama provider used)
+
+        Raises
+        ------
+        ValueError | RuntimeError
+            If any validation rule fails.
+        """
+        errors: list[str] = []
+        ollama_models_to_check: dict[str, set[str]] = {}
+
+        registered_benchmarks = [b.lower() for b in BenchmarkRegistry.list()]
+        # Add default aliases
+        registered_benchmarks.extend(["mockbenchmark", "mock", "agentboard", "gaia", "swebenchlite", "swe-bench lite"])
+
+        for spec in specs:
+            # Benchmark validation
+            for bspec in spec.benchmarks:
+                if not bspec.name:
+                    errors.append("Benchmark name cannot be empty.")
+                elif self._benchmark_factory is None and bspec.name.lower() not in registered_benchmarks:
+                    errors.append(f"Benchmark '{bspec.name}' is not registered in BenchmarkRegistry.")
+
+                if bspec.dataset_path and self._benchmark_factory is None:
+                    p = Path(bspec.dataset_path)
+                    if not p.exists() and bspec.name.lower() not in ("mockbenchmark", "mock"):
+                        errors.append(f"Dataset file does not exist for benchmark '{bspec.name}': {bspec.dataset_path}")
+
+            # Agent / provider validation
+            from llm_reliability.agents.agent_factory import _resolve
+            is_default_factory = self._agent_factory is None or self._agent_factory == self._default_agent_factory
+            for aspec in spec.agents:
+                if is_default_factory and not AgentFactory.is_mock(aspec.name) and _resolve(aspec.name) is None:
+                    errors.append(f"Unsupported agent provider '{aspec.name}'. Available prefixes: {AgentFactory.available_names()}")
+
+                # Check Ollama specifics
+                if aspec.name.lower() == "ollama" or (isinstance(aspec.name, str) and aspec.name.lower().startswith("ollama:")):
+                    model = aspec.agent_metadata.get("model") or aspec.metadata.get("model") or (aspec.name.split(":", 1)[1] if ":" in aspec.name else "llama3.1:8b")
+                    base_url = aspec.agent_metadata.get("base_url") or aspec.metadata.get("base_url") or "http://127.0.0.1:11434"
+                    ollama_models_to_check.setdefault(base_url, set()).add(model)
+
+        if check_ollama_server and ollama_models_to_check:
+            from llm_reliability.agents.utils.ollama_utils import (
+                check_ollama_server as _check_ollama,
+                validate_models_exist as _validate_models,
+            )
+            for base_url, models in ollama_models_to_check.items():
+                ok, msg = _check_ollama(base_url)
+                if not ok:
+                    errors.append(f"Ollama server reachable check failed for '{base_url}': {msg}")
+                else:
+                    valid, model_errs = _validate_models(list(models), base_url=base_url)
+                    if not valid:
+                        errors.extend(model_errs)
+
+        if errors:
+            err_summary = "\n".join(f"  • {e}" for e in errors)
+            raise ValueError(f"Pre-flight configuration validation failed with {len(errors)} error(s):\n{err_summary}")
 
     # ------------------------------------------------------------------
     # Internal Helpers

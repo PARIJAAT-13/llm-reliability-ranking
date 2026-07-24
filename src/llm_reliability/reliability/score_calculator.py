@@ -31,7 +31,6 @@ composite.  This matches the behaviour of ``ReliabilityMetricsEngine._compute_sc
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass, field
 from typing import Any
 
 from pydantic import BaseModel, Field, model_validator

@@ -33,8 +33,6 @@ formats every tabular result.
 from __future__ import annotations
 
 import pathlib
-from datetime import datetime, timezone
-from typing import Any
 
 from llm_reliability.reporting.summary import ExperimentSummary
 from llm_reliability.visualization.tables import TableGenerator
@@ -169,8 +167,8 @@ class MarkdownReportWriter:
     def _section_overview(self, s: ExperimentSummary) -> str:
         lines = [
             "## Experiment Overview\n",
-            f"| Property | Value |",
-            f"|---|---|",
+            "| Property | Value |",
+            "|---|---|",
             f"| Experiment ID | `{s.experiment_id}` |",
             f"| Experiment Name | {s.experiment_name} |",
             f"| Benchmarks | {', '.join(s.benchmarks) or 'N/A'} |",

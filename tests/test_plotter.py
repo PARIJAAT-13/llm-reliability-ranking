@@ -1,13 +1,10 @@
 """Tests for figure generation and plotters."""
 
-import os
 import tempfile
 import pathlib
-import pytest
 import matplotlib
 matplotlib.use("Agg")
 
-from llm_reliability.visualization.styles import apply_publication_style
 from llm_reliability.visualization.plotter import BasePlotter
 from llm_reliability.visualization.heatmaps import HeatmapPlotter
 from llm_reliability.visualization.distributions import DistributionPlotter
@@ -16,7 +13,7 @@ from llm_reliability.visualization.export import FigureExporter
 
 from tests.ranking_test_helpers import create_mock_metric
 from tests.statistics_test_helpers import create_mock_ranking
-from llm_reliability.statistics.result_models import CorrelationResult, StatisticalReport, SummaryStatistics
+from llm_reliability.statistics.result_models import CorrelationResult
 
 
 class SimplePlotter(BasePlotter):

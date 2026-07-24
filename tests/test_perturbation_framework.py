@@ -81,10 +81,6 @@ def test_instruction_reordering_strategy():
     strategy = InstructionReorderingPerturbationStrategy()
     assert strategy.name == "reordering"
 
-    task = {
-        "task_id": "t3",
-        "prompt": "Step A: Read documentation.\nStep B: Write tests.\nStep C: Deploy.",
-    }
     # List item reordering
     bullet_task = {
         "task_id": "t3_bullet",

@@ -162,10 +162,15 @@ def main() -> int:
     else:
         # Use default cache paths (may not exist; benchmarks will raise if missing)
         for bench in benchmarks_raw:
-            norm = bench.lower().replace("-", "_").replace(" ", "_")
-            dataset_paths[bench] = str(
-                _REPO_ROOT / "data" / "cache" / f"{norm}.json"
-            )
+            if bench.lower() == "gaia":
+                sample_file = _REPO_ROOT / "data" / "gaia_sample.json"
+                dataset_paths[bench] = str(sample_file) if sample_file.exists() else str(_REPO_ROOT / "data" / "GAIA")
+            else:
+                norm = bench.lower().replace("-", "_").replace(" ", "_")
+                dataset_paths[bench] = str(
+                    _REPO_ROOT / "data" / "cache" / f"{norm}.json"
+                )
+
 
     # ------------------------------------------------------------------
     # Build ExperimentSpec
@@ -177,7 +182,28 @@ def main() -> int:
         )
         for b in benchmarks_raw
     ]
-    agent_specs = [AgentSpec(name=a) for a in models_raw]
+    sys_prompt = raw_config.get("system_prompt")
+    agent_specs: list[AgentSpec] = []
+    for m in models_raw:
+        if isinstance(m, str) and m.startswith("ollama:"):
+            provider, model_name = m.split(":", 1)
+            meta = {"model": model_name}
+            if sys_prompt:
+                meta["system_prompt"] = sys_prompt
+            agent_specs.append(AgentSpec(name=provider, metadata=meta, agent_metadata=meta))
+        elif isinstance(m, dict):
+            provider = m.get("provider", "ollama")
+            meta = dict(m.get("metadata", {}))
+            if "model" in m:
+                meta["model"] = m["model"]
+            if sys_prompt and "system_prompt" not in meta:
+                meta["system_prompt"] = sys_prompt
+            agent_specs.append(AgentSpec(name=provider, metadata=meta, agent_metadata=meta))
+        else:
+            meta = {"model": str(m)}
+            if sys_prompt:
+                meta["system_prompt"] = sys_prompt
+            agent_specs.append(AgentSpec(name=str(m), metadata=meta, agent_metadata=meta))
 
     spec = ExperimentSpec(
         experiment_name=raw_config.get("name", "large_scale_study"),

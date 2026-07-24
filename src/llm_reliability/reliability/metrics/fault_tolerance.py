@@ -20,7 +20,6 @@ structured zero scores with warning metadata without raising exceptions.
 from __future__ import annotations
 
 import logging
-from typing import Any
 
 import numpy as np
 

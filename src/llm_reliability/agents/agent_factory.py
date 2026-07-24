@@ -37,7 +37,6 @@ Usage
 from __future__ import annotations
 
 import logging
-import os
 from typing import TYPE_CHECKING
 
 from llm_reliability.interfaces.agent import Agent
@@ -65,6 +64,7 @@ _REGISTRY: dict[str, tuple[str, str]] = {
     "qwen":          ("llm_reliability.agents.qwen_agent",            "QwenAgent"),
     "llama":         ("llm_reliability.agents.llama_agent",           "LlamaAgent"),
     "meta":          ("llm_reliability.agents.llama_agent",           "LlamaAgent"),
+    "ollama":        ("llm_reliability.agents.ollama_agent",          "OllamaAgent"),
     "mock":          ("llm_reliability.agents.mock_agent",            "MockAgent"),
     "mock_agent":    ("llm_reliability.agents.mock_agent",            "MockAgent"),
 }

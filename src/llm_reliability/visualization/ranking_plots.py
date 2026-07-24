@@ -185,9 +185,9 @@ class RankingPlotter(BasePlotter):
 
         y = np.arange(n)
         bar_h = 0.35
-        bars_s = ax.barh(y + bar_h / 2, s_vals, height=bar_h,
+        ax.barh(y + bar_h / 2, s_vals, height=bar_h,
                           color=COLOR_SUCCESS, alpha=0.85, label="Success", edgecolor="white")
-        bars_r = ax.barh(y - bar_h / 2, r_vals, height=bar_h,
+        ax.barh(y - bar_h / 2, r_vals, height=bar_h,
                           color=COLOR_RELIABILITY, alpha=0.85, label="Reliability", edgecolor="white")
 
         ax.set_yticks(y)
@@ -250,7 +250,7 @@ class RankingPlotter(BasePlotter):
         fig, ax = self._new_figure(figsize=figsize)
 
         for i, agent in enumerate(common):
-            norm_diff = diffs[i] / max(max_diff, 1)
+            diffs[i] / max(max_diff, 1)
             color = PALETTE[i % len(PALETTE)]
             ax.scatter(s_ranks[i], r_ranks[i], s=60, color=color, zorder=3)
             ax.annotate(agent, (s_ranks[i], r_ranks[i]),
@@ -360,7 +360,6 @@ class RankingPlotter(BasePlotter):
         -------
         matplotlib.figure.Figure
         """
-        import matplotlib.pyplot as plt
         from datetime import datetime
 
         records = [

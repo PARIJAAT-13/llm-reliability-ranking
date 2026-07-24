@@ -16,7 +16,6 @@ import pathlib
 import urllib.request
 from typing import Any
 
-from pydantic import Field
 from llm_reliability.utils.serialization import SerializableModel
 
 logger = logging.getLogger(__name__)

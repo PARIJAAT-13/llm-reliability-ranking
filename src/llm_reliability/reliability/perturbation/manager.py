@@ -278,7 +278,7 @@ class PerturbationManager:
         for run_idx, ptask in enumerate(perturbed_tasks, start=1):
             p_meta = ptask.get("metadata", {}).get("perturbation", {})
             strategy_name = p_meta.get("strategy", "perturbed")
-            pid = p_meta.get("perturbation_id", f"{strategy_name}_{run_idx}")
+            p_meta.get("perturbation_id", f"{strategy_name}_{run_idx}")
 
             logger.info("Executing perturbed run %d/%d (strategy='%s') for task '%s'.", run_idx, len(perturbed_tasks), strategy_name, task_id)
 

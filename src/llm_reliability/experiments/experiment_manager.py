@@ -7,7 +7,6 @@ save, archive, and list.
 
 from __future__ import annotations
 
-import json
 import shutil
 from pathlib import Path
 
