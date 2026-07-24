@@ -68,12 +68,13 @@ def _compute_fault_tolerance(evaluations: list[EvaluationRecord]) -> float | Non
 
 
 def _compute_composite(
+    success_rate: float,
     consistency: float,
     perturbation: float | None,
     fault_tolerance: float | None,
 ) -> float:
     """Average available reliability components into a composite score."""
-    components = [consistency]
+    components = [success_rate, consistency]
     if perturbation is not None:
         components.append(perturbation)
     if fault_tolerance is not None:
@@ -129,7 +130,7 @@ class MetricRecord(SerializableModel):
         consistency = _compute_repeated_run_consistency(evaluations)
         perturbation = _compute_perturbation_robustness(evaluations)
         fault_tolerance = _compute_fault_tolerance(evaluations)
-        composite = _compute_composite(consistency, perturbation, fault_tolerance)
+        composite = _compute_composite(success_rate, consistency, perturbation, fault_tolerance)
 
         return cls(
             benchmark=benchmark,

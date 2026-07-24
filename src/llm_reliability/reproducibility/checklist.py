@@ -179,8 +179,14 @@ class ReproducibilityChecklist:
     @staticmethod
     def _check_seeds_present(summary: Any) -> CheckItem:
         evals = getattr(summary, "evaluations", [])
-        seeds = {getattr(ev, "seed", None) for ev in evals}
-        seeds.discard(None)
+        seeds = set()
+        for ev in evals:
+            if isinstance(ev, dict):
+                seed = ev.get("seed")
+            else:
+                seed = getattr(ev, "seed", None)
+            if seed is not None:
+                seeds.add(seed)
         ok = bool(seeds)
         return CheckItem(
             name="Deterministic Seeds",
