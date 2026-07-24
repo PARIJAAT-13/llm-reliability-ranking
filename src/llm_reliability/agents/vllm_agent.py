@@ -17,7 +17,8 @@ from llm_reliability.agents.adapters.request_models import LLMRequest
 from llm_reliability.agents.adapters.response_models import LLMResponse
 from llm_reliability.agents.utils.rate_limiter import RateLimiter
 from llm_reliability.configs.config import Configuration
-from llm_reliability.interfaces.agent import Agent
+from llm_reliability.runtime import Runtime
+from llm_reliability.runtime.registry import RuntimeRegistry
 
 logger = logging.getLogger(__name__)
 
@@ -103,7 +104,7 @@ class _VLLMAdapter(BaseLLMAdapter):
         return self._client is not None
 
 
-class VLLMAgent(Agent):
+class VLLMAgent(Runtime):
     """vLLM agent for the LLM Reliability Ranking framework."""
 
     def __init__(self, config: Configuration) -> None:
@@ -154,3 +155,5 @@ class VLLMAgent(Agent):
 
 if not ProviderRegistry.exists("vllm"):
     ProviderRegistry.register("vllm", _VLLMAdapter)
+if not RuntimeRegistry.exists("vllm"):
+    RuntimeRegistry.register("vllm", VLLMAgent)

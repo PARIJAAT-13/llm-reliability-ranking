@@ -41,7 +41,8 @@ from llm_reliability.agents.adapters.request_models import LLMRequest
 from llm_reliability.agents.adapters.response_models import LLMResponse
 from llm_reliability.agents.utils.rate_limiter import RateLimiter
 from llm_reliability.configs.config import Configuration
-from llm_reliability.interfaces.agent import Agent
+from llm_reliability.runtime import Runtime
+from llm_reliability.runtime.registry import RuntimeRegistry
 
 logger = logging.getLogger(__name__)
 DEFAULT_MODEL: str = "gemini-2.5-flash"
@@ -175,7 +176,7 @@ class _GeminiAdapter(BaseLLMAdapter):
             return False
 
 
-class GeminiAgent(Agent):
+class GeminiAgent(Runtime):
     """Google Gemini agent for the LLM Reliability Ranking framework."""
 
     def __init__(self, config: Configuration) -> None:
@@ -247,3 +248,5 @@ class GeminiAgent(Agent):
 
 if not ProviderRegistry.exists("google"):
     ProviderRegistry.register("google", _GeminiAdapter)
+if not RuntimeRegistry.exists("gemini"):
+    RuntimeRegistry.register("gemini", GeminiAgent)

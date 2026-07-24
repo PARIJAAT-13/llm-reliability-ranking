@@ -2,6 +2,10 @@
 Agent Factory for LLM Reliability Ranking Framework.
 
 Resolves agent names to concrete Agent implementations.
+
+The factory delegates to ``RuntimeRegistry`` which supports plugin-based
+registration and discovery.  Third-party runtimes can be added without
+modifying this file.
 """
 
 from __future__ import annotations
@@ -9,7 +13,7 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
-from llm_reliability.interfaces.agent import Agent
+from llm_reliability.runtime import Runtime, RuntimeRegistry
 
 if TYPE_CHECKING:
     from llm_reliability.configs.config import Configuration
@@ -17,56 +21,54 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# Registry: maps lower-cased name prefix → import path + class name
+# Prefix → canonical name map (backward-compatible name resolution)
 # ---------------------------------------------------------------------------
 
-_REGISTRY: dict[str, tuple[str, str]] = {
-    # prefix                module path                                class name
-    "openai":        ("llm_reliability.agents.gpt_agent",             "GPTAgent"),
-    "gpt":           ("llm_reliability.agents.gpt_agent",             "GPTAgent"),
-    "gptAgent":      ("llm_reliability.agents.gpt_agent",             "GPTAgent"),
-    "anthropic":     ("llm_reliability.agents.anthropic_agent",       "AnthropicAgent"),
-    "claude":        ("llm_reliability.agents.anthropic_agent",       "AnthropicAgent"),
-    "google":        ("llm_reliability.agents.gemini_agent",          "GeminiAgent"),
-    "gemini":        ("llm_reliability.agents.gemini_agent",          "GeminiAgent"),
-    "deepseek":      ("llm_reliability.agents.deepseek_agent",        "DeepSeekAgent"),
-    "qwen":          ("llm_reliability.agents.qwen_agent",            "QwenAgent"),
-    "llama":         ("llm_reliability.agents.llama_agent",           "LlamaAgent"),
-    "meta":          ("llm_reliability.agents.llama_agent",           "LlamaAgent"),
-    "ollama":        ("llm_reliability.agents.ollama_agent",          "OllamaAgent"),
-    "llamacpp":      ("llm_reliability.agents.llama_cpp_agent",       "LlamaCppAgent"),
-    "llama.cpp":     ("llm_reliability.agents.llama_cpp_agent",       "LlamaCppAgent"),
-    "vllm":          ("llm_reliability.agents.vllm_agent",            "VLLMAgent"),
-    "huggingface":   ("llm_reliability.agents.hf_agent",              "HuggingFaceTransformersAgent"),
-    "hf":            ("llm_reliability.agents.hf_agent",              "HuggingFaceTransformersAgent"),
-    "mock":          ("llm_reliability.agents.mock_agent",            "MockAgent"),
-    "mock_agent":    ("llm_reliability.agents.mock_agent",            "MockAgent"),
+_PREFIX_MAP: dict[str, str] = {
+    "openai": "gpt",
+    "gpt": "gpt",
+    "gptAgent": "gpt",
+    "anthropic": "anthropic",
+    "claude": "anthropic",
+    "google": "gemini",
+    "gemini": "gemini",
+    "deepseek": "deepseek",
+    "qwen": "qwen",
+    "llama": "llama",
+    "meta": "llama",
+    "ollama": "ollama",
+    "llamacpp": "llamacpp",
+    "llama.cpp": "llamacpp",
+    "vllm": "vllm",
+    "huggingface": "huggingface",
+    "hf": "huggingface",
+    "mock": "mock",
+    "mock_agent": "mock",
 }
 
 
-def _load_agent_class(module_path: str, class_name: str) -> type[Agent]:
-    """Dynamically import and return an agent class."""
-    import importlib
-    module = importlib.import_module(module_path)
-    cls = getattr(module, class_name)
-    return cls  # type: ignore[return-value]
+def _resolve(name: str) -> str | None:
+    """Resolve an agent name to a canonical runtime name, or ``None``.
 
-
-def _resolve(name: str) -> tuple[str, str] | None:
-    """Resolve an agent name to (module_path, class_name) or None."""
+    Checks ``RuntimeRegistry`` for an exact match first, then tries
+    prefix-based resolution via ``_PREFIX_MAP``.
+    """
     lower = name.lower()
 
-    if lower in _REGISTRY:
-        return _REGISTRY[lower]
+    if RuntimeRegistry.exists(lower):
+        return lower
+
+    if lower in _PREFIX_MAP:
+        return _PREFIX_MAP[lower]
 
     if ":" in name:
         provider = name.split(":")[0].lower()
-        if provider in _REGISTRY:
-            return _REGISTRY[provider]
+        if provider in _PREFIX_MAP:
+            return _PREFIX_MAP[provider]
 
-    for prefix, entry in _REGISTRY.items():
+    for prefix, canonical in _PREFIX_MAP.items():
         if lower.startswith(prefix):
-            return entry
+            return canonical
 
     return None
 
@@ -75,34 +77,33 @@ class AgentFactory:
     """Create Agent instances from a name string and a Configuration."""
 
     @staticmethod
-    def create(name: str, config: "Configuration") -> Agent:
-        entry = _resolve(name)
-        if entry is None:
+    def create(name: str, config: Configuration) -> Runtime:
+        canonical = _resolve(name)
+        if canonical is None:
             raise ValueError(
                 f"Unknown agent name '{name}'. "
-                f"Recognised prefixes: {sorted(_REGISTRY.keys())}. "
+                f"Recognised prefixes: {sorted(_PREFIX_MAP.keys())}. "
                 f"Use 'mock' or 'mock_agent' for testing."
             )
 
-        module_path, class_name = entry
         try:
-            cls = _load_agent_class(module_path, class_name)
-        except ImportError as exc:
-            raise ImportError(
-                f"Cannot load agent '{class_name}' from '{module_path}'. "
-                f"Original error: {exc}"
-            ) from exc
+            runtime_cls = RuntimeRegistry.get(canonical)
+        except ValueError:
+            raise ValueError(
+                f"Agent '{name}' resolved to canonical name '{canonical}' "
+                f"but no runtime is registered under that name."
+            )
 
-        logger.debug("AgentFactory: resolved '%s' → %s.%s", name, module_path, class_name)
-        return cls(config=config)
+        logger.debug("AgentFactory: resolved '%s' → %s", name, canonical)
+        return runtime_cls(config=config)
 
     @staticmethod
     def is_mock(name: str) -> bool:
         """Return True if *name* resolves to MockAgent."""
-        lower = name.lower()
-        return lower in ("mock", "mock_agent")
+        canonical = _resolve(name)
+        return canonical == "mock"
 
     @staticmethod
     def available_names() -> list[str]:
         """Return the list of known agent name prefixes."""
-        return sorted(_REGISTRY.keys())
+        return sorted(_PREFIX_MAP.keys())

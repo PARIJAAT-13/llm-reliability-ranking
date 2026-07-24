@@ -43,7 +43,8 @@ from llm_reliability.agents.adapters.request_models import LLMRequest
 from llm_reliability.agents.adapters.response_models import LLMResponse
 from llm_reliability.agents.utils.rate_limiter import RateLimiter
 from llm_reliability.configs.config import Configuration
-from llm_reliability.interfaces.agent import Agent
+from llm_reliability.runtime import Runtime
+from llm_reliability.runtime.registry import RuntimeRegistry
 
 logger = logging.getLogger(__name__)
 
@@ -178,7 +179,7 @@ class _AnthropicAdapter(BaseLLMAdapter):
             return False
 
 
-class AnthropicAgent(Agent):
+class AnthropicAgent(Runtime):
     """Claude agent for the LLM Reliability Ranking framework."""
 
     def __init__(self, config: Configuration) -> None:
@@ -256,3 +257,5 @@ class AnthropicAgent(Agent):
 
 if not ProviderRegistry.exists("anthropic"):
     ProviderRegistry.register("anthropic", _AnthropicAdapter)
+if not RuntimeRegistry.exists("anthropic"):
+    RuntimeRegistry.register("anthropic", AnthropicAgent)

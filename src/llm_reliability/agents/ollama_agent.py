@@ -45,7 +45,8 @@ from llm_reliability.agents.utils.ollama_utils import (
 )
 from llm_reliability.agents.utils.rate_limiter import RateLimiter
 from llm_reliability.configs.config import Configuration
-from llm_reliability.interfaces.agent import Agent
+from llm_reliability.runtime import Runtime
+from llm_reliability.runtime.registry import RuntimeRegistry
 
 logger = logging.getLogger(__name__)
 
@@ -205,7 +206,7 @@ class _OllamaAdapter(BaseLLMAdapter):
         return server_ok
 
 
-class OllamaAgent(Agent):
+class OllamaAgent(Runtime):
     """Generic Ollama agent for the LLM Reliability Ranking framework."""
 
     def __init__(self, config: Configuration) -> None:
@@ -277,3 +278,5 @@ class OllamaAgent(Agent):
 
 if not ProviderRegistry.exists("ollama"):
     ProviderRegistry.register("ollama", _OllamaAdapter)
+if not RuntimeRegistry.exists("ollama"):
+    RuntimeRegistry.register("ollama", OllamaAgent)

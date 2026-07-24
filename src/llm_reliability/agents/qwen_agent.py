@@ -44,7 +44,8 @@ from llm_reliability.agents.adapters.request_models import LLMRequest
 from llm_reliability.agents.adapters.response_models import LLMResponse
 from llm_reliability.agents.utils.rate_limiter import RateLimiter
 from llm_reliability.configs.config import Configuration
-from llm_reliability.interfaces.agent import Agent
+from llm_reliability.runtime import Runtime
+from llm_reliability.runtime.registry import RuntimeRegistry
 
 logger = logging.getLogger(__name__)
 
@@ -178,7 +179,7 @@ class _QwenAdapter(BaseLLMAdapter):
             return False
 
 
-class QwenAgent(Agent):
+class QwenAgent(Runtime):
     """Qwen agent for the LLM Reliability Ranking framework."""
 
     def __init__(self, config: Configuration) -> None:
@@ -251,3 +252,5 @@ class QwenAgent(Agent):
 
 if not ProviderRegistry.exists("qwen"):
     ProviderRegistry.register("qwen", _QwenAdapter)
+if not RuntimeRegistry.exists("qwen"):
+    RuntimeRegistry.register("qwen", QwenAgent)

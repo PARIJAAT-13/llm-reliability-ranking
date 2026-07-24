@@ -3,10 +3,11 @@ from __future__ import annotations
 from typing import Any
 
 from llm_reliability.configs.config import Configuration
-from llm_reliability.interfaces.agent import Agent
+from llm_reliability.runtime import Runtime
+from llm_reliability.runtime.registry import RuntimeRegistry
 
 
-class MockAgent(Agent):
+class MockAgent(Runtime):
     """Simple deterministic mock agent."""
 
     def __init__(self, config: Configuration | None = None):
@@ -30,3 +31,7 @@ class MockAgent(Agent):
             "version": "1.0",
             "deterministic": True,
         }
+
+
+if not RuntimeRegistry.exists("mock"):
+    RuntimeRegistry.register("mock", MockAgent)
