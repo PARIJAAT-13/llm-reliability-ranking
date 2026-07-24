@@ -3,9 +3,8 @@
 [![Python Version](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code Style: Ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
-[![Tests: Pytest](https://img.shields.io/badge/tests-347%20passed-brightgreen.svg)](https://docs.pytest.org/)
-
-An extensible, production-ready research framework for benchmarking, evaluating, and ranking local Large Language Models (LLMs) across multi-run execution matrices, perturbation suites, and system fault scenarios under physical hardware constraints.
+[![Tests: Pytest](https://img.shields.io/badge/tests-361%20passed-brightgreen.svg)](https://docs.pytest.org/)
+extensible, production-ready research framework for benchmarking, evaluating, and ranking local Large Language Models (LLMs) across multi-run execution matrices, perturbation suites, and system fault scenarios under physical hardware constraints.
 
 ---
 
@@ -29,7 +28,7 @@ An extensible, production-ready research framework for benchmarking, evaluating,
 
 ```bash
 # Clone the repository
-git clone https://github.com/parijaat/llm-reliability-ranking.git
+git clone https://github.com/PARIJAAT-13/llm-reliability-ranking.git
 cd llm-reliability-ranking
 
 # Create and activate a virtual environment
@@ -83,7 +82,7 @@ To verify codebase integrity, run the automated linter and pytest suite:
 # Code style and linting check
 ruff check src tests
 
-# Run unit and integration tests (347 test cases)
+# Run unit and integration tests (361 test cases)
 pytest
 ```
 
@@ -106,9 +105,9 @@ If you use this framework or empirical benchmark dataset in your research, pleas
 
 ```bibtex
 @software{Parijaat_LLM_Reliability_Ranking_2026,
-  author = {Parijaat},
-  title = {LLM Reliability Ranking Framework: Evaluating Local Language Models Under Memory Constraints},
-  url = {https://github.com/parijaat/llm-reliability-ranking},
+  author = {Parijaat Srivastava and Pooja Mourya},
+  title = {LLM Reliability Ranking Framework: Benchmarking Local Open-Weights Language Models Under Hardware Memory Constraints},
+  url = {https://github.com/PARIJAAT-13/llm-reliability-ranking},
   version = {1.0.0},
   year = {2026}
 }
@@ -122,11 +121,15 @@ Distributed under the **MIT License**. See [LICENSE](LICENSE) for details.
 
 ## Authors
 
-
----
+- Parijaat Srivastava
+- Pooja Mourya
 
 Developed as part of the research project
 
 **LLM Reliability Ranking Framework: Benchmarking Local Open-Weights Language Models Under Hardware Memory Constraints**
+
+
+---
+
 
 
