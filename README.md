@@ -195,7 +195,7 @@ Distributed under the **MIT License**. See [LICENSE](LICENSE) for details.
 
 ## Authors
 
-- **Parijaat Srivastava** — [parijaat@antigravity.team](mailto:parijaat@antigravity.team)
+- **Parijaat Srivastava** 
 - **Pooja Mourya**
 
 ---
