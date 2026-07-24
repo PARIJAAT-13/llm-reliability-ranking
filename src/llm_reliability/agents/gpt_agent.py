@@ -118,7 +118,8 @@ from llm_reliability.agents.adapters.request_models import LLMRequest
 from llm_reliability.agents.adapters.response_models import LLMResponse
 from llm_reliability.agents.utils.rate_limiter import RateLimiter
 from llm_reliability.configs.config import Configuration
-from llm_reliability.interfaces.agent import Agent
+from llm_reliability.runtime import Runtime
+from llm_reliability.runtime.registry import RuntimeRegistry
 
 logger = logging.getLogger(__name__)
 
@@ -367,7 +368,7 @@ class _OpenAIAdapter(BaseLLMAdapter):
 # Public: GPTAgent — Agent interface implementation
 # ---------------------------------------------------------------------------
 
-class GPTAgent(Agent):
+class GPTAgent(Runtime):
     """GPT agent for the LLM Reliability Ranking framework.
 
     Integrates with the existing ``ExperimentRunner`` / ``Benchmark`` pipeline
@@ -624,3 +625,5 @@ class GPTAgent(Agent):
 # ---------------------------------------------------------------------------
 if not ProviderRegistry.exists("openai"):
     ProviderRegistry.register("openai", _OpenAIAdapter)
+if not RuntimeRegistry.exists("gpt"):
+    RuntimeRegistry.register("gpt", GPTAgent)

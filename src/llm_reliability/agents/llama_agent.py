@@ -48,7 +48,8 @@ from llm_reliability.agents.adapters.request_models import LLMRequest
 from llm_reliability.agents.adapters.response_models import LLMResponse
 from llm_reliability.agents.utils.rate_limiter import RateLimiter
 from llm_reliability.configs.config import Configuration
-from llm_reliability.interfaces.agent import Agent
+from llm_reliability.runtime import Runtime
+from llm_reliability.runtime.registry import RuntimeRegistry
 
 logger = logging.getLogger(__name__)
 
@@ -186,7 +187,7 @@ class _LlamaAdapter(BaseLLMAdapter):
             return False
 
 
-class LlamaAgent(Agent):
+class LlamaAgent(Runtime):
     """Meta Llama agent for the LLM Reliability Ranking framework."""
 
     def __init__(self, config: Configuration) -> None:
@@ -258,3 +259,5 @@ class LlamaAgent(Agent):
 
 if not ProviderRegistry.exists("llama"):
     ProviderRegistry.register("llama", _LlamaAdapter)
+if not RuntimeRegistry.exists("llama"):
+    RuntimeRegistry.register("llama", LlamaAgent)

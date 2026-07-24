@@ -17,7 +17,8 @@ from llm_reliability.agents.adapters.request_models import LLMRequest
 from llm_reliability.agents.adapters.response_models import LLMResponse
 from llm_reliability.agents.utils.rate_limiter import RateLimiter
 from llm_reliability.configs.config import Configuration
-from llm_reliability.interfaces.agent import Agent
+from llm_reliability.runtime import Runtime
+from llm_reliability.runtime.registry import RuntimeRegistry
 
 logger = logging.getLogger(__name__)
 
@@ -94,7 +95,7 @@ class _HuggingFaceAdapter(BaseLLMAdapter):
         return True
 
 
-class HuggingFaceTransformersAgent(Agent):
+class HuggingFaceTransformersAgent(Runtime):
     """Hugging Face Transformers local agent."""
 
     def __init__(self, config: Configuration) -> None:
@@ -147,3 +148,5 @@ if not ProviderRegistry.exists("huggingface"):
     ProviderRegistry.register("huggingface", _HuggingFaceAdapter)
 if not ProviderRegistry.exists("hf"):
     ProviderRegistry.register("hf", _HuggingFaceAdapter)
+if not RuntimeRegistry.exists("huggingface"):
+    RuntimeRegistry.register("huggingface", HuggingFaceTransformersAgent)

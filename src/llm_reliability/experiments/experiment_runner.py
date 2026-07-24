@@ -37,6 +37,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from llm_reliability.benchmarks.adapters.registry import BenchmarkRegistry
+from llm_reliability.cache.experiment_cache import ExperimentCache
 from llm_reliability.configs.config import Configuration
 from llm_reliability.experiments.experiment_models import (
     AgentSpec,
@@ -49,6 +50,8 @@ from llm_reliability.experiments.scheduler import RunDescriptor, Scheduler
 from llm_reliability.experiments.utils import setup_experiment_logger
 from llm_reliability.interfaces.agent import Agent
 from llm_reliability.interfaces.benchmark import Benchmark
+from llm_reliability.logging import LogContext
+from llm_reliability.logging.config import get_logger
 from llm_reliability.pipeline.experiment_pipeline import ExperimentPipeline, ExperimentResult
 from llm_reliability.records.evaluation import EvaluationRecord
 from llm_reliability.records.execution import ExecutionRecord
@@ -56,6 +59,7 @@ from llm_reliability.records.metric import MetricRecord
 from llm_reliability.records.ranking import RankingRecord
 
 logger = logging.getLogger(__name__)
+log = get_logger(__name__)
 
 
 class ExperimentRunner:
@@ -71,6 +75,9 @@ class ExperimentRunner:
     benchmark_factory : callable[[str, Configuration], Benchmark] | None
         Optional callable that creates benchmark instances via the registry.
         Defaults to using BenchmarkRegistry.get().
+    cache : ExperimentCache | None
+        Optional experiment cache.  When provided and enabled, repeated
+        runs with identical configuration return cached results.
     """
 
     def __init__(
@@ -78,10 +85,12 @@ class ExperimentRunner:
         spec: ExperimentSpec,
         agent_factory: Any | None = None,
         benchmark_factory: Any | None = None,
+        cache: ExperimentCache | None = None,
     ) -> None:
         self._spec = spec
         self._agent_factory = agent_factory
         self._benchmark_factory = benchmark_factory or self._default_benchmark_factory
+        self._cache = cache
 
         self._scheduler = Scheduler(spec)
         self._result_manager = ResultManager(spec, output_dir=spec.output_dir)
@@ -154,6 +163,15 @@ class ExperimentRunner:
             resume,
             self._status.total_runs,
         )
+        log.info("Experiment started",
+                 extra={"event": "experiment_start",
+                        "experiment_id": self._spec.experiment_id,
+                        "experiment_name": self._spec.experiment_name,
+                        "total_runs": self._status.total_runs,
+                        "resume": resume})
+
+        import time as _time_mod
+        self._start_time = _time_mod.time()
 
         self._result_manager.save_configuration()
 
@@ -163,6 +181,10 @@ class ExperimentRunner:
         if resume:
             completed_indices = set(self._result_manager.load_checkpoint())
             self._logger.info("Resuming: %d runs already completed.", len(completed_indices))
+            log.info("Experiment resumed",
+                     extra={"event": "experiment_resume",
+                            "experiment_id": self._spec.experiment_id,
+                            "completed_runs": len(completed_indices)})
 
         if self._spec.parallel:
             self._run_parallel(run_queue, completed_indices)
@@ -247,28 +269,51 @@ class ExperimentRunner:
 
         config = self._build_config(run)
 
+        run_start = time.time()
         try:
             benchmark = self._benchmark_factory(run.benchmark_name, config)
             agent = self._build_agent(run.agent_name, config)
 
-            pipeline = ExperimentPipeline(config=config, benchmark=benchmark, agent=agent)
+            pipeline = ExperimentPipeline(config=config, benchmark=benchmark, agent=agent, cache=self._cache)
             result: ExperimentResult = pipeline.run()
 
             self._executions.extend(result.execution_records)
             self._evaluations.extend(result.evaluation_records)
 
             self._status.completed_runs += 1
-            # Save a checkpoint after each successful run
             self._result_manager.save_checkpoint(
                 list(range(self._status.completed_runs))
             )
+
+            run_duration = time.time() - run_start
+            log.info("Benchmark run completed",
+                     extra={"event": "benchmark_complete",
+                            "benchmark": run.benchmark_name,
+                            "agent": run.agent_name,
+                            "model": model_name,
+                            "seed": run.derived_seed,
+                            "run_index": idx,
+                            "duration_seconds": round(run_duration, 3),
+                            "num_executions": len(result.execution_records),
+                            "num_evaluations": len(result.evaluation_records)})
+
         except Exception as exc:
+            run_duration = time.time() - run_start
             self._logger.error("Run %d failed for model '%s': %s", current_num, model_name, exc, exc_info=True)
             self._status.failed_runs += 1
             self._status.errors.append(
                 {"run_index": idx, "benchmark": run.benchmark_name,
                  "agent": run.agent_name, "model": model_name, "error": str(exc)}
             )
+            log.error("Benchmark run failed",
+                      extra={"event": "benchmark_failure",
+                             "benchmark": run.benchmark_name,
+                             "agent": run.agent_name,
+                             "model": model_name,
+                             "seed": run.derived_seed,
+                             "run_index": idx,
+                             "duration_seconds": round(run_duration, 3),
+                             "error": str(exc)})
 
         self._result_manager.save_status(self._status)
 
@@ -346,6 +391,20 @@ class ExperimentRunner:
             self._status.completed_runs,
             self._status.failed_runs,
         )
+
+        duration = 0.0
+        if hasattr(self, "_start_time") and self._start_time is not None:
+            import time
+            duration = time.time() - self._start_time
+        log.info("Experiment finished",
+                 extra={"event": "experiment_finish",
+                        "experiment_id": self._spec.experiment_id,
+                        "experiment_name": self._spec.experiment_name,
+                        "state": self._status.state,
+                        "total_runs": self._status.total_runs,
+                        "completed_runs": self._status.completed_runs,
+                        "failed_runs": self._status.failed_runs,
+                        "duration_seconds": round(duration, 3)})
 
     # ------------------------------------------------------------------
     # Factory helpers

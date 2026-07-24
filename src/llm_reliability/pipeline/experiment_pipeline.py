@@ -20,9 +20,11 @@ from typing import Any
 
 from pydantic import Field
 
+from llm_reliability.cache.experiment_cache import ExperimentCache
 from llm_reliability.configs.config import Configuration
 from llm_reliability.interfaces.agent import Agent
 from llm_reliability.interfaces.benchmark import Benchmark
+from llm_reliability.logging.config import get_logger
 from llm_reliability.records.evaluation import EvaluationRecord
 from llm_reliability.records.execution import ExecutionRecord
 from llm_reliability.records.metric import MetricRecord
@@ -30,6 +32,7 @@ from llm_reliability.records.ranking import RankingRecord
 from llm_reliability.utils.serialization import SerializableModel
 
 logger = logging.getLogger(__name__)
+log = get_logger(__name__)
 
 
 class ExperimentResult(SerializableModel):
@@ -67,11 +70,26 @@ class ExperimentPipeline:
         config: Configuration,
         benchmark: Benchmark,
         agent: Agent,
+        cache: ExperimentCache | None = None,
     ) -> None:
-        """Initialize the pipeline with its core components."""
+        """Initialize the pipeline with its core components.
+
+        Parameters
+        ----------
+        config : Configuration
+            Experiment configuration.
+        benchmark : Benchmark
+            Benchmark adapter instance.
+        agent : Agent
+            Agent instance.
+        cache : ExperimentCache | None
+            Optional experiment cache.  When provided and enabled, pipeline
+            results are cached and reused on repeated identical executions.
+        """
         self.config = config
         self.benchmark = benchmark
         self.agent = agent
+        self.cache = cache
 
         self.execution_records: list[ExecutionRecord] = []
         self.evaluation_records: list[EvaluationRecord] = []
@@ -80,7 +98,32 @@ class ExperimentPipeline:
         self.errors: list[dict[str, Any]] = []
 
     def run(self) -> ExperimentResult:
-        """Execute the entire experiment pipeline end-to-end."""
+        """Execute the entire experiment pipeline end-to-end.
+
+        If a cache is configured and contains a result for this configuration,
+        the cached result is returned without re-execution.
+        """
+        if self.cache is not None:
+            key = self.cache.generate_key(self.config)
+            if self.cache.exists(key):
+                cached = self.cache.get(key)
+                if cached is not None:
+                    logger.info("Cache HIT — returning cached result for key '%s'", key)
+                    log.info("Cache hit for experiment pipeline",
+                             extra={"event": "cache_hit",
+                                    "cache_key": key,
+                                    "benchmark": self.config.benchmark,
+                                    "agent": self.config.agent,
+                                    "seed": self.config.seed})
+                    return cached
+
+        pipeline_start = __import__("time").time()
+        log.info("Pipeline execution started",
+                 extra={"event": "pipeline_start",
+                        "benchmark": self.config.benchmark,
+                        "agent": self.config.agent,
+                        "seed": self.config.seed})
+
         logger.info("experiment start")
         try:
             self.agent.initialize()
@@ -91,7 +134,7 @@ class ExperimentPipeline:
             self.evaluate()
             self.compute_metrics()
             self.compute_rankings()
-            return ExperimentResult(
+            result = ExperimentResult(
                 configuration=self.config,
                 execution_records=self.execution_records,
                 evaluation_records=self.evaluation_records,
@@ -99,6 +142,8 @@ class ExperimentPipeline:
                 ranking_records=self.ranking_records,
                 metadata={"errors": [{"phase": "initialize", "error": str(init_exc)}]},
             )
+            self._maybe_cache(result)
+            return result
 
         try:
             self.run_all()
@@ -112,7 +157,7 @@ class ExperimentPipeline:
                 logger.debug("Error during agent shutdown: %s", shutdown_exc)
 
         logger.info("experiment completion")
-        return ExperimentResult(
+        result = ExperimentResult(
             configuration=self.config,
             execution_records=self.execution_records,
             evaluation_records=self.evaluation_records,
@@ -120,6 +165,25 @@ class ExperimentPipeline:
             ranking_records=self.ranking_records,
             metadata={"errors": self.errors},
         )
+        self._maybe_cache(result)
+
+        duration = __import__("time").time() - pipeline_start
+        log.info("Pipeline execution completed",
+                 extra={"event": "pipeline_finish",
+                        "benchmark": self.config.benchmark,
+                        "agent": self.config.agent,
+                        "seed": self.config.seed,
+                        "duration_seconds": round(duration, 3),
+                        "num_executions": len(result.execution_records),
+                        "num_evaluations": len(result.evaluation_records),
+                        "num_errors": len(self.errors)})
+        return result
+
+    def _maybe_cache(self, result: ExperimentResult) -> None:
+        """Store result in cache if caching is enabled."""
+        if self.cache is not None:
+            key = self.cache.generate_key(self.config)
+            self.cache.set(key, result)
 
     def run_all(self) -> None:
         """Run all tasks provided by the benchmark with automatic model failure detection."""

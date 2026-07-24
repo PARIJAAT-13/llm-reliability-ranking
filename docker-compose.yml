@@ -1,0 +1,15 @@
+version: "3.9"
+
+services:
+  llm-reliability:
+    build: .
+    image: llm-reliability-ranking:latest
+    container_name: llm-reliability
+    entrypoint: ["python", "-m", "llm_reliability"]
+    volumes:
+      - ./results:/app/results
+      - ./configs:/app/configs:ro
+      - ./.cache:/app/.cache
+    environment:
+      - PYTHONUNBUFFERED=1
+    command: ["--help"]
