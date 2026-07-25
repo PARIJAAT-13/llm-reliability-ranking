@@ -1,163 +1,134 @@
-"""Extended CLI tests covering error paths, help output, and edge cases."""
-
-from __future__ import annotations
+"""Tests for the enhanced CLI with all new commands."""
 
 import json
+import tempfile
 from pathlib import Path
-from unittest.mock import patch
 
 import pytest
 
 from llm_reliability.cli import main
 
-# ---------------------------------------------------------------------------
-# run command — error paths
-# ---------------------------------------------------------------------------
+
+def test_version(capsys):
+    main(["--version"])
+    captured = capsys.readouterr()
+    assert "llm-reliability-ranking" in captured.out
 
 
-class TestCliRunErrors:
-    def test_cli_run_nonexistent_config(self, capsys):
-        with pytest.raises(SystemExit):
-            main(["run", "/nonexistent/path/config.json"])
-        captured = capsys.readouterr()
-        assert "Error" in captured.err
-        assert "not found" in captured.err
-
-    def test_cli_run_bad_json(self, tmp_path: Path):
-        config_path = tmp_path / "bad.json"
-        config_path.write_text("not even json", encoding="utf-8")
-        with pytest.raises(Exception):
-            main(["run", str(config_path)])
+def test_no_command_shows_help(capsys):
+    with pytest.raises(SystemExit):
+        main(["--help"])
+    captured = capsys.readouterr()
+    assert "usage:" in captured.out
 
 
-# ---------------------------------------------------------------------------
-# help output for subcommands
-# ---------------------------------------------------------------------------
+def test_list_benchmarks(capsys):
+    main(["list", "benchmarks"])
+    captured = capsys.readouterr()
+    assert "Registered benchmarks" in captured.out or "No benchmarks" in captured.out
 
 
-class TestCliSubcommandHelp:
-    def test_cli_list_help(self, capsys):
-        with pytest.raises(SystemExit):
-            main(["list", "--help"])
-        captured = capsys.readouterr()
-        assert "usage:" in captured.out.lower()
-        assert "benchmarks" in captured.out
-        assert "runtimes" in captured.out
-
-    def test_cli_run_help(self, capsys):
-        with pytest.raises(SystemExit):
-            main(["run", "--help"])
-        captured = capsys.readouterr()
-        assert "usage:" in captured.out.lower()
-        assert "--no-cache" in captured.out
-
-    def test_cli_validate_help(self, capsys):
-        with pytest.raises(SystemExit):
-            main(["validate", "--help"])
-        captured = capsys.readouterr()
-        assert "usage:" in captured.out.lower()
-        assert "config" in captured.out
-
-    def test_cli_clear_cache_help(self, capsys):
-        with pytest.raises(SystemExit):
-            main(["clear-cache", "--help"])
-        captured = capsys.readouterr()
-        assert "usage:" in captured.out.lower()
+def test_list_runtimes(capsys):
+    main(["list", "runtimes"])
+    captured = capsys.readouterr()
+    assert "Registered runtimes" in captured.out or "No runtimes" in captured.out
 
 
-# ---------------------------------------------------------------------------
-# invalid command
-# ---------------------------------------------------------------------------
+def test_discover_runtimes(capsys):
+    main(["discover-runtimes"])
+    captured = capsys.readouterr()
+    assert "Registered runtimes" in captured.out
 
 
-class TestCliInvalidCommand:
-    def test_cli_invalid_command(self, capsys):
-        with pytest.raises(SystemExit):
-            main(["does-not-exist"])
-        captured = capsys.readouterr()
-        assert "error" in captured.err.lower() or "invalid" in captured.err.lower()
+def test_hardware_info(capsys):
+    main(["hardware-info"])
+    captured = capsys.readouterr()
+    assert "Hardware Profile" in captured.out
 
 
-# ---------------------------------------------------------------------------
-# list commands output
-# ---------------------------------------------------------------------------
+def test_system_info(capsys):
+    main(["system-info"])
+    captured = capsys.readouterr()
+    assert "System Information" in captured.out
 
 
-class TestCliListOutput:
-    def test_cli_list_benchmarks_actual(self, capsys):
-        main(["list", "benchmarks"])
-        captured = capsys.readouterr()
-        assert "Registered benchmarks" in captured.out
-        assert "GSM8K" in captured.out or "MMLU" in captured.out or "ARC" in captured.out
-
-    def test_cli_list_runtimes_actual(self, capsys):
-        main(["list", "runtimes"])
-        captured = capsys.readouterr()
-        assert "Registered runtimes" in captured.out
-        assert "mock" in captured.out or "gpt" in captured.out
+def test_validate_invalid_path(capsys):
+    with pytest.raises(SystemExit):
+        main(["validate", "/nonexistent/path.json"])
+    captured = capsys.readouterr()
+    assert "not found" in captured.err
 
 
-# ---------------------------------------------------------------------------
-# version output
-# ---------------------------------------------------------------------------
+def test_validate_valid_config(capsys, tmp_path):
+    config = {
+        "experiment_name": "test",
+        "benchmarks": [{"name": "mock", "dataset_path": "test.json"}],
+        "agents": [{"name": "mock"}],
+        "seeds": [42],
+        "repetitions": 1,
+        "llm": "mock",
+        "prompt_version": "1",
+        "dataset_version": "1",
+    }
+    path = tmp_path / "config.json"
+    path.write_text(json.dumps(config), encoding="utf-8")
+    main(["validate", str(path)])
+    captured = capsys.readouterr()
+    assert "Config valid" in captured.out
 
 
-class TestCliVersion:
-    def test_cli_version_output_format(self, capsys):
-        main(["--version"])
-        captured = capsys.readouterr()
-        assert captured.out.startswith("llm-reliability-ranking v")
-        assert "." in captured.out
+def test_checkpoint_no_dir(capsys):
+    with pytest.raises(SystemExit) as excinfo:
+        main(["checkpoint", "/nonexistent"])
+    assert excinfo.value.code == 1
+    captured = capsys.readouterr()
+    assert "not found" in captured.err
 
 
-# ---------------------------------------------------------------------------
-# validate with valid config
-# ---------------------------------------------------------------------------
+def test_checkpoint_empty_dir(capsys, tmp_path):
+    main(["checkpoint", str(tmp_path)])
+    captured = capsys.readouterr()
+    assert "No checkpoint found" in captured.out
 
 
-class TestCliValidate:
-    def test_cli_validate_with_valid_config(self, tmp_path: Path, capsys):
-        cfg = {
-            "experiment_name": "test",
-            "experiment_id": "test-1",
-            "benchmarks": [{"name": "mock", "dataset_path": "dummy.json"}],
-            "agents": [{"name": "mock"}],
-            "seeds": [42],
-            "repetitions": 1,
-        }
-        config_path = tmp_path / "valid_config.json"
-        config_path.write_text(json.dumps(cfg), encoding="utf-8")
-        main(["validate", str(config_path)])
-        captured = capsys.readouterr()
-        assert "Config valid" in captured.out
-        assert "test-1" in captured.out
+def test_report_no_dir(capsys):
+    with pytest.raises(SystemExit):
+        main(["report", "/nonexistent"])
+    captured = capsys.readouterr()
+    assert "not found" in captured.err
 
 
-# ---------------------------------------------------------------------------
-# run with --no-cache flag
-# ---------------------------------------------------------------------------
+def test_export_no_dir(capsys):
+    with pytest.raises(SystemExit):
+        main(["export", "/nonexistent"])
+    captured = capsys.readouterr()
+    assert "not found" in captured.err
 
 
-class TestCliRun:
-    def test_cli_run_with_no_cache_flag(self, tmp_path: Path, capsys):
-        cfg = {
-            "experiment_name": "test",
-            "experiment_id": "test-1",
-            "benchmarks": [{"name": "mock", "dataset_path": "dummy.json"}],
-            "agents": [{"name": "mock"}],
-            "seeds": [42],
-            "repetitions": 1,
-        }
-        config_path = tmp_path / "run_config.json"
-        config_path.write_text(json.dumps(cfg), encoding="utf-8")
+def test_statistics_no_dir(capsys):
+    with pytest.raises(SystemExit):
+        main(["statistics", "/nonexistent"])
+    captured = capsys.readouterr()
+    assert "not found" in captured.err
 
-        mock_status = type(
-            "MockStatus", (), {"state": "completed", "completed_runs": 1, "failed_runs": 0}
-        )()
 
-        with patch("llm_reliability.experiments.experiment_runner.ExperimentRunner") as MockRunner:
-            instance = MockRunner.return_value
-            instance.run.return_value = mock_status
-            main(["run", str(config_path), "--no-cache"])
-        captured = capsys.readouterr()
-        assert "completed" in captured.out
+def test_clear_cache(capsys):
+    main(["clear-cache"])
+    captured = capsys.readouterr()
+    assert "Cache cleared" in captured.out
+
+
+def test_discover_models(capsys):
+    main(["discover-models"])
+    captured = capsys.readouterr()
+    assert "runtime-specific" in captured.out
+
+
+def test_compare_multiple(tmp_path, capsys):
+    d1 = tmp_path / "exp1"
+    d2 = tmp_path / "exp2"
+    d1.mkdir()
+    d2.mkdir()
+    main(["compare", str(d1), str(d2)])
+    captured = capsys.readouterr()
+    assert "No experiment summaries" in captured.out

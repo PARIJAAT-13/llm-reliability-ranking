@@ -29,6 +29,10 @@ from llm_reliability.records.evaluation import EvaluationRecord
 from llm_reliability.records.execution import ExecutionRecord
 from llm_reliability.records.metric import MetricRecord
 from llm_reliability.records.ranking import RankingRecord
+from llm_reliability.utils.hardware_profile import (
+    HardwareProfile,
+    detect_hardware_profile,
+)
 from llm_reliability.utils.serialization import SerializableModel
 
 logger = logging.getLogger(__name__)
@@ -108,6 +112,23 @@ class ExperimentPipeline:
         self.metric_records: list[MetricRecord] = []
         self.ranking_records: list[RankingRecord] = []
         self.errors: list[dict[str, Any]] = []
+
+        self._hardware_profile: HardwareProfile | None = None
+        if config.metadata.get("hardware_profile"):
+            try:
+                from llm_reliability.utils.hardware_profile import HardwareRegistry
+
+                pid = config.metadata["hardware_profile"]
+                self._hardware_profile = HardwareRegistry.get(pid)
+            except Exception:
+                pass
+        if self._hardware_profile is None:
+            try:
+                self._hardware_profile = detect_hardware_profile(
+                    profile_id=config.experiment_name or "experiment"
+                )
+            except Exception:
+                pass
 
     def run(self) -> ExperimentResult:
         """Execute the entire experiment pipeline end-to-end.
@@ -267,6 +288,7 @@ class ExperimentPipeline:
             self.agent.reset()
             try:
                 execution = self.benchmark.run(self.agent, task)
+                execution = self._inject_hardware_metadata(execution)
                 if execution.status == "error" and execution.error:
                     reason = classify_failure_reason(execution.error)
                     meta = dict(execution.environment_metadata or {})
@@ -296,6 +318,7 @@ class ExperimentPipeline:
                         agent_output=None,
                         environment_metadata={"failure_reason": reason},
                     )
+                    err_record = self._inject_hardware_metadata(err_record)
                     self.execution_records.append(err_record)
         else:
             if use_perturbations:
@@ -305,7 +328,9 @@ class ExperimentPipeline:
 
                 pm = PerturbationManager(config=self.config)
                 pert_res = pm.run_perturbed_task(self.agent, self.benchmark, task)
-                self.execution_records.extend(pert_res.execution_records)
+                self.execution_records.extend(
+                    self._inject_hardware_metadata(r) for r in pert_res.execution_records
+                )
                 if pert_res.errors:
                     self.errors.extend(pert_res.errors)
 
@@ -314,13 +339,10 @@ class ExperimentPipeline:
 
                 fm = FaultManager(config=self.config)
                 fault_res = fm.run_fault_injected_task(self.agent, self.benchmark, task)
+                records = fault_res.execution_records
                 if use_perturbations:
-                    # Filter out baseline run to avoid duplicate baseline runs
-                    self.execution_records.extend(
-                        [r for r in fault_res.execution_records if r.fault_injected]
-                    )
-                else:
-                    self.execution_records.extend(fault_res.execution_records)
+                    records = [r for r in records if r.fault_injected]
+                self.execution_records.extend(self._inject_hardware_metadata(r) for r in records)
                 if fault_res.errors:
                     self.errors.extend(fault_res.errors)
 
@@ -364,7 +386,22 @@ class ExperimentPipeline:
             agent_output=None,
             environment_metadata={"failure_reason": reason, "skipped": True},
         )
+        exec_record = self._inject_hardware_metadata(exec_record)
         self.execution_records.append(exec_record)
+
+    def _inject_hardware_metadata(self, record: ExecutionRecord) -> ExecutionRecord:
+        if self._hardware_profile is None:
+            return record
+        meta = dict(record.environment_metadata or {})
+        meta["hardware_profile"] = self._hardware_profile.profile_id
+        hw = self._hardware_profile
+        meta["ram_total_gb"] = hw.ram_total_gb
+        meta["cpu_cores_logical"] = hw.cpu_cores_logical
+        meta["gpu_name"] = hw.gpu_name
+        meta["vram_total_gb"] = hw.vram_total_gb
+        meta["os_name"] = hw.os_name
+        meta["cpu_architecture"] = hw.cpu_architecture
+        return record.model_copy(update={"environment_metadata": meta})
 
     def evaluate(self) -> None:
         """Evaluate all captured execution records."""

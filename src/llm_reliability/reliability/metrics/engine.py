@@ -32,9 +32,7 @@ from llm_reliability.reliability.metrics.base import (
     ReliabilityMetric,
     RobustnessMetricResult,
 )
-from llm_reliability.reliability.metrics.consistency import (
-    RepeatedRunConsistencyMetric,
-)
+from llm_reliability.reliability.metrics.consistency import RepeatedRunConsistencyMetric
 from llm_reliability.reliability.metrics.fault_tolerance import FaultToleranceMetric
 from llm_reliability.reliability.metrics.robustness import (
     PromptPerturbationRobustnessMetric,

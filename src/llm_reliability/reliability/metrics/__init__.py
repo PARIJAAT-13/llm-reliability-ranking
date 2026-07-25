@@ -11,9 +11,7 @@ from llm_reliability.reliability.metrics.base import (
     ReliabilityMetric,
     RobustnessMetricResult,
 )
-from llm_reliability.reliability.metrics.consistency import (
-    RepeatedRunConsistencyMetric,
-)
+from llm_reliability.reliability.metrics.consistency import RepeatedRunConsistencyMetric
 from llm_reliability.reliability.metrics.engine import (
     ReliabilityMetricsEngine,
     ScopeReliabilitySummary,

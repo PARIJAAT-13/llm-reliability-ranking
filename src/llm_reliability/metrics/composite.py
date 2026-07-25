@@ -34,6 +34,7 @@ def compute_composite(
     consistency: float,
     robustness: float | None = None,
     fault_tolerance: float | None = None,
+    isr_composite: float | None = None,
     weights: dict[str, float] | None = None,
 ) -> tuple[float, dict[str, float]]:
     """Compute the composite reliability score.
@@ -65,6 +66,8 @@ def compute_composite(
         available["robustness"] = robustness
     if fault_tolerance is not None:
         available["fault_tolerance"] = fault_tolerance
+    if isr_composite is not None:
+        available["isr_composite"] = isr_composite
 
     if weights is None:
         n = len(available)

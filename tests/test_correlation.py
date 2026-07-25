@@ -4,10 +4,7 @@ Tests for correlation calculations.
 
 import pytest
 
-from llm_reliability.statistics.correlation import (
-    compute_kendall_tau,
-    compute_spearman,
-)
+from llm_reliability.statistics.correlation import compute_kendall_tau, compute_spearman
 from tests.statistics_test_helpers import create_mock_ranking
 
 

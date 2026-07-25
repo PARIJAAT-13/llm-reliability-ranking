@@ -28,6 +28,7 @@ from typing import TypeVar
 
 from pydantic import Field, model_validator
 
+from llm_reliability.metrics.isr import compute_isr
 from llm_reliability.records.evaluation import EvaluationRecord
 from llm_reliability.utils.serialization import SerializableModel
 
@@ -70,6 +71,7 @@ def _compute_composite(
     consistency: float,
     perturbation: float | None,
     fault_tolerance: float | None,
+    isr_composite: float | None = None,
 ) -> float:
     """Average available reliability components into a composite score."""
     components = [success_rate, consistency]
@@ -77,6 +79,8 @@ def _compute_composite(
         components.append(perturbation)
     if fault_tolerance is not None:
         components.append(fault_tolerance)
+    if isr_composite is not None:
+        components.append(isr_composite)
     return sum(components) / len(components)
 
 
@@ -94,6 +98,9 @@ class MetricRecord(SerializableModel):
     repeated_run_consistency: float = Field(ge=0.0, le=1.0)
     perturbation_robustness: float | None = Field(default=None, ge=0.0, le=1.0)
     fault_tolerance: float | None = Field(default=None, ge=0.0, le=1.0)
+    isr_output: float | None = Field(default=None, ge=0.0, le=1.0)
+    isr_behavior: float | None = Field(default=None, ge=0.0, le=1.0)
+    isr_composite_val: float | None = Field(default=None, ge=0.0, le=1.0)
     composite_reliability: float = Field(ge=0.0, le=1.0)
     computed_at: str = Field(min_length=1)
 
@@ -128,7 +135,19 @@ class MetricRecord(SerializableModel):
         consistency = _compute_repeated_run_consistency(evaluations)
         perturbation = _compute_perturbation_robustness(evaluations)
         fault_tolerance = _compute_fault_tolerance(evaluations)
-        composite = _compute_composite(success_rate, consistency, perturbation, fault_tolerance)
+
+        has_faulted = any(ev.fault_injected for ev in evaluations)
+        if has_faulted:
+            isr_result = compute_isr(evaluations)
+            isr_out = isr_result["isr_output"]
+            isr_beh = isr_result["isr_behavior"]
+            isr_comp = isr_result["isr_composite"]
+        else:
+            isr_out = isr_beh = isr_comp = None
+
+        composite = _compute_composite(
+            success_rate, consistency, perturbation, fault_tolerance, isr_comp
+        )
 
         return cls(
             benchmark=benchmark,
@@ -139,6 +158,9 @@ class MetricRecord(SerializableModel):
             repeated_run_consistency=consistency,
             perturbation_robustness=perturbation,
             fault_tolerance=fault_tolerance,
+            isr_output=isr_out,
+            isr_behavior=isr_beh,
+            isr_composite_val=isr_comp,
             composite_reliability=composite,
             computed_at=computed_at,
         )

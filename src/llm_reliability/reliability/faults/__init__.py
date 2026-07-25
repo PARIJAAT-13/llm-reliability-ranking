@@ -11,6 +11,15 @@ from llm_reliability.reliability.faults.base import (
     FaultTrace,
     RecoveryStatus,
 )
+from llm_reliability.reliability.faults.extensions import (
+    SEVERITY_PARAMS,
+    FaultInjectionConfig,
+    FaultSchedule,
+    FaultSeverity,
+    FaultSummary,
+    RecoveryMetrics,
+    ScheduledFaultConfig,
+)
 from llm_reliability.reliability.faults.manager import FaultManager
 from llm_reliability.reliability.faults.report import (
     FaultReport,
@@ -41,4 +50,11 @@ __all__ = [
     "ToolFailureFaultStrategy",
     "ContextTruncationFaultStrategy",
     "NetworkInterruptionFaultStrategy",
+    "FaultSeverity",
+    "FaultSchedule",
+    "ScheduledFaultConfig",
+    "FaultInjectionConfig",
+    "RecoveryMetrics",
+    "FaultSummary",
+    "SEVERITY_PARAMS",
 ]

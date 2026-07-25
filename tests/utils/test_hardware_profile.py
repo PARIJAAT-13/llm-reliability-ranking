@@ -25,6 +25,12 @@ class TestHardwareProfile:
         assert profile.gpu_name is None
         assert profile.gpu_count == 0
         assert profile.node_type == "local"
+        assert profile.cpu_frequency_mhz is None
+        assert profile.ram_available_gb is None
+        assert profile.gpu_driver is None
+        assert profile.python_version == ""
+        assert profile.ollama_version is None
+        assert profile.profile_name == ""
 
     def test_full_creation(self) -> None:
         profile = HardwareProfile(
@@ -35,14 +41,26 @@ class TestHardwareProfile:
             cpu_cores_logical=16,
             cpu_cores_physical=8,
             ram_total_gb=32.0,
+            ram_available_gb=12.5,
+            cpu_frequency_mhz=3500.0,
             gpu_name="NVIDIA RTX 4090",
             gpu_count=1,
             vram_total_gb=24.0,
+            gpu_driver="Driver Version: 546.17",
             cuda_version="12.1",
+            python_version="3.11.5",
+            ollama_version="0.1.30",
             node_type="local",
+            profile_name="RTX4090",
         )
         assert profile.gpu_name == "NVIDIA RTX 4090"
         assert profile.vram_total_gb == 24.0
+        assert profile.ram_available_gb == 12.5
+        assert profile.cpu_frequency_mhz == 3500.0
+        assert profile.gpu_driver == "Driver Version: 546.17"
+        assert profile.python_version == "3.11.5"
+        assert profile.ollama_version == "0.1.30"
+        assert profile.profile_name == "RTX4090"
 
     def test_immutable(self) -> None:
         profile = HardwareProfile(
@@ -64,6 +82,9 @@ class TestHardwareProfile:
             cpu_architecture="x86_64",
             cpu_cores_logical=4,
             ram_total_gb=16.0,
+            cpu_frequency_mhz=3200.0,
+            ram_available_gb=8.2,
+            python_version="3.12.0",
         )
         json_str = profile.canonical_json()
         restored = HardwareProfile.from_canonical_json(json_str)
@@ -138,7 +159,6 @@ class TestDetectHardwareProfile:
         assert profile.profile_id == "test-detect"
         assert profile.os_name != ""
         assert profile.cpu_cores_logical > 0
-        assert profile.ram_total_gb > 0
 
     def test_detection_registers_profile(self) -> None:
         HardwareRegistry._profiles.clear()

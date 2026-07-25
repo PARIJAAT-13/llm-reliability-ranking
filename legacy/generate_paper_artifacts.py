@@ -26,7 +26,8 @@ sys.path.insert(0, str(_REPO_ROOT / "src"))
 
 from llm_reliability.ranking.ranking_engine import RankingEngine
 from llm_reliability.records.metric import MetricRecord
-from llm_reliability.statistics.ranking_divergence import analyze_ranking_divergence
+from llm_reliability.statistics.ranking_divergence import \
+    analyze_ranking_divergence
 from llm_reliability.visualization import DistributionPlotter, RankingPlotter
 
 logging.basicConfig(

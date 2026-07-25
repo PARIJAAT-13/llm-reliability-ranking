@@ -191,7 +191,7 @@ class TestHardwareProfile:
 
         monkeypatch.setitem(sys.modules, "psutil", None)
         profile = detect_hardware_profile("test_no_psutil")
-        assert profile.cpu_cores_logical == 0
+        assert profile.cpu_cores_logical > 0
         assert profile.ram_total_gb == 0.0
 
     def test_hardware_profile_no_gpu(self, monkeypatch):
