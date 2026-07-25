@@ -9,11 +9,11 @@ rankings, statistical divergence results, and reports/plots are generated correc
 
 from __future__ import annotations
 
+import argparse
 import logging
 import pathlib
 import sys
 
-# Ensure src/ is on sys.path
 _REPO_ROOT = pathlib.Path(__file__).parent.parent
 sys.path.insert(0, str(_REPO_ROOT / "src"))
 
@@ -32,21 +32,63 @@ logging.basicConfig(
 logger = logging.getLogger("run_pilot_experiment")
 
 
-def main() -> int:
-    logger.info("Initializing pilot experiment...")
-    output_dir = _REPO_ROOT / "results" / "pilot_experiment"
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="run_pilot_experiment",
+        description="LLM Reliability Ranking — Pilot Experiment Runner",
+    )
+    parser.add_argument(
+        "--output-dir",
+        type=pathlib.Path,
+        default=_REPO_ROOT / "results" / "pilot_experiment",
+        help="Output directory for experiment results.",
+    )
+    parser.add_argument(
+        "--repetitions",
+        type=int,
+        default=3,
+        help="Number of repetitions per seed.",
+    )
+    parser.add_argument(
+        "--benchmark",
+        default="mock_benchmark",
+        help="Benchmark name (default: mock_benchmark).",
+    )
+    parser.add_argument(
+        "--agent",
+        default="mock_agent",
+        help="Agent name (default: mock_agent).",
+    )
+    parser.add_argument(
+        "--llm",
+        default="gpt-4o",
+        help="LLM model identifier.",
+    )
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=42,
+        help="Random seed.",
+    )
+    return parser
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = build_parser().parse_args(argv)
+    output_dir = args.output_dir
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    # Build Pilot Configuration
+    logger.info("Initializing pilot experiment...")
+
     config = Configuration(
         experiment_name="pilot_experiment_001",
-        benchmark="mock_benchmark",
-        agent="mock_agent",
-        llm="gpt-4o",
+        benchmark=args.benchmark,
+        agent=args.agent,
+        llm=args.llm,
         prompt_version="v1.0",
         dataset_version="1.0",
-        seed=42,
-        repetitions=3,
+        seed=args.seed,
+        repetitions=args.repetitions,
         perturbations=("typo", "whitespace"),
         fault_injection=True,
         reliability_weights=ReliabilityWeightsConfig(
@@ -63,19 +105,13 @@ def main() -> int:
     benchmark = MockBenchmark(config)
     agent = MockAgent(config)
 
-    pipeline = ExperimentPipeline(
-        config=config,
-        benchmark=benchmark,
-        agent=agent,
-    )
-
+    pipeline = ExperimentPipeline(config=config, benchmark=benchmark, agent=agent)
     result: ExperimentResult = pipeline.run()
 
     logger.info("Pipeline executed successfully!")
     logger.info("Total metrics calculated: %d", len(result.metric_records))
     logger.info("Total rankings generated: %d", len(result.ranking_records))
 
-    # Save ExperimentResult output
     summary_path = output_dir / "summary.json"
     summary_path.write_text(result.canonical_json(), encoding="utf-8")
 
