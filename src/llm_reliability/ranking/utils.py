@@ -4,6 +4,8 @@ Utility functions for the Ranking Engine.
 Includes validation, deterministic tie-breaking sorting, and other helper functions.
 """
 
+from __future__ import annotations
+
 from collections.abc import Callable
 
 from llm_reliability.records.metric import MetricRecord

@@ -5,6 +5,8 @@ Defines the structure for all statistical outputs, ensuring strict typing
 and validation of statistical metrics.
 """
 
+from __future__ import annotations
+
 from typing import Any
 
 from pydantic import BaseModel, Field, field_validator

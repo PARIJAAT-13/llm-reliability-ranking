@@ -1,5 +1,7 @@
 """Immutable pipeline records."""
 
+from __future__ import annotations
+
 from llm_reliability.records.evaluation import EvaluationRecord
 from llm_reliability.records.execution import ExecutionRecord, ExecutionStatus
 from llm_reliability.records.metric import MetricRecord

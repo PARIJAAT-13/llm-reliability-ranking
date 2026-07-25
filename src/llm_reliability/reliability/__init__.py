@@ -6,6 +6,8 @@ composite score calculation mechanisms to evaluate repeated-run consistency,
 prompt perturbation robustness, and fault tolerance.
 """
 
+from __future__ import annotations
+
 from llm_reliability.reliability.faults import (
     FaultInjectionStrategy,
     FaultManager,

@@ -4,6 +4,8 @@ Correlation analysis module.
 Computes Kendall's Tau and Spearman Rank Correlation between two rankings.
 """
 
+from __future__ import annotations
+
 from scipy.stats import kendalltau, spearmanr
 
 from llm_reliability.records.ranking import RankingRecord

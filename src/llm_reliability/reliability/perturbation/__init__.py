@@ -4,6 +4,8 @@ LLM Reliability - Prompt Perturbation Module.
 Provides prompt perturbation strategies and orchestration to measure prompt perturbation robustness.
 """
 
+from __future__ import annotations
+
 from llm_reliability.reliability.perturbation.base import (
     PerturbationRunResult,
     PerturbationStrategy,

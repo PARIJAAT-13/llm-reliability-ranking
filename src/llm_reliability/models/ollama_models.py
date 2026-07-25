@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from llm_reliability.models.model_info import ModelInfo
 
 SUPPORTED_OLLAMA_MODELS: list[ModelInfo] = [

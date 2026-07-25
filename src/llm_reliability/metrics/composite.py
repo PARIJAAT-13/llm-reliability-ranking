@@ -26,6 +26,8 @@ parts.  Custom weights allow researchers to emphasise the metric most
 relevant to their deployment context.
 """
 
+from __future__ import annotations
+
 import numpy as np
 
 

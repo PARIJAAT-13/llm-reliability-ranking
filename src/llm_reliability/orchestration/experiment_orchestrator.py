@@ -36,6 +36,7 @@ import argparse
 import json
 import logging
 import time
+import uuid
 from collections.abc import Callable
 from datetime import datetime, timezone
 from pathlib import Path
@@ -495,8 +496,6 @@ class ExperimentOrchestrator:
                 logger.warning("Duplicate model specification detected in config: %s", model_key)
             seen_models.add(model_key)
             agent_specs.append(aspec)
-
-        import uuid
 
         specs: list[ExperimentSpec] = []
 

@@ -33,6 +33,8 @@ from __future__ import annotations
 
 import concurrent.futures
 import logging
+import time
+from collections import defaultdict
 from datetime import datetime, timezone
 from typing import Any
 
@@ -176,9 +178,7 @@ class ExperimentRunner:
             },
         )
 
-        import time as _time_mod
-
-        self._start_time = _time_mod.time()
+        self._start_time = time.time()
 
         self._result_manager.save_configuration()
 
@@ -242,11 +242,7 @@ class ExperimentRunner:
     def _execute_single_run(self, idx: int, run: RunDescriptor) -> None:
         """Execute a single RunDescriptor and collect its artifacts."""
         if not hasattr(self, "_start_time") or self._start_time is None:
-            import time
-
             self._start_time = time.time()
-
-        import time
 
         current_num = idx + 1
         total_runs = self._status.total_runs
@@ -355,8 +351,6 @@ class ExperimentRunner:
         computed_at = datetime.now(timezone.utc).isoformat()
 
         # Group evaluations by (benchmark, agent)
-        from collections import defaultdict
-
         groups: dict[tuple[str, str], list[EvaluationRecord]] = defaultdict(list)
         for ev in self._evaluations:
             groups[(ev.benchmark, ev.agent)].append(ev)
@@ -372,9 +366,7 @@ class ExperimentRunner:
                 )
 
         # Build rankings per benchmark if ≥ 2 agents
-        from collections import defaultdict as dd
-
-        bench_metrics: dict[str, list[MetricRecord]] = dd(list)
+        bench_metrics: dict[str, list[MetricRecord]] = defaultdict(list)
         for m in self._metrics:
             bench_metrics[m.benchmark].append(m)
 
@@ -424,8 +416,6 @@ class ExperimentRunner:
 
         duration = 0.0
         if hasattr(self, "_start_time") and self._start_time is not None:
-            import time
-
             duration = time.time() - self._start_time
         log.info(
             "Experiment finished",

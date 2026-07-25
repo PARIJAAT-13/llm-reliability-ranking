@@ -6,6 +6,8 @@ It carries every computed metric alongside provenance information so the
 upstream ranking layer can consume a single, self-contained object.
 """
 
+from __future__ import annotations
+
 from typing import Any
 
 from pydantic import Field, model_validator
@@ -61,7 +63,7 @@ class ReliabilityResult(SerializableModel):
     metadata: dict[str, Any] = Field(default_factory=dict)
 
     @model_validator(mode="after")
-    def _weights_sum_to_one(self) -> "ReliabilityResult":
+    def _weights_sum_to_one(self) -> ReliabilityResult:
         if self.weights:
             total = sum(self.weights.values())
             if abs(total - 1.0) > 1e-6:

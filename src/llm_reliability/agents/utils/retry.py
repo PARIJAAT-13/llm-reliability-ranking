@@ -5,6 +5,8 @@ Provides a standalone retry decorator and a functional helper so
 adapters can apply retry logic declaratively.
 """
 
+from __future__ import annotations
+
 import functools
 import logging
 import time

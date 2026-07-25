@@ -10,6 +10,8 @@ Responsibilities
 - Define the AgentBoardMetadata schema
 """
 
+from __future__ import annotations
+
 from typing import Any
 
 from pydantic import Field

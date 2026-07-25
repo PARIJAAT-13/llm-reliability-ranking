@@ -10,6 +10,8 @@ Responsibilities
 - Evaluate execution accuracy against ground truth choices (A, B, C, D)
 """
 
+from __future__ import annotations
+
 import hashlib
 import json
 import logging

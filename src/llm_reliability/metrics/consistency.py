@@ -26,6 +26,8 @@ If every task has exactly one evaluation the std component is 0 and
 consistency equals the overall success rate.
 """
 
+from __future__ import annotations
+
 from collections import defaultdict
 
 import numpy as np

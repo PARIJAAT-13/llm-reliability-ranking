@@ -5,6 +5,8 @@ Provides a simple whitespace-based approximation of token counts.
 Providers should replace this with their own tokenizer when available.
 """
 
+from __future__ import annotations
+
 
 def approximate_token_count(text: str) -> int:
     """Estimate token count using whitespace splitting (≈ 1 token per word).

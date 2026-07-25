@@ -4,6 +4,8 @@ Strongly-typed Pydantic models for LLM request payloads.
 LLMRequest captures all provider-agnostic parameters for a single inference call.
 """
 
+from __future__ import annotations
+
 from typing import Any
 
 from pydantic import Field, field_validator

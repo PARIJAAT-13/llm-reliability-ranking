@@ -1,5 +1,7 @@
 """Runtime adapters — fully capable inference backend implementations."""
 
+from __future__ import annotations
+
 from llm_reliability.runtime.adapters.llama_cpp import LlamaCppRuntime
 from llm_reliability.runtime.adapters.lm_studio import LMStudioRuntime
 from llm_reliability.runtime.adapters.mlx import MLXRuntime

@@ -9,6 +9,8 @@ Responsibilities
 - Evaluate choice predictions (0, 1, 2, 3 or A, B, C, D)
 """
 
+from __future__ import annotations
+
 import hashlib
 import json
 import logging

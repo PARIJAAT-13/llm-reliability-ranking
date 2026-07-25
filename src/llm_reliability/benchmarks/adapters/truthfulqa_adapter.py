@@ -9,6 +9,8 @@ Responsibilities
 - Evaluate truthful/hallucination avoidance performance
 """
 
+from __future__ import annotations
+
 import hashlib
 import json
 import logging

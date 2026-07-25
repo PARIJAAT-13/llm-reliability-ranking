@@ -5,6 +5,8 @@ The registry manages a global mapping from provider names to adapter classes,
 enabling the pipeline to instantiate providers by name without hard-coded imports.
 """
 
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -14,10 +16,10 @@ if TYPE_CHECKING:
 class ProviderRegistry:
     """Registry for LLM provider adapters."""
 
-    _adapters: dict[str, type["BaseLLMAdapter"]] = {}
+    _adapters: dict[str, type[BaseLLMAdapter]] = {}
 
     @classmethod
-    def register(cls, name: str, adapter_cls: type["BaseLLMAdapter"]) -> None:
+    def register(cls, name: str, adapter_cls: type[BaseLLMAdapter]) -> None:
         """Register a provider adapter by name.
 
         Raises ValueError if the name is already registered.
@@ -43,7 +45,7 @@ class ProviderRegistry:
         del cls._adapters[name]
 
     @classmethod
-    def get(cls, name: str) -> type["BaseLLMAdapter"]:
+    def get(cls, name: str) -> type[BaseLLMAdapter]:
         """Return the adapter class for the given provider name.
 
         Raises ValueError if the provider is not registered.

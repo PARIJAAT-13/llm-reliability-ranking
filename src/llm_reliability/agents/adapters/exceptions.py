@@ -5,6 +5,8 @@ These are raised at different stages of the request/response lifecycle
 so callers can handle each failure mode explicitly.
 """
 
+from __future__ import annotations
+
 
 class ProviderError(Exception):
     """Base class for all provider-related errors."""

@@ -24,6 +24,8 @@ Fault-injected records have ``fault_injected == True``.
 Raises ValueError if no fault-injected evaluations are present.
 """
 
+from __future__ import annotations
+
 import numpy as np
 
 from llm_reliability.records.evaluation import EvaluationRecord

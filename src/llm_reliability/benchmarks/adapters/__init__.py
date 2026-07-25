@@ -7,6 +7,8 @@ Adapters can be added as new modules in this package and will be
 automatically discovered — no core file edits required.
 """
 
+from __future__ import annotations
+
 from llm_reliability.benchmarks.adapters.base_adapter import BaseBenchmarkAdapter
 from llm_reliability.benchmarks.adapters.registry import BenchmarkRegistry
 

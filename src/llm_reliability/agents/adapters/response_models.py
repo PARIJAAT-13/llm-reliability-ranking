@@ -5,6 +5,8 @@ LLMResponse standardizes output across all providers so downstream
 components never need to handle provider-specific response structures.
 """
 
+from __future__ import annotations
+
 from typing import Any
 
 from pydantic import Field

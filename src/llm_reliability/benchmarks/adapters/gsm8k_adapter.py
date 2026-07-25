@@ -9,6 +9,8 @@ Responsibilities
 - Parse numerical completion output (#### number) and compare against target
 """
 
+from __future__ import annotations
+
 import hashlib
 import json
 import logging

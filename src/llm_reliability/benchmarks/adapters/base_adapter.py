@@ -11,6 +11,8 @@ Responsibilities
 - Leave actual execution and evaluation to subclasses
 """
 
+from __future__ import annotations
+
 from abc import abstractmethod
 from typing import Any
 

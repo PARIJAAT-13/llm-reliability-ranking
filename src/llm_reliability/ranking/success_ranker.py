@@ -4,6 +4,8 @@ Success Ranking Strategy.
 Ranks agents based on their success rate.
 """
 
+from __future__ import annotations
+
 from llm_reliability.ranking.ranking_strategy import RankingStrategy
 from llm_reliability.ranking.utils import sort_and_rank, validate_metrics
 from llm_reliability.records.metric import MetricRecord

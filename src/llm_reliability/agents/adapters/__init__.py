@@ -2,6 +2,8 @@
 LLM Agent Adapter Framework public API.
 """
 
+from __future__ import annotations
+
 from llm_reliability.agents.adapters.base_llm_adapter import BaseLLMAdapter
 from llm_reliability.agents.adapters.exceptions import (
     AuthenticationError,

@@ -15,6 +15,8 @@ Orchestrator
     ``ReportGenerator``      — Generates all formats in one call.
 """
 
+from __future__ import annotations
+
 from llm_reliability.reporting.html_report import HTMLReportWriter
 from llm_reliability.reporting.latex_report import LaTeXReportWriter
 from llm_reliability.reporting.markdown_report import MarkdownReportWriter

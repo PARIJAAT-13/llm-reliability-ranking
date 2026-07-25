@@ -6,6 +6,8 @@ using a deterministic derivation from the base seed, ensuring that repeated
 runs are bitwise-identical regardless of execution order.
 """
 
+from __future__ import annotations
+
 import hashlib
 
 

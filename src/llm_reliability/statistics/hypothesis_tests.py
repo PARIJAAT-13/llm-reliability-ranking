@@ -4,6 +4,8 @@ Hypothesis testing module.
 Performs Paired t-tests and Wilcoxon Signed-Rank tests, validating assumptions beforehand.
 """
 
+from __future__ import annotations
+
 import numpy as np
 from scipy.stats import ttest_rel, wilcoxon
 

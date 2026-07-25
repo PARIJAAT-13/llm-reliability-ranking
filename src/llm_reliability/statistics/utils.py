@@ -4,6 +4,8 @@ Utilities for the Statistical Analysis Engine.
 Handles input validations and helper functions for summary statistics.
 """
 
+from __future__ import annotations
+
 from collections.abc import Sequence
 
 import numpy as np

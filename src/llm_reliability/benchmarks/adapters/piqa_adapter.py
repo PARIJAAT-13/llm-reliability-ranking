@@ -9,6 +9,8 @@ Responsibilities
 - Evaluate solution choices (0 vs 1 or A vs B)
 """
 
+from __future__ import annotations
+
 import hashlib
 import json
 import logging

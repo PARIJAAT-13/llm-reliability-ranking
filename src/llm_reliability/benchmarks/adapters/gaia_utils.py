@@ -8,6 +8,8 @@ Responsibilities
 - Strip punctuation and standardize case for evaluation alignment
 """
 
+from __future__ import annotations
+
 import string
 
 

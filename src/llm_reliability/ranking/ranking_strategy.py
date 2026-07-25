@@ -4,6 +4,8 @@ Ranking Strategy Interface.
 Defines the abstract base class for all ranking strategies.
 """
 
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 
 from llm_reliability.records.metric import MetricRecord

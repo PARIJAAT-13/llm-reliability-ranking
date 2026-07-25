@@ -9,6 +9,8 @@ Responsibilities
 - Evaluate multiple-choice answers (A, B, C, D or 1, 2, 3, 4)
 """
 
+from __future__ import annotations
+
 import hashlib
 import json
 import logging

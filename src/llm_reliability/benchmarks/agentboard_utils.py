@@ -19,6 +19,8 @@ branching that would complicate the pipeline.  Partial-progress scores (when
 independently of the normalised string match.
 """
 
+from __future__ import annotations
+
 import string
 
 

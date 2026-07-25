@@ -1,5 +1,7 @@
 """Reliability Metrics Engine public API."""
 
+from __future__ import annotations
+
 from llm_reliability.metrics.composite import compute_composite
 from llm_reliability.metrics.consistency import compute_consistency
 from llm_reliability.metrics.fault_tolerance import compute_fault_tolerance

@@ -4,6 +4,8 @@ Confidence intervals module.
 Computes bootstrap confidence intervals for a given sequence of numbers.
 """
 
+from __future__ import annotations
+
 from collections.abc import Sequence
 
 import numpy as np

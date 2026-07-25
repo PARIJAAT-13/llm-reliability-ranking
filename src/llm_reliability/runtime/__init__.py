@@ -1,5 +1,7 @@
 """Runtime abstraction layer — interchangeable inference backends."""
 
+from __future__ import annotations
+
 from llm_reliability.runtime.interface import Runtime
 from llm_reliability.runtime.metadata import RuntimeCapabilities, RuntimeMetadata
 from llm_reliability.runtime.registry import RuntimeRegistry

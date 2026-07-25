@@ -5,6 +5,8 @@ Provides standard infrastructure and strategies to rank agents by success,
 reliability, and custom weighted configurations.
 """
 
+from __future__ import annotations
+
 from llm_reliability.ranking.ranking_engine import RankingEngine
 from llm_reliability.ranking.ranking_models import WeightedRankingConfig
 from llm_reliability.ranking.ranking_strategy import RankingStrategy

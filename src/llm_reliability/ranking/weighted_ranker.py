@@ -4,6 +4,8 @@ Weighted Ranking Strategy.
 Ranks agents based on a user-defined weighted combination of metrics.
 """
 
+from __future__ import annotations
+
 from llm_reliability.ranking.ranking_strategy import RankingStrategy
 from llm_reliability.ranking.utils import sort_and_rank, validate_metrics
 from llm_reliability.records.metric import MetricRecord

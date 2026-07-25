@@ -21,6 +21,8 @@ Export
     ``TableExporter`` — CSV, Excel, JSON, Markdown, LaTeX.
 """
 
+from __future__ import annotations
+
 from llm_reliability.visualization.distributions import DistributionPlotter
 from llm_reliability.visualization.export import FigureExporter, TableExporter
 from llm_reliability.visualization.heatmaps import HeatmapPlotter

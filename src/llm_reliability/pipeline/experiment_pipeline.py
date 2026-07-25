@@ -13,7 +13,10 @@ Responsibilities
 - Persist experiment results to disk
 """
 
+from __future__ import annotations
+
 import logging
+from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -433,8 +436,6 @@ class ExperimentPipeline:
         computed_at = datetime.now(timezone.utc).isoformat()
 
         # Group evaluations by (benchmark, agent) — mirrors ExperimentRunner._aggregate()
-        from collections import defaultdict
-
         groups: dict[tuple[str, str], list] = defaultdict(list)
         for ev in self.evaluation_records:
             groups[(ev.benchmark, ev.agent)].append(ev)

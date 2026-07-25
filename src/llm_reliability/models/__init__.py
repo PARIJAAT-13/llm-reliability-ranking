@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from llm_reliability.models.discovery import discover_local_models, merge_discovered
 from llm_reliability.models.model_info import ModelInfo
 from llm_reliability.models.model_registry import (

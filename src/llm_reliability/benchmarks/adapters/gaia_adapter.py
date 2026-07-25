@@ -10,6 +10,8 @@ Responsibilities
 - Evaluate the execution success using normalized GAIA evaluation criteria
 """
 
+from __future__ import annotations
+
 import hashlib
 import json
 import logging

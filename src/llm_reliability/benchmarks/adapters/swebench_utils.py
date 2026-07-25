@@ -8,6 +8,8 @@ Responsibilities
 - Normalize generated patches for resilient evaluations
 """
 
+from __future__ import annotations
+
 
 def normalize_patch(patch: str) -> str:
     """

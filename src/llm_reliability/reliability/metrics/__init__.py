@@ -5,6 +5,8 @@ Provides quantitative metric calculation across consistency, prompt perturbation
 and fault tolerance dimensions.
 """
 
+from __future__ import annotations
+
 from llm_reliability.reliability.metrics.base import (
     ConsistencyMetricResult,
     FaultToleranceMetricResult,

@@ -2,6 +2,8 @@
 Pydantic models for the Ranking Engine.
 """
 
+from __future__ import annotations
+
 from pydantic import BaseModel, Field, field_validator
 
 

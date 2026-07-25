@@ -9,6 +9,8 @@ Responsibilities
 - Evaluate generated Python functions against assertions
 """
 
+from __future__ import annotations
+
 import hashlib
 import json
 import logging

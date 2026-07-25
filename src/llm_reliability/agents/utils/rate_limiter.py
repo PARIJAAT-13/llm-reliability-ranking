@@ -5,6 +5,8 @@ Enforces a maximum number of requests per second across repeated calls,
 preventing providers from returning 429 errors due to burst traffic.
 """
 
+from __future__ import annotations
+
 import threading
 import time
 

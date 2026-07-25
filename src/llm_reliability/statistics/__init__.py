@@ -7,6 +7,8 @@ correction, power analysis, and Bayesian analysis for comparative analysis of
 LLM reliability.
 """
 
+from __future__ import annotations
+
 from llm_reliability.statistics.assumptions import check_normality
 from llm_reliability.statistics.confidence_intervals import compute_bootstrap_ci
 from llm_reliability.statistics.correlation import compute_kendall_tau, compute_spearman

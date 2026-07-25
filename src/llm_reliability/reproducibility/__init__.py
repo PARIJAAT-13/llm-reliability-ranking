@@ -21,6 +21,8 @@ Archive
     ``ArchiveBuilder`` — assemble the complete results directory tree.
 """
 
+from __future__ import annotations
+
 from llm_reliability.reproducibility.archive import ArchiveBuilder
 from llm_reliability.reproducibility.checklist import (
     CheckItem,

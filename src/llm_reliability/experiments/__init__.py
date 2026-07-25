@@ -1,5 +1,7 @@
 """Experiments module public API."""
 
+from __future__ import annotations
+
 from llm_reliability.experiments.experiment_manager import ExperimentManager
 from llm_reliability.experiments.experiment_models import (
     AgentSpec,

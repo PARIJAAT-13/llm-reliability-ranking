@@ -10,6 +10,8 @@ Responsibilities
 - Evaluate the generated patch outputs
 """
 
+from __future__ import annotations
+
 import hashlib
 import json
 import logging

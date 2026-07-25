@@ -5,6 +5,8 @@ Provides fault injection strategies, FaultManager orchestration, and FaultReport
 for fault tolerance evaluation.
 """
 
+from __future__ import annotations
+
 from llm_reliability.reliability.faults.base import (
     FaultInjectionStrategy,
     FaultRunResult,

@@ -25,6 +25,8 @@ Raises ValueError if no perturbed evaluations are found — calling code should
 check before calling when perturbations are optional.
 """
 
+from __future__ import annotations
+
 import numpy as np
 
 from llm_reliability.records.evaluation import EvaluationRecord
