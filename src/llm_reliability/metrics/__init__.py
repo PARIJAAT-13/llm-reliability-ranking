@@ -8,7 +8,8 @@ from llm_reliability.metrics.fault_tolerance import compute_fault_tolerance
 from llm_reliability.metrics.models import ReliabilityResult
 from llm_reliability.metrics.reliability_engine import ReliabilityEngine
 from llm_reliability.metrics.robustness import compute_robustness
-from llm_reliability.reliability.metrics.isr import compute_isr, compute_temporal_isr
+from llm_reliability.reliability.metrics.isr import (compute_isr,
+                                                     compute_temporal_isr)
 
 _warnings.warn(
     "llm_reliability.metrics is deprecated. Use llm_reliability.reliability.metrics instead.",

@@ -25,13 +25,10 @@ from llm_reliability.agents.mock_agent import MockAgent
 from llm_reliability.benchmarks.dataset_manager import DatasetManager
 from llm_reliability.benchmarks.mock_benchmark import MockBenchmark
 from llm_reliability.configs.config import Configuration
-from llm_reliability.experiments import (
-    AgentSpec,
-    BenchmarkSpec,
-    ExperimentRunner,
-    ExperimentSpec,
-)
-from llm_reliability.experiments.experiment_models import AgentSpec as _AgentSpec
+from llm_reliability.experiments import (AgentSpec, BenchmarkSpec,
+                                         ExperimentRunner, ExperimentSpec)
+from llm_reliability.experiments.experiment_models import \
+    AgentSpec as _AgentSpec
 from llm_reliability.interfaces.agent import Agent
 from llm_reliability.utils.hardware_profile import detect_hardware_profile
 

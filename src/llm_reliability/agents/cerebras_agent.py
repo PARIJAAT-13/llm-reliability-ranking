@@ -6,17 +6,11 @@ import time
 from typing import Any
 
 from llm_reliability.agents.adapters.base_llm_adapter import BaseLLMAdapter
+from llm_reliability.agents.adapters.exceptions import AuthenticationError
+from llm_reliability.agents.adapters.exceptions import \
+    ConnectionError as ProviderConnectionError
 from llm_reliability.agents.adapters.exceptions import (
-    AuthenticationError,
-)
-from llm_reliability.agents.adapters.exceptions import (
-    ConnectionError as ProviderConnectionError,
-)
-from llm_reliability.agents.adapters.exceptions import (
-    ProviderError,
-    RateLimitError,
-    ResponseValidationError,
-)
+    ProviderError, RateLimitError, ResponseValidationError)
 from llm_reliability.agents.adapters.provider_registry import ProviderRegistry
 from llm_reliability.agents.adapters.request_models import LLMRequest
 from llm_reliability.agents.adapters.response_models import LLMResponse
@@ -154,7 +148,11 @@ class CerebrasAgent(BaseProvider):
     def metadata(self) -> dict[str, Any]:
         base = super().metadata()
         base.update(
-            {"name": "CerebrasAgent", "provider": "cerebras", "model": self._adapter._model}
+            {
+                "name": "CerebrasAgent",
+                "provider": "cerebras",
+                "model": self._adapter._model,
+            }
         )
         return base
 

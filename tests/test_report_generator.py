@@ -7,14 +7,12 @@ import pytest
 
 from llm_reliability.reporting.report_generator import ReportGenerator
 from llm_reliability.reporting.summary import ExperimentSummary
-from llm_reliability.statistics.result_models import (
-    ConfidenceIntervalResult,
-    CorrelationResult,
-    EffectSizeResult,
-    HypothesisTestResult,
-    StatisticalReport,
-    SummaryStatistics,
-)
+from llm_reliability.statistics.result_models import (ConfidenceIntervalResult,
+                                                      CorrelationResult,
+                                                      EffectSizeResult,
+                                                      HypothesisTestResult,
+                                                      StatisticalReport,
+                                                      SummaryStatistics)
 from tests.ranking_test_helpers import create_mock_metric
 from tests.statistics_test_helpers import create_mock_ranking
 

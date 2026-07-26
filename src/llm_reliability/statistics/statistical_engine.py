@@ -42,27 +42,18 @@ class StatisticalEngine:
         """Backward-compatible full statistical analysis on two rankings."""
         import numpy as np
 
-        from llm_reliability.statistics.confidence_intervals import compute_bootstrap_ci
+        from llm_reliability.statistics.confidence_intervals import \
+            compute_bootstrap_ci
         from llm_reliability.statistics.correlation import (
-            _align_ranking_scores,
-            compute_kendall_tau,
-            compute_spearman,
-        )
-        from llm_reliability.statistics.effect_sizes import (
-            compute_cliffs_delta,
-        )
-        from llm_reliability.statistics.effect_sizes import (
-            compute_cohens_d as calc_cohen,
-        )
+            _align_ranking_scores, compute_kendall_tau, compute_spearman)
+        from llm_reliability.statistics.effect_sizes import \
+            compute_cliffs_delta
+        from llm_reliability.statistics.effect_sizes import \
+            compute_cohens_d as calc_cohen
         from llm_reliability.statistics.hypothesis_tests import (
-            run_paired_t_test,
-            run_wilcoxon_test,
-        )
+            run_paired_t_test, run_wilcoxon_test)
         from llm_reliability.statistics.result_models import (
-            ConfidenceIntervalResult,
-            StatisticalReport,
-            SummaryStatistics,
-        )
+            ConfidenceIntervalResult, StatisticalReport, SummaryStatistics)
 
         spearman = compute_spearman(ranking1, ranking2)
         kendall = compute_kendall_tau(ranking1, ranking2)
@@ -206,7 +197,9 @@ def compute_cohens_d(group1: Sequence[float], group2: Sequence[float]) -> float:
     return round((m1 - m2) / s_pooled, 4)
 
 
-def perform_cross_validation_check(seed_results: dict[int, list[float]]) -> dict[str, Any]:
+def perform_cross_validation_check(
+    seed_results: dict[int, list[float]],
+) -> dict[str, Any]:
     """Perform multi-seed cross-validation stability analysis across 5 seeds."""
     all_scores: list[float] = []
     seed_means: dict[int, float] = {}

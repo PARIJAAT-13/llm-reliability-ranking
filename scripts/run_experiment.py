@@ -57,12 +57,8 @@ from llm_reliability.agents.agent_factory import AgentFactory
 from llm_reliability.agents.mock_agent import MockAgent
 from llm_reliability.benchmarks.mock_benchmark import MockBenchmark
 from llm_reliability.configs.config import Configuration
-from llm_reliability.experiments import (
-    AgentSpec,
-    BenchmarkSpec,
-    ExperimentRunner,
-    ExperimentSpec,
-)
+from llm_reliability.experiments import (AgentSpec, BenchmarkSpec,
+                                         ExperimentRunner, ExperimentSpec)
 from llm_reliability.interfaces.agent import Agent
 
 logging.basicConfig(
@@ -144,9 +140,8 @@ def _run_via_orchestrator(args: argparse.Namespace, is_demo: bool) -> int:
     This preserves all orchestration logic (matrix expansion, retry, multi-spec
     batch runs) without duplicating it in run_experiment.py.
     """
-    from llm_reliability.orchestration.experiment_orchestrator import (
-        ExperimentOrchestrator,
-    )
+    from llm_reliability.orchestration.experiment_orchestrator import \
+        ExperimentOrchestrator
 
     raw = json.loads(args.spec.read_text(encoding="utf-8"))
     output_dir = raw.get("output_dir", args.output)

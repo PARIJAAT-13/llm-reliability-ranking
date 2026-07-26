@@ -27,16 +27,14 @@ from llm_reliability.records.evaluation import EvaluationRecord
 from llm_reliability.records.execution import ExecutionRecord
 from llm_reliability.records.metric import MetricRecord
 from llm_reliability.reliability.metrics.base import (
-    ConsistencyMetricResult,
-    FaultToleranceMetricResult,
-    ReliabilityMetric,
-    RobustnessMetricResult,
-)
-from llm_reliability.reliability.metrics.consistency import RepeatedRunConsistencyMetric
-from llm_reliability.reliability.metrics.fault_tolerance import FaultToleranceMetric
-from llm_reliability.reliability.metrics.robustness import (
-    PromptPerturbationRobustnessMetric,
-)
+    ConsistencyMetricResult, FaultToleranceMetricResult, ReliabilityMetric,
+    RobustnessMetricResult)
+from llm_reliability.reliability.metrics.consistency import \
+    RepeatedRunConsistencyMetric
+from llm_reliability.reliability.metrics.fault_tolerance import \
+    FaultToleranceMetric
+from llm_reliability.reliability.metrics.robustness import \
+    PromptPerturbationRobustnessMetric
 
 logger = logging.getLogger(__name__)
 
@@ -67,7 +65,7 @@ class ScopeReliabilitySummary:
             "robustness": self.robustness.model_dump(),
             "fault_tolerance": self.fault_tolerance.model_dump(),
             "composite_score": self.composite_score,
-            "metric_record": self.metric_record.model_dump() if self.metric_record else None,
+            "metric_record": (self.metric_record.model_dump() if self.metric_record else None),
         }
 
 

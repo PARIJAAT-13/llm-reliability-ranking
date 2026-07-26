@@ -6,22 +6,14 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from llm_reliability.runtime.hardware_profiler import (
-    CPUInfo,
-    GPUInfo,
-)
-from llm_reliability.runtime.hardware_profiler import (
-    HardwareProfile as RuntimeHardwareProfile,
-)
-from llm_reliability.runtime.hardware_profiler import (
-    HardwareProfiler,
-    MemoryInfo,
-)
-from llm_reliability.utils.hardware_profile import (
-    HardwareProfile,
-    HardwareRegistry,
-    detect_hardware_profile,
-)
+from llm_reliability.runtime.hardware_profiler import CPUInfo, GPUInfo
+from llm_reliability.runtime.hardware_profiler import \
+    HardwareProfile as RuntimeHardwareProfile
+from llm_reliability.runtime.hardware_profiler import (HardwareProfiler,
+                                                       MemoryInfo)
+from llm_reliability.utils.hardware_profile import (HardwareProfile,
+                                                    HardwareRegistry,
+                                                    detect_hardware_profile)
 
 SHA256_HEX_LEN = 64
 

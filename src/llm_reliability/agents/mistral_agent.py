@@ -7,11 +7,8 @@ from typing import Any
 
 from llm_reliability.agents.adapters.base_llm_adapter import BaseLLMAdapter
 from llm_reliability.agents.adapters.exceptions import (
-    AuthenticationError,
-    ProviderError,
-    RateLimitError,
-    ResponseValidationError,
-)
+    AuthenticationError, ProviderError, RateLimitError,
+    ResponseValidationError)
 from llm_reliability.agents.adapters.provider_registry import ProviderRegistry
 from llm_reliability.agents.adapters.request_models import LLMRequest
 from llm_reliability.agents.adapters.response_models import LLMResponse
@@ -135,7 +132,13 @@ class MistralAgent(BaseProvider):
 
     def metadata(self) -> dict[str, Any]:
         base = super().metadata()
-        base.update({"name": "MistralAgent", "provider": "mistral", "model": self._adapter._model})
+        base.update(
+            {
+                "name": "MistralAgent",
+                "provider": "mistral",
+                "model": self._adapter._model,
+            }
+        )
         return base
 
     def _health_check_impl(self) -> bool:

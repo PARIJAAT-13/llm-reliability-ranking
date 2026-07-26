@@ -17,7 +17,8 @@ from abc import ABC
 from typing import Any
 
 from llm_reliability.interfaces.agent import Agent
-from llm_reliability.runtime.metadata import RuntimeCapabilities, RuntimeMetadata
+from llm_reliability.runtime.metadata import (RuntimeCapabilities,
+                                              RuntimeMetadata)
 
 
 class Runtime(Agent, ABC):

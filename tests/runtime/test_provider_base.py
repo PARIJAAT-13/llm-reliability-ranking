@@ -9,31 +9,21 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+from llm_reliability.agents.adapters.exceptions import AuthenticationError
+from llm_reliability.agents.adapters.exceptions import \
+    ConnectionError as ProviderConnectionError
 from llm_reliability.agents.adapters.exceptions import (
-    AuthenticationError,
-)
-from llm_reliability.agents.adapters.exceptions import (
-    ConnectionError as ProviderConnectionError,
-)
-from llm_reliability.agents.adapters.exceptions import (
-    ContentFilterError,
-    ContextLengthExceededError,
-    InvalidRequestError,
-    NetworkError,
-    ProviderError,
-    ProviderUnavailableError,
-    QuotaExceededError,
-    RateLimitError,
-    ResponseValidationError,
-    TimeoutError,
-)
+    ContentFilterError, ContextLengthExceededError, InvalidRequestError,
+    NetworkError, ProviderError, ProviderUnavailableError, QuotaExceededError,
+    RateLimitError, ResponseValidationError, TimeoutError)
 from llm_reliability.agents.adapters.provider_registry import ProviderRegistry
 from llm_reliability.agents.adapters.request_models import LLMRequest
 from llm_reliability.agents.adapters.response_models import LLMResponse
 from llm_reliability.configs.config import Configuration
 from llm_reliability.runtime.batching import BatchProcessor
 from llm_reliability.runtime.cost_accounting import CostTracker
-from llm_reliability.runtime.metadata import RuntimeCapabilities, RuntimeMetadata
+from llm_reliability.runtime.metadata import (RuntimeCapabilities,
+                                              RuntimeMetadata)
 from llm_reliability.runtime.provider_base import BaseProvider
 from llm_reliability.runtime.streaming import TokenStream
 
@@ -265,14 +255,9 @@ class TestErrorHierarchy:
 
     def test_new_errors_are_importable_from_adapters(self) -> None:
         from llm_reliability.agents.adapters.exceptions import (
-            ContentFilterError,
-            ContextLengthExceededError,
-            InvalidRequestError,
-            NetworkError,
-            ProviderUnavailableError,
-            QuotaExceededError,
-            TimeoutError,
-        )
+            ContentFilterError, ContextLengthExceededError,
+            InvalidRequestError, NetworkError, ProviderUnavailableError,
+            QuotaExceededError, TimeoutError)
 
         assert TimeoutError
         assert QuotaExceededError
@@ -1024,35 +1009,20 @@ class TestAgentClassHierarchy:
         assert issubclass(MockAgent, BaseProvider)
 
     def test_all_refactored_agents(self) -> None:
-        from llm_reliability.agents import (
-            anthropic_agent,
-            azure_openai_agent,
-            bedrock_agent,
-            cerebras_agent,
-            cohere_agent,
-            deepseek_agent,
-            fireworks_agent,
-            gemini_agent,
-            gpt_agent,
-            groq_agent,
-            hf_agent,
-            litellm_agent,
-            llama_agent,
-            llama_cpp_agent,
-            mistral_agent,
-            mock_agent,
-            nim_agent,
-            ollama_agent,
-            openrouter_agent,
-            perplexity_agent,
-            qwen_agent,
-            sambanova_agent,
-            sglang_agent,
-            together_agent,
-            vertex_agent,
-            vllm_agent,
-            xai_agent,
-        )
+        from llm_reliability.agents import (anthropic_agent,
+                                            azure_openai_agent, bedrock_agent,
+                                            cerebras_agent, cohere_agent,
+                                            deepseek_agent, fireworks_agent,
+                                            gemini_agent, gpt_agent,
+                                            groq_agent, hf_agent,
+                                            litellm_agent, llama_agent,
+                                            llama_cpp_agent, mistral_agent,
+                                            mock_agent, nim_agent,
+                                            ollama_agent, openrouter_agent,
+                                            perplexity_agent, qwen_agent,
+                                            sambanova_agent, sglang_agent,
+                                            together_agent, vertex_agent,
+                                            vllm_agent, xai_agent)
 
         agent_classes = [
             gpt_agent.GPTAgent,
@@ -1183,9 +1153,8 @@ class TestEdgeCases:
             api_key_env = "REQUIRED_KEY"
 
             def initialize(self) -> None:
-                from llm_reliability.agents.adapters.exceptions import (
-                    AuthenticationError,
-                )
+                from llm_reliability.agents.adapters.exceptions import \
+                    AuthenticationError
 
                 if not __import__("os").environ.get(self.api_key_env):
                     raise AuthenticationError(f"{self.api_key_env} not set")

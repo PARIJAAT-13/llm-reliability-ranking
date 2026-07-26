@@ -7,10 +7,13 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from llm_reliability.benchmarks.adapters.base_adapter import BaseBenchmarkAdapter
+from llm_reliability.benchmarks.adapters.base_adapter import \
+    BaseBenchmarkAdapter
 from llm_reliability.benchmarks.adapters.registry import BenchmarkRegistry
-from llm_reliability.benchmarks.adapters.webarena_models import WebArenaMetadata
-from llm_reliability.benchmarks.adapters.webarena_utils import normalize_webarena_answer
+from llm_reliability.benchmarks.adapters.webarena_models import \
+    WebArenaMetadata
+from llm_reliability.benchmarks.adapters.webarena_utils import \
+    normalize_webarena_answer
 from llm_reliability.interfaces.agent import Agent
 from llm_reliability.records.evaluation import EvaluationRecord
 from llm_reliability.records.execution import ExecutionRecord
@@ -43,7 +46,8 @@ class WebArenaAdapter(BaseBenchmarkAdapter):
         if not isinstance(data, list):
             raise TypeError("WebArena dataset must be a list of tasks.")
 
-        from llm_reliability.benchmarks.adapters.webarena_models import WebArenaTask
+        from llm_reliability.benchmarks.adapters.webarena_models import \
+            WebArenaTask
 
         self._tasks = {}
         for item in data:

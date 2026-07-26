@@ -7,11 +7,9 @@ from unittest.mock import MagicMock, patch
 from llm_reliability.agents.agent_factory import AgentFactory
 from llm_reliability.agents.ollama_agent import OllamaAgent, _OllamaAdapter
 from llm_reliability.configs.config import Configuration
-from llm_reliability.experiments.experiment_models import (
-    AgentSpec,
-    BenchmarkSpec,
-    ExperimentSpec,
-)
+from llm_reliability.experiments.experiment_models import (AgentSpec,
+                                                           BenchmarkSpec,
+                                                           ExperimentSpec)
 from llm_reliability.experiments.experiment_runner import ExperimentRunner
 
 
@@ -121,15 +119,9 @@ def test_experiment_runner_build_config_propagates_model():
 def test_ollama_non_retryable_exceptions():
     """Verify that deterministic Ollama errors have is_transient=False and fail immediately without retry."""
     from llm_reliability.agents.adapters.exceptions import (
-        AuthenticationError,
-        ConnectionError,
-        OllamaMemoryError,
-        OllamaModelNotFoundError,
-        OllamaServerNotFoundError,
-        RateLimitError,
-        RequestValidationError,
-        ResponseValidationError,
-    )
+        AuthenticationError, ConnectionError, OllamaMemoryError,
+        OllamaModelNotFoundError, OllamaServerNotFoundError, RateLimitError,
+        RequestValidationError, ResponseValidationError)
 
     assert OllamaModelNotFoundError.is_transient is False
     assert OllamaMemoryError.is_transient is False
@@ -155,10 +147,7 @@ def test_ollama_shutdown_unloads_model():
 def test_ollama_utils_diagnostics_formatting():
     """Verify error message formatting functions produce actionable messages."""
     from llm_reliability.agents.utils.ollama_utils import (
-        format_memory_error,
-        format_model_not_found_error,
-        model_matches,
-    )
+        format_memory_error, format_model_not_found_error, model_matches)
 
     err_msg = format_model_not_found_error(["llama3.1:8b"], ["phi3:mini", "mistral:7b"])
     assert "llama3.1:8b" in err_msg

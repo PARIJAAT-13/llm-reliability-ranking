@@ -19,7 +19,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from llm_reliability.benchmarks.adapters.base_adapter import BaseBenchmarkAdapter
+from llm_reliability.benchmarks.adapters.base_adapter import \
+    BaseBenchmarkAdapter
 from llm_reliability.benchmarks.adapters.registry import BenchmarkRegistry
 from llm_reliability.interfaces.agent import Agent
 from llm_reliability.records.evaluation import EvaluationRecord
@@ -74,7 +75,8 @@ class ArenaHardAdapter(BaseBenchmarkAdapter):
                 tid = item.get("task_id", item.get("id", f"arena_hard_{len(self._tasks)}"))
                 prompt = item.get("prompt", item.get("question", item.get("conversation", "")))
                 reference = item.get(
-                    "reference_answer", item.get("reference", item.get("ground_truth_answer", ""))
+                    "reference_answer",
+                    item.get("reference", item.get("ground_truth_answer", "")),
                 )
                 category = item.get("category", item.get("type", "general"))
                 self._tasks[tid] = {

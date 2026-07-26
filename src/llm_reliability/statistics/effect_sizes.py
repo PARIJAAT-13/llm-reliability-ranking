@@ -69,7 +69,7 @@ def compute_rank_biserial(
     signs = np.sign(non_zero)
     signed_ranks = ranks * signs
 
-r_plus: float = np.sum(signed_ranks[signed_ranks > 0])
+    r_plus: float = np.sum(signed_ranks[signed_ranks > 0])
     r_minus: float = np.sum(np.abs(signed_ranks[signed_ranks < 0]))
 
     total_ranks = r_plus + r_minus

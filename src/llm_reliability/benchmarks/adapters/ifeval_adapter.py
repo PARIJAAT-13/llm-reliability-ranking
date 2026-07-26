@@ -20,7 +20,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from llm_reliability.benchmarks.adapters.base_adapter import BaseBenchmarkAdapter
+from llm_reliability.benchmarks.adapters.base_adapter import \
+    BaseBenchmarkAdapter
 from llm_reliability.benchmarks.adapters.registry import BenchmarkRegistry
 from llm_reliability.interfaces.agent import Agent
 from llm_reliability.records.evaluation import EvaluationRecord

@@ -4,8 +4,10 @@ import json
 
 import pytest
 
-from llm_reliability.benchmarks.adapters.webarena_adapter import WebArenaAdapter
-from llm_reliability.benchmarks.adapters.webarena_utils import normalize_webarena_answer
+from llm_reliability.benchmarks.adapters.webarena_adapter import \
+    WebArenaAdapter
+from llm_reliability.benchmarks.adapters.webarena_utils import \
+    normalize_webarena_answer
 from llm_reliability.configs.config import Configuration
 from tests.contracts.test_agent_contract import ValidAgent
 

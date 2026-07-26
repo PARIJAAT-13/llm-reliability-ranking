@@ -2,7 +2,8 @@
 
 import pytest
 
-from llm_reliability.benchmarks.adapters.base_adapter import BaseBenchmarkAdapter
+from llm_reliability.benchmarks.adapters.base_adapter import \
+    BaseBenchmarkAdapter
 from llm_reliability.configs.config import Configuration
 from llm_reliability.interfaces.agent import Agent
 from llm_reliability.records.evaluation import EvaluationRecord

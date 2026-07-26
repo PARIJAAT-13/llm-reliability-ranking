@@ -2,16 +2,11 @@
 
 import pytest
 
-from llm_reliability.models import (
-    SUPPORTED_OLLAMA_MODELS,
-    DuplicateModelError,
-    ModelInfo,
-    ModelNotFoundError,
-    ModelRegistry,
-    discover_local_models,
-    merge_discovered,
-    populate_registry,
-)
+from llm_reliability.models import (SUPPORTED_OLLAMA_MODELS,
+                                    DuplicateModelError, ModelInfo,
+                                    ModelNotFoundError, ModelRegistry,
+                                    discover_local_models, merge_discovered,
+                                    populate_registry)
 from llm_reliability.models.discovery import _infer_family
 
 

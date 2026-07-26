@@ -8,12 +8,10 @@ from pathlib import Path
 import pytest
 
 from llm_reliability.experiments.experiment_manager import ExperimentManager
-from llm_reliability.experiments.experiment_models import (
-    AgentSpec,
-    BenchmarkSpec,
-    ExperimentSpec,
-    ExperimentState,
-)
+from llm_reliability.experiments.experiment_models import (AgentSpec,
+                                                           BenchmarkSpec,
+                                                           ExperimentSpec,
+                                                           ExperimentState)
 from llm_reliability.experiments.result_manager import ResultManager
 from llm_reliability.experiments.scheduler import RunDescriptor, Scheduler
 from llm_reliability.experiments.seed_manager import SeedManager
@@ -337,7 +335,8 @@ class TestResultManager:
         assert (rm.experiment_dir / "rankings.json").exists()
 
     def test_result_manager_save_metadata(self, tmp_path: Path):
-        from llm_reliability.experiments.experiment_models import ExperimentStatus
+        from llm_reliability.experiments.experiment_models import \
+            ExperimentStatus
 
         spec = _make_spec(experiment_name="rm_save_meta")
         rm = ResultManager(spec, output_dir=str(tmp_path / "results"))

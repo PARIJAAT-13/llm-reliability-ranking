@@ -63,7 +63,8 @@ class TestPopulateRegistry:
         assert count >= 100
 
     def test_populate_count_matches_ollama_plus_provider(self):
-        from llm_reliability.models.ollama_models import SUPPORTED_OLLAMA_MODELS
+        from llm_reliability.models.ollama_models import \
+            SUPPORTED_OLLAMA_MODELS
 
         expected = len(SUPPORTED_OLLAMA_MODELS) + len(SUPPORTED_PROVIDER_MODELS)
         count = populate_registry()

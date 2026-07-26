@@ -347,7 +347,8 @@ def main() -> int:
                 import matplotlib
 
                 matplotlib.use("Agg")
-                from llm_reliability.reproducibility.archive import ArchiveBuilder
+                from llm_reliability.reproducibility.archive import \
+                    ArchiveBuilder
 
                 ArchiveBuilder()._generate_figures(summary, figures_dir)
                 logger.info("Figures written to %s", figures_dir)
@@ -356,7 +357,8 @@ def main() -> int:
 
         if args.tables:
             try:
-                from llm_reliability.reproducibility.archive import ArchiveBuilder
+                from llm_reliability.reproducibility.archive import \
+                    ArchiveBuilder
 
                 ArchiveBuilder()._generate_tables(summary, tables_dir, skip_excel=args.skip_excel)
                 logger.info("Tables written to %s", tables_dir)
@@ -364,7 +366,8 @@ def main() -> int:
                 logger.error("Table generation failed: %s", exc)
 
         try:
-            from llm_reliability.reporting.report_generator import ReportGenerator
+            from llm_reliability.reporting.report_generator import \
+                ReportGenerator
 
             gen = ReportGenerator()
             paths = gen.generate(

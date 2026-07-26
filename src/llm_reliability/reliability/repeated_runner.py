@@ -258,7 +258,10 @@ class RepeatedRunner:
                 # Check if benchmark returned an error execution record
                 if execution.status == "error" or execution.error:
                     logger.warning(
-                        "Run %d/%d recorded error: %s", run_idx + 1, num_reps, execution.error
+                        "Run %d/%d recorded error: %s",
+                        run_idx + 1,
+                        num_reps,
+                        execution.error,
                     )
                     errors.append(
                         {

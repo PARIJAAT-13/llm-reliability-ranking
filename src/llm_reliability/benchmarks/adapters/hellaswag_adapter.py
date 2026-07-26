@@ -19,7 +19,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from llm_reliability.benchmarks.adapters.base_adapter import BaseBenchmarkAdapter
+from llm_reliability.benchmarks.adapters.base_adapter import \
+    BaseBenchmarkAdapter
 from llm_reliability.benchmarks.adapters.registry import BenchmarkRegistry
 from llm_reliability.interfaces.agent import Agent
 from llm_reliability.records.evaluation import EvaluationRecord
@@ -73,7 +74,12 @@ class HellaSwagAdapter(BaseBenchmarkAdapter):
                     + "\nAnswer with letter (A, B, C, D):"
                 )
                 gt = (
-                    str(item.get("ground_truth_answer", item.get("label", item.get("target", "0"))))
+                    str(
+                        item.get(
+                            "ground_truth_answer",
+                            item.get("label", item.get("target", "0")),
+                        )
+                    )
                     .strip()
                     .upper()
                 )
@@ -90,7 +96,12 @@ class HellaSwagAdapter(BaseBenchmarkAdapter):
                 f"hellaswag_{i}": {
                     "task_id": f"hellaswag_{i}",
                     "prompt": f"Context {i}: A person starts a craft project.\nA. Ends well\nB. Fails completely\nC. Flies away\nD. Explodes\nAnswer:",
-                    "endings": ["Ends well", "Fails completely", "Flies away", "Explodes"],
+                    "endings": [
+                        "Ends well",
+                        "Fails completely",
+                        "Flies away",
+                        "Explodes",
+                    ],
                     "ground_truth_answer": "A",
                 }
                 for i in range(5)

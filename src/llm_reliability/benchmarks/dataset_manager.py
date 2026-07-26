@@ -143,7 +143,10 @@ class DatasetManager:
                     return isinstance(data, list | dict) and len(data) > 0
         except Exception as e:
             logger.warning(
-                "Dataset validation failed for %s at %s: %s", benchmark_name, file_path, e
+                "Dataset validation failed for %s at %s: %s",
+                benchmark_name,
+                file_path,
+                e,
             )
             return False
 
@@ -155,7 +158,10 @@ class DatasetManager:
             fallback_path = self.cache_dir / f"{norm_name}.json"
             if not fallback_path.exists():
                 with open(fallback_path, "w", encoding="utf-8") as f:
-                    json.dump([{"task_id": f"{norm_name}_1", "prompt": f"Solve {norm_name}"}], f)
+                    json.dump(
+                        [{"task_id": f"{norm_name}_1", "prompt": f"Solve {norm_name}"}],
+                        f,
+                    )
             sha = self.compute_sha256(fallback_path)
             return DatasetInfo(
                 benchmark_name=benchmark_name,
@@ -209,7 +215,9 @@ class DatasetManager:
             urllib.request.urlretrieve(manifest["url"], target_path)
         except Exception as e:
             logger.warning(
-                "Download failed for %s (%s). Creating local fallback dataset.", norm_name, e
+                "Download failed for %s (%s). Creating local fallback dataset.",
+                norm_name,
+                e,
             )
             with open(target_path, "w", encoding="utf-8") as f:
                 json.dump(

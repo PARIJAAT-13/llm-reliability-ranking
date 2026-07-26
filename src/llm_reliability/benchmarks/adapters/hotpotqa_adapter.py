@@ -20,7 +20,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from llm_reliability.benchmarks.adapters.base_adapter import BaseBenchmarkAdapter
+from llm_reliability.benchmarks.adapters.base_adapter import \
+    BaseBenchmarkAdapter
 from llm_reliability.benchmarks.adapters.registry import BenchmarkRegistry
 from llm_reliability.interfaces.agent import Agent
 from llm_reliability.records.evaluation import EvaluationRecord
@@ -128,7 +129,10 @@ class HotpotQAAdapter(BaseBenchmarkAdapter):
                     "context": [
                         [
                             "France",
-                            ["Paris is the capital of France.", "The Eiffel Tower is in Paris."],
+                            [
+                                "Paris is the capital of France.",
+                                "The Eiffel Tower is in Paris.",
+                            ],
                         ]
                     ],
                     "prompt": f"Context:\nFrance: Paris is the capital of France. The Eiffel Tower is in Paris.\n\nQuestion: What is the capital of the country where the Eiffel Tower is located? {i}\nAnswer:",

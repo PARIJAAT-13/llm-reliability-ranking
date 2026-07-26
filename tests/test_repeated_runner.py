@@ -9,10 +9,8 @@ from llm_reliability.benchmarks.mock_benchmark import MockBenchmark
 from llm_reliability.configs.config import Configuration
 from llm_reliability.metrics.consistency import compute_consistency
 from llm_reliability.records.metric import MetricRecord
-from llm_reliability.reliability.repeated_runner import (
-    RepeatedRunner,
-    RepeatedRunResult,
-)
+from llm_reliability.reliability.repeated_runner import (RepeatedRunner,
+                                                         RepeatedRunResult)
 from tests.contracts.test_agent_contract import ValidAgent
 
 

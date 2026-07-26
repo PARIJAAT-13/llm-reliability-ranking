@@ -32,12 +32,10 @@ from __future__ import annotations
 from typing import Any, Literal
 
 from llm_reliability.visualization.plotter import BasePlotter
-from llm_reliability.visualization.styles import (
-    CMAP_DIVERGING,
-    FIG_WIDTH_DOUBLE,
-    FONT_SIZE_ANNOTATION,
-    FONT_SIZE_TITLE,
-)
+from llm_reliability.visualization.styles import (CMAP_DIVERGING,
+                                                  FIG_WIDTH_DOUBLE,
+                                                  FONT_SIZE_ANNOTATION,
+                                                  FONT_SIZE_TITLE)
 
 
 class HeatmapPlotter(BasePlotter):

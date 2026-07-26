@@ -4,18 +4,13 @@ Unit tests for expanded benchmark adapters (MMLU, HellaSwag, HumanEval, MBPP, Tr
 
 import pytest
 
-from llm_reliability.benchmarks.adapters import (
-    ARCAdapter,
-    BenchmarkRegistry,
-    GSM8KAdapter,
-    HellaSwagAdapter,
-    HumanEvalAdapter,
-    MBPPAdapter,
-    MMLUAdapter,
-    PIQAAdapter,
-    TruthfulQAAdapter,
-    WinograndeAdapter,
-)
+from llm_reliability.benchmarks.adapters import (ARCAdapter, BenchmarkRegistry,
+                                                 GSM8KAdapter,
+                                                 HellaSwagAdapter,
+                                                 HumanEvalAdapter, MBPPAdapter,
+                                                 MMLUAdapter, PIQAAdapter,
+                                                 TruthfulQAAdapter,
+                                                 WinograndeAdapter)
 from llm_reliability.configs.config import Configuration
 
 

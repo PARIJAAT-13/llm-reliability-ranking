@@ -38,7 +38,11 @@ class LlamaCppRuntime(Runtime):
             self._client = httpx.Client(timeout=self._timeout)
         except ImportError as exc:
             raise ImportError("The 'httpx' package is required for LlamaCppRuntime.") from exc
-        logger.info("LlamaCppRuntime initialized (model=%s, url=%s).", self._model, self._base_url)
+        logger.info(
+            "LlamaCppRuntime initialized (model=%s, url=%s).",
+            self._model,
+            self._base_url,
+        )
 
     def reset(self) -> None:
         pass
@@ -64,7 +68,11 @@ class LlamaCppRuntime(Runtime):
             raise RuntimeError(f"llama.cpp inference failed: {exc}") from exc
 
     def metadata(self) -> dict:
-        return {"runtime": "llama.cpp", "model": self._model, "base_url": self._base_url}
+        return {
+            "runtime": "llama.cpp",
+            "model": self._model,
+            "base_url": self._base_url,
+        }
 
     def shutdown(self) -> None:
         self._client = None

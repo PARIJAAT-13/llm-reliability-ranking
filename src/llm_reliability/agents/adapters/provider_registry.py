@@ -26,7 +26,8 @@ class ProviderRegistry:
         Raises TypeError if adapter_cls is not a subclass of BaseLLMAdapter.
         """
         # Import here to avoid circular imports at module load time
-        from llm_reliability.agents.adapters.base_llm_adapter import BaseLLMAdapter
+        from llm_reliability.agents.adapters.base_llm_adapter import \
+            BaseLLMAdapter
 
         if name in cls._adapters:
             raise ValueError(f"Provider '{name}' is already registered.")

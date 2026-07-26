@@ -1,11 +1,8 @@
 import pytest
 
-from llm_reliability.benchmarks.adapters import (
-    DROPAdapter,
-    HotpotQAAdapter,
-    NaturalQuestionsAdapter,
-    TriviaQAAdapter,
-)
+from llm_reliability.benchmarks.adapters import (DROPAdapter, HotpotQAAdapter,
+                                                 NaturalQuestionsAdapter,
+                                                 TriviaQAAdapter)
 from llm_reliability.configs.config import Configuration
 from llm_reliability.interfaces.agent import Agent
 from llm_reliability.records.evaluation import EvaluationRecord
@@ -104,9 +101,8 @@ def test_triviaqa_evaluate_no_match():
 
 
 def test_triviaqa_aliases():
-    from llm_reliability.benchmarks.adapters.triviaqa_adapter import (
-        extract_triviaqa_answer,
-    )
+    from llm_reliability.benchmarks.adapters.triviaqa_adapter import \
+        extract_triviaqa_answer
 
     assert extract_triviaqa_answer("Paris is great", ["Paris"])
     assert extract_triviaqa_answer("I live in paris", ["Paris"])
@@ -168,9 +164,7 @@ def test_hotpotqa_adapter():
 
 def test_hotpotqa_exact_match_and_f1():
     from llm_reliability.benchmarks.adapters.hotpotqa_adapter import (
-        compute_exact_match,
-        compute_f1,
-    )
+        compute_exact_match, compute_f1)
 
     assert compute_exact_match("Paris", "Paris")
     assert not compute_exact_match("Paris", "London")
@@ -210,9 +204,7 @@ def test_drop_fallback_task_structure():
 
 def test_drop_normalize():
     from llm_reliability.benchmarks.adapters.drop_adapter import (
-        _f1_score,
-        _normalize_text,
-    )
+        _f1_score, _normalize_text)
 
     assert _normalize_text("Hello, World!") == "hello world"
     assert _normalize_text("") == ""
@@ -221,7 +213,8 @@ def test_drop_normalize():
 
 
 def test_hotpotqa_normalize():
-    from llm_reliability.benchmarks.adapters.hotpotqa_adapter import normalize_text
+    from llm_reliability.benchmarks.adapters.hotpotqa_adapter import \
+        normalize_text
 
     assert normalize_text("Hello, World!") == "hello world"
     assert normalize_text("") == ""

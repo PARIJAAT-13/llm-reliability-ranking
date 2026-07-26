@@ -5,14 +5,12 @@ import tempfile
 
 import pandas as pd
 
-from llm_reliability.statistics.result_models import (
-    ConfidenceIntervalResult,
-    CorrelationResult,
-    EffectSizeResult,
-    HypothesisTestResult,
-    StatisticalReport,
-    SummaryStatistics,
-)
+from llm_reliability.statistics.result_models import (ConfidenceIntervalResult,
+                                                      CorrelationResult,
+                                                      EffectSizeResult,
+                                                      HypothesisTestResult,
+                                                      StatisticalReport,
+                                                      SummaryStatistics)
 from llm_reliability.visualization.export import TableExporter
 from llm_reliability.visualization.tables import TableGenerator
 from tests.ranking_test_helpers import create_mock_metric

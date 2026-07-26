@@ -88,7 +88,7 @@ class PerformanceProfiler:
             "per_benchmark": per_benchmark,
             "cache_hits": self._num_cache_hits,
             "cache_misses": self._num_cache_misses,
-            "cache_hit_rate_pct": round(cache_rate, 1) if cache_rate is not None else None,
+            "cache_hit_rate_pct": (round(cache_rate, 1) if cache_rate is not None else None),
             "errors": self._num_errors,
         }
 

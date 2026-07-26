@@ -4,15 +4,9 @@ import numpy as np
 import pytest
 
 from llm_reliability.statistics.auto_selection import (
-    auto_select,
-    check_normality,
-    check_variance_homogeneity,
-    run_recommended_test,
-    suggest_correction,
-    suggest_effect_size,
-    suggest_posthoc,
-    suggest_test,
-)
+    auto_select, check_normality, check_variance_homogeneity,
+    run_recommended_test, suggest_correction, suggest_effect_size,
+    suggest_posthoc, suggest_test)
 
 # ======================================================================
 # Normality check

@@ -94,7 +94,8 @@ def config() -> Configuration:
 
 @pytest.fixture
 def clear_registries():
-    from llm_reliability.agents.adapters.provider_registry import ProviderRegistry
+    from llm_reliability.agents.adapters.provider_registry import \
+        ProviderRegistry
     from llm_reliability.runtime.registry import RuntimeRegistry
 
     ProviderRegistry._adapters.clear()

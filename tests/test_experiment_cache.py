@@ -10,10 +10,8 @@ from llm_reliability.benchmarks.mock_benchmark import MockBenchmark
 from llm_reliability.cache.backend import CacheBackend, FileSystemCacheBackend
 from llm_reliability.cache.experiment_cache import ExperimentCache
 from llm_reliability.configs.config import Configuration
-from llm_reliability.pipeline.experiment_pipeline import (
-    ExperimentPipeline,
-    ExperimentResult,
-)
+from llm_reliability.pipeline.experiment_pipeline import (ExperimentPipeline,
+                                                          ExperimentResult)
 from tests.test_mock_benchmark import DummyAgent
 
 logging.basicConfig(level=logging.DEBUG)

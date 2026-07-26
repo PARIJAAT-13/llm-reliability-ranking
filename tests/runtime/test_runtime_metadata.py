@@ -2,12 +2,8 @@
 
 import pytest
 
-from llm_reliability.runtime import (
-    Runtime,
-    RuntimeCapabilities,
-    RuntimeMetadata,
-    RuntimeRegistry,
-)
+from llm_reliability.runtime import (Runtime, RuntimeCapabilities,
+                                     RuntimeMetadata, RuntimeRegistry)
 
 
 class TestRuntimeMetadata:

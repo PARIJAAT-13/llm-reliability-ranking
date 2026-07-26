@@ -4,10 +4,7 @@ import pytest
 
 from llm_reliability.benchmarks.adapters.registry import BenchmarkRegistry
 from llm_reliability.benchmarks.adapters.reliability_bench_adapter import (
-    RELIABILITY_BENCH_TASKS,
-    SCORING_RUBRICS,
-    ReliabilityBenchAdapter,
-)
+    RELIABILITY_BENCH_TASKS, SCORING_RUBRICS, ReliabilityBenchAdapter)
 from llm_reliability.configs.config import Configuration
 
 # ---------------------------------------------------------------------------

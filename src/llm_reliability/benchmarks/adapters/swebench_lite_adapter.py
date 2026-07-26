@@ -18,12 +18,11 @@ import logging
 from datetime import datetime, timezone
 from typing import Any
 
-from llm_reliability.benchmarks.adapters.base_adapter import BaseBenchmarkAdapter
+from llm_reliability.benchmarks.adapters.base_adapter import \
+    BaseBenchmarkAdapter
 from llm_reliability.benchmarks.adapters.registry import BenchmarkRegistry
 from llm_reliability.benchmarks.adapters.swebench_models import (
-    SWEBenchMetadata,
-    SWEBenchTask,
-)
+    SWEBenchMetadata, SWEBenchTask)
 from llm_reliability.benchmarks.adapters.swebench_utils import normalize_patch
 from llm_reliability.interfaces.agent import Agent
 from llm_reliability.records.evaluation import EvaluationRecord

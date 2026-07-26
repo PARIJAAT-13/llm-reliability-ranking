@@ -274,7 +274,7 @@ class ReliabilityEngine:
             isr_behavior_ci=isr_result.get("isr_behavior_ci") if isr_result else None,
             temporal_isr=temporal_isr,
             temporal_isr_slope=temporal_slope,
-            per_fault_type_isr=isr_result.get("per_fault_type", {}) if isr_result else {},
+            per_fault_type_isr=(isr_result.get("per_fault_type", {}) if isr_result else {}),
             composite=composite,
             weights=effective_weights,
             n_evaluations=len(self._evaluations),

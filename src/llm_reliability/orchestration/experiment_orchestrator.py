@@ -45,11 +45,9 @@ from typing import Any
 from llm_reliability.agents.agent_factory import AgentFactory
 from llm_reliability.benchmarks.adapters.registry import BenchmarkRegistry
 from llm_reliability.configs.config import Configuration
-from llm_reliability.experiments.experiment_models import (
-    AgentSpec,
-    BenchmarkSpec,
-    ExperimentSpec,
-)
+from llm_reliability.experiments.experiment_models import (AgentSpec,
+                                                           BenchmarkSpec,
+                                                           ExperimentSpec)
 from llm_reliability.experiments.experiment_runner import ExperimentRunner
 from llm_reliability.interfaces.agent import Agent
 from llm_reliability.reporting.summary import ExperimentSummary
@@ -246,7 +244,10 @@ class ExperimentOrchestrator:
 
                 # Resume or Run
                 if resume and checkpoint_file.exists():
-                    logger.info("Resuming experiment '%s' from checkpoint.", spec.experiment_name)
+                    logger.info(
+                        "Resuming experiment '%s' from checkpoint.",
+                        spec.experiment_name,
+                    )
                     status = runner.resume()
                 else:
                     status = runner.run()
@@ -449,7 +450,8 @@ class ExperimentOrchestrator:
             elif isinstance(b, dict):
                 b_name = b["name"]
                 b_path = b.get(
-                    "dataset_path", DEFAULT_DATASET_PATHS.get(b_name, f"data/{b_name.lower()}.json")
+                    "dataset_path",
+                    DEFAULT_DATASET_PATHS.get(b_name, f"data/{b_name.lower()}.json"),
                 )
                 b_meta = b.get("adapter_metadata", {})
                 bench_specs.append(
@@ -593,7 +595,14 @@ class ExperimentOrchestrator:
         registered_benchmarks = [b.lower() for b in BenchmarkRegistry.list()]
         # Add default aliases
         registered_benchmarks.extend(
-            ["mockbenchmark", "mock", "agentboard", "gaia", "swebenchlite", "swe-bench lite"]
+            [
+                "mockbenchmark",
+                "mock",
+                "agentboard",
+                "gaia",
+                "swebenchlite",
+                "swe-bench lite",
+            ]
         )
 
         for spec in specs:
@@ -611,7 +620,10 @@ class ExperimentOrchestrator:
 
                 if bspec.dataset_path and self._benchmark_factory is None:
                     p = Path(bspec.dataset_path)
-                    if not p.exists() and bspec.name.lower() not in ("mockbenchmark", "mock"):
+                    if not p.exists() and bspec.name.lower() not in (
+                        "mockbenchmark",
+                        "mock",
+                    ):
                         errors.append(
                             f"Dataset file does not exist for benchmark '{bspec.name}': {bspec.dataset_path}"
                         )
@@ -647,12 +659,10 @@ class ExperimentOrchestrator:
                     ollama_models_to_check.setdefault(base_url, set()).add(model)
 
         if check_ollama_server and ollama_models_to_check:
-            from llm_reliability.agents.utils.ollama_utils import (
-                check_ollama_server as _check_ollama,
-            )
-            from llm_reliability.agents.utils.ollama_utils import (
-                validate_models_exist as _validate_models,
-            )
+            from llm_reliability.agents.utils.ollama_utils import \
+                check_ollama_server as _check_ollama
+            from llm_reliability.agents.utils.ollama_utils import \
+                validate_models_exist as _validate_models
 
             for base_url, models in ollama_models_to_check.items():
                 ok, msg = _check_ollama(base_url)
@@ -693,7 +703,7 @@ class ExperimentOrchestrator:
             experiment_name=config.experiment_name,
             benchmark=config.benchmark,
             agent=aspec.name,
-            llm=config.llm if config.llm != "default" else cfg_metadata.get("model", config.llm),
+            llm=(config.llm if config.llm != "default" else cfg_metadata.get("model", config.llm)),
             prompt_version=config.prompt_version,
             dataset_version=config.dataset_version,
             seed=config.seed,

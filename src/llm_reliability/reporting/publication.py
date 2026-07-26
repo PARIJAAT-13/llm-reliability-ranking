@@ -58,7 +58,7 @@ def generate_experiment_summary(
             "std": _std(reliability_scores),
         },
         "success_rate": {
-            "mean": round(sum(success_rates) / len(success_rates), 4) if success_rates else 0.0,
+            "mean": (round(sum(success_rates) / len(success_rates), 4) if success_rates else 0.0),
             "min": round(min(success_rates), 4) if success_rates else 0.0,
             "max": round(max(success_rates), 4) if success_rates else 0.0,
             "std": _std(success_rates),
@@ -76,7 +76,9 @@ def generate_experiment_summary(
     return summary
 
 
-def generate_runtime_summary(runtime_metadata: dict[str, Any] | None = None) -> dict[str, Any]:
+def generate_runtime_summary(
+    runtime_metadata: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """Generate a runtime summary from detected or provided metadata."""
     summary: dict[str, Any] = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -124,8 +126,8 @@ def generate_benchmark_summary(
                 "benchmark": b,
                 "agents": sorted(data["agents"]),
                 "total_executions": data["total_executions"],
-                "mean_reliability": round(sum(scores) / len(scores), 4) if scores else 0.0,
-                "mean_success_rate": round(sum(rates) / len(rates), 4) if rates else 0.0,
+                "mean_reliability": (round(sum(scores) / len(scores), 4) if scores else 0.0),
+                "mean_success_rate": (round(sum(rates) / len(rates), 4) if rates else 0.0),
             }
         )
     return results

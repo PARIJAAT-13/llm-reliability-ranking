@@ -3,7 +3,8 @@
 import pytest
 from pydantic import ValidationError
 
-from llm_reliability.records import EvaluationRecord, ExecutionRecord, MetricRecord
+from llm_reliability.records import (EvaluationRecord, ExecutionRecord,
+                                     MetricRecord)
 from tests.conftest import CONFIG_HASH, TIMESTAMP
 
 

@@ -139,7 +139,7 @@ class TokenCollector:
         stats = StreamStatistics(
             total_tokens=stream.token_count,
             total_duration_ms=duration,
-            tokens_per_second=(stream.token_count / (duration / 1000.0)) if duration > 0 else 0.0,
+            tokens_per_second=((stream.token_count / (duration / 1000.0)) if duration > 0 else 0.0),
             cancelled=stream.cancelled,
             timed_out=stream.timed_out,
             partial_output=stream.partial_output,

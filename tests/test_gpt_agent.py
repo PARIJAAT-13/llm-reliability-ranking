@@ -324,7 +324,8 @@ def test_run_raises_connection_error_on_network_failure(config, openai_mod, monk
     """run() must raise ProviderConnectionError on network-level failures."""
     monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
     cfg = _make_config(metadata={"max_retries": 1, "retry_backoff": 0.0})
-    from llm_reliability.agents.adapters.exceptions import ConnectionError as PCE
+    from llm_reliability.agents.adapters.exceptions import \
+        ConnectionError as PCE
     from llm_reliability.agents.gpt_agent import GPTAgent
 
     client_mock = openai_mod.OpenAI.return_value
@@ -339,7 +340,8 @@ def test_run_raises_connection_error_on_network_failure(config, openai_mod, monk
 def test_run_raises_response_validation_error_on_empty_choice(config, openai_mod, monkeypatch):
     """run() must raise ResponseValidationError when the completion is empty."""
     monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
-    from llm_reliability.agents.adapters.exceptions import ResponseValidationError
+    from llm_reliability.agents.adapters.exceptions import \
+        ResponseValidationError
     from llm_reliability.agents.gpt_agent import GPTAgent
 
     empty_completion = MagicMock()
@@ -395,7 +397,8 @@ def test_metadata_returns_required_keys(agent_with_mock_openai):
 def test_provider_registry_registers_openai(openai_mod):
     """Importing gpt_agent must register 'openai' in ProviderRegistry."""
     from llm_reliability.agents.adapters.base_llm_adapter import BaseLLMAdapter
-    from llm_reliability.agents.adapters.provider_registry import ProviderRegistry
+    from llm_reliability.agents.adapters.provider_registry import \
+        ProviderRegistry
     from llm_reliability.agents.gpt_agent import _OpenAIAdapter
 
     if not ProviderRegistry.exists("openai"):

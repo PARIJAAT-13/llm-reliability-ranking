@@ -5,7 +5,8 @@ import json
 import pytest
 
 from llm_reliability.benchmarks.adapters.gaia_adapter import GAIAAdapter
-from llm_reliability.benchmarks.adapters.gaia_utils import normalize_gaia_answer
+from llm_reliability.benchmarks.adapters.gaia_utils import \
+    normalize_gaia_answer
 from llm_reliability.configs.config import Configuration
 from tests.contracts.test_agent_contract import ValidAgent
 

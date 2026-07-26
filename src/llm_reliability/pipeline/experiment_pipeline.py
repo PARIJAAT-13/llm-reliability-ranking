@@ -32,10 +32,8 @@ from llm_reliability.records.evaluation import EvaluationRecord
 from llm_reliability.records.execution import ExecutionRecord
 from llm_reliability.records.metric import MetricRecord
 from llm_reliability.records.ranking import RankingRecord
-from llm_reliability.utils.hardware_profile import (
-    HardwareProfile,
-    detect_hardware_profile,
-)
+from llm_reliability.utils.hardware_profile import (HardwareProfile,
+                                                    detect_hardware_profile)
 from llm_reliability.utils.serialization import SerializableModel
 
 logger = logging.getLogger(__name__)
@@ -119,7 +117,8 @@ class ExperimentPipeline:
         self._hardware_profile: HardwareProfile | None = None
         if config.metadata.get("hardware_profile"):
             try:
-                from llm_reliability.utils.hardware_profile import HardwareRegistry
+                from llm_reliability.utils.hardware_profile import \
+                    HardwareRegistry
 
                 pid = config.metadata["hardware_profile"]
                 self._hardware_profile = HardwareRegistry.get(pid)
@@ -325,9 +324,8 @@ class ExperimentPipeline:
                     self.execution_records.append(err_record)
         else:
             if use_perturbations:
-                from llm_reliability.reliability.perturbation.manager import (
-                    PerturbationManager,
-                )
+                from llm_reliability.reliability.perturbation.manager import \
+                    PerturbationManager
 
                 pm = PerturbationManager(config=self.config)
                 pert_res = pm.run_perturbed_task(self.agent, self.benchmark, task)
@@ -338,7 +336,8 @@ class ExperimentPipeline:
                     self.errors.extend(pert_res.errors)
 
             if use_faults:
-                from llm_reliability.reliability.faults.manager import FaultManager
+                from llm_reliability.reliability.faults.manager import \
+                    FaultManager
 
                 fm = FaultManager(config=self.config)
                 fault_res = fm.run_fault_injected_task(self.agent, self.benchmark, task)
@@ -415,7 +414,10 @@ class ExperimentPipeline:
                 self.evaluation_records.append(evaluation)
             except Exception as e:
                 logger.error(
-                    "errors evaluating execution %s: %s", execution.task_id, e, exc_info=True
+                    "errors evaluating execution %s: %s",
+                    execution.task_id,
+                    e,
+                    exc_info=True,
                 )
                 self.errors.append(
                     {"phase": "evaluate", "task_id": execution.task_id, "error": str(e)}

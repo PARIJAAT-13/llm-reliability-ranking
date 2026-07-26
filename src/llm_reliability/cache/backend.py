@@ -49,7 +49,8 @@ class FileSystemCacheBackend(CacheBackend):
         return (self._cache_dir / key).with_suffix(".json")
 
     def get(self, key: str) -> ExperimentResult | None:
-        from llm_reliability.pipeline.experiment_pipeline import ExperimentResult
+        from llm_reliability.pipeline.experiment_pipeline import \
+            ExperimentResult
 
         path = self._path(key)
         if not path.exists():
@@ -64,7 +65,11 @@ class FileSystemCacheBackend(CacheBackend):
     def set(self, key: str, result: ExperimentResult) -> None:
         path = self._path(key)
         path.write_text(result.canonical_json(), encoding="utf-8")
-        logger.debug("Cached experiment result with key '%s' (%d bytes)", key, path.stat().st_size)
+        logger.debug(
+            "Cached experiment result with key '%s' (%d bytes)",
+            key,
+            path.stat().st_size,
+        )
 
     def exists(self, key: str) -> bool:
         return self._path(key).exists()

@@ -6,20 +6,16 @@ from pathlib import Path
 
 import pytest
 
-from llm_reliability.hardware.analysis import (
-    HardwareAnalysis,
-    _ram_bucket,
-    _vram_bucket,
-)
-from llm_reliability.hardware.reports import (
-    generate_hardware_report,
-    generate_hardware_statistics,
-    generate_hardware_summary,
-    save_hardware_artifacts,
-)
+from llm_reliability.hardware.analysis import (HardwareAnalysis, _ram_bucket,
+                                               _vram_bucket)
+from llm_reliability.hardware.reports import (generate_hardware_report,
+                                              generate_hardware_statistics,
+                                              generate_hardware_summary,
+                                              save_hardware_artifacts)
 from llm_reliability.records.execution import ExecutionRecord
 from llm_reliability.records.metric import MetricRecord
-from llm_reliability.utils.hardware_profile import HardwareProfile, HardwareRegistry
+from llm_reliability.utils.hardware_profile import (HardwareProfile,
+                                                    HardwareRegistry)
 
 
 def _sha64(s: str) -> str:
@@ -305,7 +301,8 @@ class TestHardwareReports:
 
 class TestHardwarePackageIntegration:
     def test_with_named_profiles(self, sample_metrics, sample_executions) -> None:
-        from llm_reliability.utils.hardware_profile import _register_named_profiles
+        from llm_reliability.utils.hardware_profile import \
+            _register_named_profiles
 
         _register_named_profiles()
         assert len(HardwareRegistry.list_profiles()) >= 3

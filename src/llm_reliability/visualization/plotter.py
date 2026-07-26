@@ -35,12 +35,10 @@ import abc
 import pathlib
 from typing import Any
 
-from llm_reliability.visualization.styles import (
-    DPI_PRINT,
-    FIG_HEIGHT_DEFAULT,
-    FIG_WIDTH_SINGLE,
-    apply_publication_style,
-)
+from llm_reliability.visualization.styles import (DPI_PRINT,
+                                                  FIG_HEIGHT_DEFAULT,
+                                                  FIG_WIDTH_SINGLE,
+                                                  apply_publication_style)
 
 
 class BasePlotter(abc.ABC):

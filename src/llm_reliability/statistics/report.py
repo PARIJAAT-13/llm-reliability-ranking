@@ -1,11 +1,9 @@
 from __future__ import annotations
 
 from llm_reliability.records.metric import MetricRecord
-from llm_reliability.statistics.auto_selection import (
-    auto_select,
-    run_recommended_test,
-    suggest_correction,
-)
+from llm_reliability.statistics.auto_selection import (auto_select,
+                                                       run_recommended_test,
+                                                       suggest_correction)
 
 
 def generate_reliability_statistical_report(

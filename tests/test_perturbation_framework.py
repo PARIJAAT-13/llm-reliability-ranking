@@ -9,15 +9,10 @@ from llm_reliability.benchmarks.mock_benchmark import MockBenchmark
 from llm_reliability.configs.config import Configuration
 from llm_reliability.metrics.robustness import compute_robustness
 from llm_reliability.reliability.perturbation import (
-    FormattingPerturbationStrategy,
-    InstructionReorderingPerturbationStrategy,
-    PerturbationManager,
-    PerturbationRunResult,
-    PerturbationStrategy,
-    PromptWrapperPerturbationStrategy,
-    SynonymSubstitutionPerturbationStrategy,
-    WhitespacePerturbationStrategy,
-)
+    FormattingPerturbationStrategy, InstructionReorderingPerturbationStrategy,
+    PerturbationManager, PerturbationRunResult, PerturbationStrategy,
+    PromptWrapperPerturbationStrategy, SynonymSubstitutionPerturbationStrategy,
+    WhitespacePerturbationStrategy)
 
 
 class FaultyStrategy(PerturbationStrategy):

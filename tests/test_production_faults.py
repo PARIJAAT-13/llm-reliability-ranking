@@ -3,15 +3,11 @@
 import pytest
 
 from llm_reliability.reliability.faults.base import FaultTrace
-from llm_reliability.reliability.faults.extensions import FaultSeverity, RecoveryMetrics
+from llm_reliability.reliability.faults.extensions import (FaultSeverity,
+                                                           RecoveryMetrics)
 from llm_reliability.reliability.faults.production import (
-    CombinedFaultStrategy,
-    GpuOomFaultStrategy,
-    RuntimeCrashFaultStrategy,
-    compute_mtbf,
-    compute_mttr,
-    compute_reliability_report,
-)
+    CombinedFaultStrategy, GpuOomFaultStrategy, RuntimeCrashFaultStrategy,
+    compute_mtbf, compute_mttr, compute_reliability_report)
 
 # ======================================================================
 # GPU OOM

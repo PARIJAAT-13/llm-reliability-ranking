@@ -145,7 +145,8 @@ def _report(args: argparse.Namespace) -> None:
         print(f"Error: output directory not found: {output_dir}", file=sys.stderr)
         sys.exit(1)
 
-    from llm_reliability.reporting.publication import save_publication_artifacts
+    from llm_reliability.reporting.publication import \
+        save_publication_artifacts
 
     metrics, rankings, executions = _load_artifacts(output_dir)
     if not metrics:
@@ -170,11 +171,9 @@ def _export(args: argparse.Namespace) -> None:
         print(f"Error: output directory not found: {output_dir}", file=sys.stderr)
         sys.exit(1)
 
-    from llm_reliability.reporting.publication import (
-        generate_csv,
-        generate_latex_table,
-        generate_markdown_table,
-    )
+    from llm_reliability.reporting.publication import (generate_csv,
+                                                       generate_latex_table,
+                                                       generate_markdown_table)
 
     _, rankings, _ = _load_artifacts(output_dir)
     if not rankings:
@@ -206,7 +205,8 @@ def _validate_config(args: argparse.Namespace) -> None:
         sys.exit(1)
 
     try:
-        from llm_reliability.experiments.experiment_models import ExperimentSpec
+        from llm_reliability.experiments.experiment_models import \
+            ExperimentSpec
 
         data = path.read_text(encoding="utf-8")
         spec = ExperimentSpec.from_canonical_json(data)
@@ -251,9 +251,7 @@ def _list_benchmarks(args: argparse.Namespace) -> None:
 
 def _hardware_info(args: argparse.Namespace) -> None:
     from llm_reliability.utils.hardware_profile import (
-        HardwareRegistry,
-        detect_hardware_profile,
-    )
+        HardwareRegistry, detect_hardware_profile)
 
     RuntimeRegistry.discover()
     profile = detect_hardware_profile(profile_id="cli-detect")
@@ -300,7 +298,8 @@ def _statistics(args: argparse.Namespace) -> None:
         print(f"Error: output directory not found: {output_dir}", file=sys.stderr)
         sys.exit(1)
 
-    from llm_reliability.reporting.publication import generate_statistics_summary
+    from llm_reliability.reporting.publication import \
+        generate_statistics_summary
 
     metrics, _, _ = _load_artifacts(output_dir)
     if not metrics:
@@ -416,7 +415,7 @@ def main(argv: list[str] | None = None) -> None:
         help="What to list",
     )
     p_list.set_defaults(
-        func=lambda a: _list_benchmarks(a) if a.what == "benchmarks" else _discover_runtimes(a)
+        func=lambda a: (_list_benchmarks(a) if a.what == "benchmarks" else _discover_runtimes(a))
     )
 
     # hardware-info

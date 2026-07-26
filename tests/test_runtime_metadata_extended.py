@@ -6,7 +6,8 @@ import copy
 
 import pytest
 
-from llm_reliability.runtime.metadata import RuntimeCapabilities, RuntimeMetadata
+from llm_reliability.runtime.metadata import (RuntimeCapabilities,
+                                              RuntimeMetadata)
 
 SHA256_HEX_LEN = 64
 

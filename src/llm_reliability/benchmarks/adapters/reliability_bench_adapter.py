@@ -46,7 +46,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from llm_reliability.benchmarks.adapters.base_adapter import BaseBenchmarkAdapter
+from llm_reliability.benchmarks.adapters.base_adapter import \
+    BaseBenchmarkAdapter
 from llm_reliability.benchmarks.adapters.registry import BenchmarkRegistry
 from llm_reliability.interfaces.agent import Agent
 from llm_reliability.records.evaluation import EvaluationRecord
@@ -214,7 +215,12 @@ RELIABILITY_BENCH_TASKS: list[dict[str, Any]] = [
         ),
         "reference_answer": "reliability",
         "scoring_rubric": "constraint_satisfaction",
-        "fault_types": ["timeout", "api_failure", "invalid_response", "context_truncation"],
+        "fault_types": [
+            "timeout",
+            "api_failure",
+            "invalid_response",
+            "context_truncation",
+        ],
         "perturbation_types": ["typo", "rephrase", "format_change"],
     },
     {
@@ -245,7 +251,12 @@ RELIABILITY_BENCH_TASKS: list[dict[str, Any]] = [
         ),
         "reference_answer": "42",
         "scoring_rubric": "multi_step_match",
-        "fault_types": ["timeout", "api_failure", "context_truncation", "invalid_response"],
+        "fault_types": [
+            "timeout",
+            "api_failure",
+            "context_truncation",
+            "invalid_response",
+        ],
         "perturbation_types": ["typo", "rephrase", "step_reorder"],
     },
     {
@@ -261,7 +272,12 @@ RELIABILITY_BENCH_TASKS: list[dict[str, Any]] = [
         ),
         "reference_answer": "POEM:",
         "scoring_rubric": "constraint_satisfaction",
-        "fault_types": ["timeout", "api_failure", "invalid_response", "context_truncation"],
+        "fault_types": [
+            "timeout",
+            "api_failure",
+            "invalid_response",
+            "context_truncation",
+        ],
         "perturbation_types": ["typo", "rephrase", "format_change"],
     },
     {
@@ -274,7 +290,12 @@ RELIABILITY_BENCH_TASKS: list[dict[str, Any]] = [
         ),
         "reference_answer": "avoid_blue_animals",
         "scoring_rubric": "negation_compliance",
-        "fault_types": ["timeout", "api_failure", "invalid_response", "context_truncation"],
+        "fault_types": [
+            "timeout",
+            "api_failure",
+            "invalid_response",
+            "context_truncation",
+        ],
         "perturbation_types": ["typo", "rephrase", "negation_removal"],
     },
     # ==================================================================
@@ -336,7 +357,12 @@ RELIABILITY_BENCH_TASKS: list[dict[str, Any]] = [
         ),
         "reference_answer": "def fibonacci",
         "scoring_rubric": "code_syntax_match",
-        "fault_types": ["timeout", "api_failure", "invalid_response", "context_truncation"],
+        "fault_types": [
+            "timeout",
+            "api_failure",
+            "invalid_response",
+            "context_truncation",
+        ],
         "perturbation_types": ["typo", "rephrase"],
     },
     {
@@ -367,7 +393,12 @@ RELIABILITY_BENCH_TASKS: list[dict[str, Any]] = [
         ),
         "reference_answer": "fox",
         "scoring_rubric": "contains_match",
-        "fault_types": ["timeout", "api_failure", "invalid_response", "context_truncation"],
+        "fault_types": [
+            "timeout",
+            "api_failure",
+            "invalid_response",
+            "context_truncation",
+        ],
         "perturbation_types": ["typo", "rephrase", "length_constraint"],
     },
     {
@@ -426,7 +457,12 @@ RELIABILITY_BENCH_TASKS: list[dict[str, Any]] = [
         ),
         "reference_answer": "telescope",
         "scoring_rubric": "multi_item_match",
-        "fault_types": ["timeout", "api_failure", "invalid_response", "context_truncation"],
+        "fault_types": [
+            "timeout",
+            "api_failure",
+            "invalid_response",
+            "context_truncation",
+        ],
         "perturbation_types": ["typo", "rephrase"],
     },
     # ==================================================================
@@ -455,7 +491,12 @@ RELIABILITY_BENCH_TASKS: list[dict[str, Any]] = [
         ),
         "reference_answer": "4",
         "scoring_rubric": "numeric_match",
-        "fault_types": ["timeout", "api_failure", "invalid_response", "context_truncation"],
+        "fault_types": [
+            "timeout",
+            "api_failure",
+            "invalid_response",
+            "context_truncation",
+        ],
         "perturbation_types": ["distractors", "misleading_context", "role_switch"],
     },
     {
@@ -486,7 +527,12 @@ RELIABILITY_BENCH_TASKS: list[dict[str, Any]] = [
         ),
         "reference_answer": "Au",
         "scoring_rubric": "exact_match",
-        "fault_types": ["timeout", "api_failure", "invalid_response", "context_truncation"],
+        "fault_types": [
+            "timeout",
+            "api_failure",
+            "invalid_response",
+            "context_truncation",
+        ],
         "perturbation_types": ["distractors", "misleading_context"],
     },
     {
@@ -531,7 +577,12 @@ RELIABILITY_BENCH_TASKS: list[dict[str, Any]] = [
         ),
         "reference_answer": "German",
         "scoring_rubric": "exact_match",
-        "fault_types": ["timeout", "api_failure", "invalid_response", "context_truncation"],
+        "fault_types": [
+            "timeout",
+            "api_failure",
+            "invalid_response",
+            "context_truncation",
+        ],
         "perturbation_types": ["typo", "distractors", "misleading_context"],
     },
     {
@@ -570,7 +621,12 @@ RELIABILITY_BENCH_TASKS: list[dict[str, Any]] = [
         ),
         "reference_answer": "Title:",
         "scoring_rubric": "expert_constraint_match",
-        "fault_types": ["timeout", "api_failure", "invalid_response", "context_truncation"],
+        "fault_types": [
+            "timeout",
+            "api_failure",
+            "invalid_response",
+            "context_truncation",
+        ],
         "perturbation_types": ["typo", "rephrase", "format_change"],
     },
     {
@@ -608,7 +664,12 @@ RELIABILITY_BENCH_TASKS: list[dict[str, Any]] = [
         ),
         "reference_answer": "B",
         "scoring_rubric": "exact_match",
-        "fault_types": ["timeout", "api_failure", "invalid_response", "context_truncation"],
+        "fault_types": [
+            "timeout",
+            "api_failure",
+            "invalid_response",
+            "context_truncation",
+        ],
         "perturbation_types": ["typo", "rephrase"],
     },
     {
@@ -656,7 +717,9 @@ SCORING_RUBRICS: dict[str, dict[str, Any]] = {
 # ---------------------------------------------------------------------------
 
 
-def _evaluate_reliability_bench(execution: ExecutionRecord) -> tuple[bool, float, dict[str, Any]]:
+def _evaluate_reliability_bench(
+    execution: ExecutionRecord,
+) -> tuple[bool, float, dict[str, Any]]:
     """Evaluate an execution against its task's rubric.
 
     Returns (success, score, metrics_dict).

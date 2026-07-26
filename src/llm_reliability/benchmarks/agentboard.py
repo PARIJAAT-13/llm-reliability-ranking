@@ -485,7 +485,13 @@ class AgentBoardBenchmark(Benchmark):
         if not isinstance(raw, dict):
             raise TypeError(f"Each task must be a JSON object (dict), got {type(raw).__name__!r}.")
 
-        required_fields = ("task_id", "prompt", "expected_output", "difficulty", "category")
+        required_fields = (
+            "task_id",
+            "prompt",
+            "expected_output",
+            "difficulty",
+            "category",
+        )
         for field in required_fields:
             value = raw.get(field)
             if not value or not str(value).strip():

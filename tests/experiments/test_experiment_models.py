@@ -5,13 +5,11 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-from llm_reliability.experiments.experiment_models import (
-    AgentSpec,
-    BenchmarkSpec,
-    ExperimentSpec,
-    ExperimentState,
-    ExperimentStatus,
-)
+from llm_reliability.experiments.experiment_models import (AgentSpec,
+                                                           BenchmarkSpec,
+                                                           ExperimentSpec,
+                                                           ExperimentState,
+                                                           ExperimentStatus)
 
 
 class TestBenchmarkSpec:

@@ -28,13 +28,10 @@ from llm_reliability.visualization.export import FigureExporter, TableExporter
 from llm_reliability.visualization.heatmaps import HeatmapPlotter
 from llm_reliability.visualization.plotter import BasePlotter
 from llm_reliability.visualization.ranking_plots import RankingPlotter
-from llm_reliability.visualization.styles import (
-    COLOR_RELIABILITY,
-    COLOR_SUCCESS,
-    COLOR_WEIGHTED,
-    PALETTE,
-    apply_publication_style,
-)
+from llm_reliability.visualization.styles import (COLOR_RELIABILITY,
+                                                  COLOR_SUCCESS,
+                                                  COLOR_WEIGHTED, PALETTE,
+                                                  apply_publication_style)
 from llm_reliability.visualization.tables import TableGenerator
 
 __all__ = [

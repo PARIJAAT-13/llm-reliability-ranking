@@ -115,7 +115,7 @@ class CloudBaselineComparison(SerializableModel):
             best_score=best.success_rate,
             most_efficient_provider=best_cost.provider if best_cost else None,
             most_efficient_model=best_cost.model if best_cost else None,
-            lowest_cost_per_success=best_cost.cost_per_success_usd if best_cost else Decimal("0"),
+            lowest_cost_per_success=(best_cost.cost_per_success_usd if best_cost else Decimal("0")),
         )
 
 

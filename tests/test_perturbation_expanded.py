@@ -3,12 +3,10 @@
 import pytest
 
 from llm_reliability.reliability.perturbation.strategies import (
-    KeyboardNoiseStrategy,
-    TypoPerturbationStrategy,
-    UnicodeHomoglyphStrategy,
-)
+    KeyboardNoiseStrategy, TypoPerturbationStrategy, UnicodeHomoglyphStrategy)
 from llm_reliability.statistics.auto_selection import auto_select
-from llm_reliability.statistics.report import generate_reliability_statistical_report
+from llm_reliability.statistics.report import \
+    generate_reliability_statistical_report
 
 # ===================================================================
 # TypoPerturbationStrategy

@@ -31,7 +31,8 @@ class HypothesisTestResult(BaseModel):
         ..., description="Whether the statistical assumptions were satisfied."
     )
     warnings: list[str] = Field(
-        default_factory=list, description="Warnings regarding assumptions or sample sizes."
+        default_factory=list,
+        description="Warnings regarding assumptions or sample sizes.",
     )
 
 
@@ -92,8 +93,10 @@ class StatisticalReport(BaseModel):
         default_factory=list, description="Effect size calculations."
     )
     confidence_intervals: dict[str, ConfidenceIntervalResult] = Field(
-        default_factory=dict, description="Confidence intervals mapped by variable name."
+        default_factory=dict,
+        description="Confidence intervals mapped by variable name.",
     )
     metadata: dict[str, Any] = Field(
-        default_factory=dict, description="Additional context such as sample sizes and timestamps."
+        default_factory=dict,
+        description="Additional context such as sample sizes and timestamps.",
     )

@@ -4,7 +4,8 @@ import json
 
 import pytest
 
-from llm_reliability.benchmarks.adapters.agentboard_adapter import AgentBoardAdapter
+from llm_reliability.benchmarks.adapters.agentboard_adapter import \
+    AgentBoardAdapter
 from llm_reliability.configs.config import Configuration
 from tests.contracts.test_agent_contract import ValidAgent
 

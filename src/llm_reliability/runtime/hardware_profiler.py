@@ -97,7 +97,10 @@ class HardwareProfiler:
             )
         if available >= required:
             return True, f"GPU ({available:.1f}GB VRAM >= {required:.1f}GB required)"
-        return False, f"Insufficient memory: need {required:.1f}GB, have {available:.1f}GB"
+        return (
+            False,
+            f"Insufficient memory: need {required:.1f}GB, have {available:.1f}GB",
+        )
 
     @staticmethod
     def _detect_cpu(profile: HardwareProfile) -> None:
@@ -107,7 +110,10 @@ class HardwareProfiler:
                 import subprocess
 
                 result = subprocess.run(
-                    ["cat", "/proc/cpuinfo"], capture_output=True, text=True, timeout=5.0
+                    ["cat", "/proc/cpuinfo"],
+                    capture_output=True,
+                    text=True,
+                    timeout=5.0,
                 )
                 for line in result.stdout.split("\n"):
                     if "model name" in line:
@@ -128,7 +134,10 @@ class HardwareProfiler:
                 import subprocess
 
                 result = subprocess.run(
-                    ["wmic", "cpu", "get", "name"], capture_output=True, text=True, timeout=5.0
+                    ["wmic", "cpu", "get", "name"],
+                    capture_output=True,
+                    text=True,
+                    timeout=5.0,
                 )
                 lines = [line.strip() for line in result.stdout.split("\n") if line.strip()]
                 if len(lines) > 1:
@@ -172,7 +181,11 @@ class HardwareProfiler:
             import subprocess
 
             result = subprocess.run(
-                ["nvidia-smi", "--query-gpu=name,memory.total", "--format=csv,noheader,nounits"],
+                [
+                    "nvidia-smi",
+                    "--query-gpu=name,memory.total",
+                    "--format=csv,noheader,nounits",
+                ],
                 capture_output=True,
                 text=True,
                 timeout=10.0,

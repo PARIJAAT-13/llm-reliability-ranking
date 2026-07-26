@@ -6,7 +6,8 @@ from unittest.mock import patch
 
 import pytest
 
-from llm_reliability.orchestration.experiment_orchestrator import ExperimentOrchestrator
+from llm_reliability.orchestration.experiment_orchestrator import \
+    ExperimentOrchestrator
 
 
 def test_dual_model_config_parsing_string_and_dict():

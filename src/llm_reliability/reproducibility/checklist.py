@@ -191,7 +191,7 @@ class ReproducibilityChecklist:
         return CheckItem(
             name="Deterministic Seeds",
             passed=ok,
-            message=f"Seeds used: {sorted(seeds)}" if ok else "No seeds found in evaluations.",
+            message=(f"Seeds used: {sorted(seeds)}" if ok else "No seeds found in evaluations."),
             critical=True,
         )
 
@@ -202,7 +202,7 @@ class ReproducibilityChecklist:
         return CheckItem(
             name="Configuration Snapshot",
             passed=ok,
-            message=f"{len(snap)} key(s) captured." if ok else "config_snapshot is empty.",
+            message=(f"{len(snap)} key(s) captured." if ok else "config_snapshot is empty."),
             critical=True,
         )
 
@@ -213,7 +213,7 @@ class ReproducibilityChecklist:
         return CheckItem(
             name="Metric Records",
             passed=ok,
-            message=f"{n} MetricRecord(s) present." if ok else "No MetricRecords found.",
+            message=(f"{n} MetricRecord(s) present." if ok else "No MetricRecords found."),
         )
 
     @staticmethod
@@ -223,7 +223,7 @@ class ReproducibilityChecklist:
         return CheckItem(
             name="Ranking Records",
             passed=ok,
-            message=f"{n} RankingRecord(s) present." if ok else "No RankingRecords found.",
+            message=(f"{n} RankingRecord(s) present." if ok else "No RankingRecords found."),
         )
 
     @staticmethod
@@ -233,7 +233,7 @@ class ReproducibilityChecklist:
         return CheckItem(
             name="Evaluation Records",
             passed=ok,
-            message=f"{n} EvaluationRecord(s) present." if ok else "No EvaluationRecords found.",
+            message=(f"{n} EvaluationRecord(s) present." if ok else "No EvaluationRecords found."),
         )
 
     @staticmethod
@@ -243,7 +243,7 @@ class ReproducibilityChecklist:
         return CheckItem(
             name="Execution Records",
             passed=ok,
-            message=f"{n} ExecutionRecord(s) present." if ok else "No ExecutionRecords found.",
+            message=(f"{n} ExecutionRecord(s) present." if ok else "No ExecutionRecords found."),
         )
 
     @staticmethod

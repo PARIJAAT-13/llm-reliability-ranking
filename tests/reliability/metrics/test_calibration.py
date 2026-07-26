@@ -6,13 +6,8 @@ import pytest
 
 from llm_reliability.records.evaluation import EvaluationRecord
 from llm_reliability.reliability.metrics.calibration import (
-    CalibrationResult,
-    _reliability_diagram_data,
-    compute_brier_score,
-    compute_calibration,
-    compute_ece,
-    compute_mce,
-)
+    CalibrationResult, _reliability_diagram_data, compute_brier_score,
+    compute_calibration, compute_ece, compute_mce)
 
 # Helpers -------------------------------------------------------------------
 

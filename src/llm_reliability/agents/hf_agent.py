@@ -62,7 +62,9 @@ class _HuggingFaceAdapter(BaseLLMAdapter):
         if self._pipeline:
             try:
                 out = self._pipeline(
-                    prompt, max_new_tokens=request.max_tokens, do_sample=request.temperature > 0
+                    prompt,
+                    max_new_tokens=request.max_tokens,
+                    do_sample=request.temperature > 0,
                 )
                 text = out[0]["generated_text"]
             except Exception:

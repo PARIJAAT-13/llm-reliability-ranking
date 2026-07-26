@@ -11,14 +11,12 @@ import logging
 import subprocess
 from typing import Any
 
-from llm_reliability.agents.utils.ollama_utils import (
-    check_ollama_server,
-    estimate_model_memory,
-    get_available_memory_gb,
-    list_local_models,
-    normalize_ollama_url,
-    unload_ollama_model,
-)
+from llm_reliability.agents.utils.ollama_utils import (check_ollama_server,
+                                                       estimate_model_memory,
+                                                       get_available_memory_gb,
+                                                       list_local_models,
+                                                       normalize_ollama_url,
+                                                       unload_ollama_model)
 from llm_reliability.runtime import Runtime
 from llm_reliability.runtime.metadata import RuntimeMetadata
 

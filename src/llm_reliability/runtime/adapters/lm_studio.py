@@ -36,7 +36,11 @@ class LMStudioRuntime(Runtime):
             self._client = OpenAI(base_url=self._base_url, api_key="lm-studio")
         except ImportError as exc:
             raise ImportError("The 'openai' package is required for LMStudioRuntime.") from exc
-        logger.info("LMStudioRuntime initialized (model=%s, url=%s).", self._model, self._base_url)
+        logger.info(
+            "LMStudioRuntime initialized (model=%s, url=%s).",
+            self._model,
+            self._base_url,
+        )
 
     def reset(self) -> None:
         pass
@@ -54,7 +58,11 @@ class LMStudioRuntime(Runtime):
         return response.choices[0].message.content
 
     def metadata(self) -> dict:
-        return {"runtime": "lm-studio", "model": self._model, "base_url": self._base_url}
+        return {
+            "runtime": "lm-studio",
+            "model": self._model,
+            "base_url": self._base_url,
+        }
 
     def shutdown(self) -> None:
         self._client = None

@@ -20,25 +20,20 @@ import pytest
 
 from llm_reliability.records.ranking import RankingRecord
 from llm_reliability.statistics.assumptions import check_normality
-from llm_reliability.statistics.confidence_intervals import compute_bootstrap_ci
+from llm_reliability.statistics.confidence_intervals import \
+    compute_bootstrap_ci
 from llm_reliability.statistics.effect_sizes import compute_cliffs_delta
-from llm_reliability.statistics.effect_sizes import compute_cohens_d as effect_cohens_d
+from llm_reliability.statistics.effect_sizes import \
+    compute_cohens_d as effect_cohens_d
 from llm_reliability.statistics.effect_sizes import compute_rank_biserial
-from llm_reliability.statistics.hypothesis_tests import (
-    run_paired_t_test,
-    run_wilcoxon_test,
-)
+from llm_reliability.statistics.hypothesis_tests import (run_paired_t_test,
+                                                         run_wilcoxon_test)
+from llm_reliability.statistics.statistical_engine import \
+    compute_cohens_d as engine_cohens_d
 from llm_reliability.statistics.statistical_engine import (
-    compute_cohens_d as engine_cohens_d,
-)
-from llm_reliability.statistics.statistical_engine import (
-    compute_statistical_summary,
-    perform_cross_validation_check,
-)
-from llm_reliability.statistics.utils import (
-    calculate_summary_statistics,
-    validate_rankings,
-)
+    compute_statistical_summary, perform_cross_validation_check)
+from llm_reliability.statistics.utils import (calculate_summary_statistics,
+                                              validate_rankings)
 from tests.statistics_test_helpers import create_mock_ranking
 
 # ============================================================================
@@ -849,7 +844,8 @@ class TestNanInfEdgeCases:
 
 class TestStatisticalEngineIntegration:
     def test_engine_summarize(self):
-        from llm_reliability.statistics.statistical_engine import StatisticalEngine
+        from llm_reliability.statistics.statistical_engine import \
+            StatisticalEngine
 
         data = [0.8, 0.85, 0.9, 0.82, 0.88]
         s = StatisticalEngine.summarize(data, n_bootstrap=100)
@@ -858,7 +854,8 @@ class TestStatisticalEngineIntegration:
         assert s.ci_95_lower <= s.ci_95_upper
 
     def test_engine_analyze(self):
-        from llm_reliability.statistics.statistical_engine import StatisticalEngine
+        from llm_reliability.statistics.statistical_engine import \
+            StatisticalEngine
 
         r1 = create_mock_ranking({"a": 0.95, "b": 0.90, "c": 0.85, "d": 0.80})
         r2 = create_mock_ranking({"a": 0.60, "b": 0.55, "c": 0.50, "d": 0.45})

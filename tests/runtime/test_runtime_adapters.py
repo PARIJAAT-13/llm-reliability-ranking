@@ -2,15 +2,10 @@
 
 import pytest
 
-from llm_reliability.runtime.adapters import (
-    LlamaCppRuntime,
-    LMStudioRuntime,
-    MLXRuntime,
-    OllamaRuntime,
-    OpenAICompatRuntime,
-    TGIRuntime,
-    VLLMRuntime,
-)
+from llm_reliability.runtime.adapters import (LlamaCppRuntime, LMStudioRuntime,
+                                              MLXRuntime, OllamaRuntime,
+                                              OpenAICompatRuntime, TGIRuntime,
+                                              VLLMRuntime)
 
 
 class TestOllamaRuntime:
@@ -129,15 +124,12 @@ class TestRuntimeAdapterRegistration:
     def test_all_adapters_accessible(self):
         # Verify all classes exist and are Runtime subclasses
         from llm_reliability.runtime import Runtime
-        from llm_reliability.runtime.adapters import (
-            LlamaCppRuntime,
-            LMStudioRuntime,
-            MLXRuntime,
-            OllamaRuntime,
-            OpenAICompatRuntime,
-            TGIRuntime,
-            VLLMRuntime,
-        )
+        from llm_reliability.runtime.adapters import (LlamaCppRuntime,
+                                                      LMStudioRuntime,
+                                                      MLXRuntime,
+                                                      OllamaRuntime,
+                                                      OpenAICompatRuntime,
+                                                      TGIRuntime, VLLMRuntime)
 
         adapters = [
             OllamaRuntime,

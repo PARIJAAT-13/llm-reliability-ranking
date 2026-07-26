@@ -10,16 +10,11 @@ from typing import Any
 import pytest
 
 from llm_reliability.agents.adapters.exceptions import ProviderError
-from llm_reliability.agents.utils import (
-    RateLimiter,
-    approximate_token_count,
-    with_retry,
-)
-from llm_reliability.utils.hardware_profile import (
-    HardwareProfile,
-    HardwareRegistry,
-    detect_hardware_profile,
-)
+from llm_reliability.agents.utils import (RateLimiter, approximate_token_count,
+                                          with_retry)
+from llm_reliability.utils.hardware_profile import (HardwareProfile,
+                                                    HardwareRegistry,
+                                                    detect_hardware_profile)
 from llm_reliability.utils.serialization import SerializableModel
 
 # ======================================================================

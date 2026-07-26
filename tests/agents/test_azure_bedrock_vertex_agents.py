@@ -153,7 +153,8 @@ def _stub_litellm_module() -> ModuleType:
 class BaseAgentTestSetup:
     @pytest.fixture(autouse=True)
     def clear_registries(self):
-        from llm_reliability.agents.adapters.provider_registry import ProviderRegistry
+        from llm_reliability.agents.adapters.provider_registry import \
+            ProviderRegistry
         from llm_reliability.runtime.registry import RuntimeRegistry
 
         ProviderRegistry._adapters.clear()
@@ -176,7 +177,8 @@ class TestAzureOpenAIAgent(BaseAgentTestSetup):
     def test_initialize_succeeds_with_env_vars(self):
         stub = _stub_openai_module()
         with patch.dict(sys.modules, {"openai": stub}):
-            from llm_reliability.agents.azure_openai_agent import AzureOpenAIAgent
+            from llm_reliability.agents.azure_openai_agent import \
+                AzureOpenAIAgent
 
             agent = AzureOpenAIAgent(_make_config(agent="AzureOpenAIAgent"))
             agent.initialize()
@@ -187,7 +189,8 @@ class TestAzureOpenAIAgent(BaseAgentTestSetup):
         monkeypatch.setenv("AZURE_OPENAI_ENDPOINT", "https://test.openai.azure.com")
         stub = _stub_openai_module()
         with patch.dict(sys.modules, {"openai": stub}):
-            from llm_reliability.agents.azure_openai_agent import AzureOpenAIAgent
+            from llm_reliability.agents.azure_openai_agent import \
+                AzureOpenAIAgent
 
             agent = AzureOpenAIAgent(_make_config(agent="AzureOpenAIAgent"))
             with pytest.raises(AuthenticationError):
@@ -198,7 +201,8 @@ class TestAzureOpenAIAgent(BaseAgentTestSetup):
         monkeypatch.delenv("AZURE_OPENAI_ENDPOINT", raising=False)
         stub = _stub_openai_module()
         with patch.dict(sys.modules, {"openai": stub}):
-            from llm_reliability.agents.azure_openai_agent import AzureOpenAIAgent
+            from llm_reliability.agents.azure_openai_agent import \
+                AzureOpenAIAgent
 
             agent = AzureOpenAIAgent(_make_config(agent="AzureOpenAIAgent"))
             with pytest.raises(AuthenticationError):
@@ -210,7 +214,8 @@ class TestAzureOpenAIAgent(BaseAgentTestSetup):
         client_mock = stub.AzureOpenAI.return_value
         client_mock.chat.completions.create.return_value = completion
         with patch.dict(sys.modules, {"openai": stub}):
-            from llm_reliability.agents.azure_openai_agent import AzureOpenAIAgent
+            from llm_reliability.agents.azure_openai_agent import \
+                AzureOpenAIAgent
 
             agent = AzureOpenAIAgent(_make_config(agent="AzureOpenAIAgent"))
             agent.initialize()
@@ -220,7 +225,8 @@ class TestAzureOpenAIAgent(BaseAgentTestSetup):
     def test_metadata(self):
         stub = _stub_openai_module()
         with patch.dict(sys.modules, {"openai": stub}):
-            from llm_reliability.agents.azure_openai_agent import AzureOpenAIAgent
+            from llm_reliability.agents.azure_openai_agent import \
+                AzureOpenAIAgent
 
             agent = AzureOpenAIAgent(_make_config(agent="AzureOpenAIAgent"))
             agent.initialize()
@@ -231,7 +237,8 @@ class TestAzureOpenAIAgent(BaseAgentTestSetup):
     def test_shutdown_clears_client(self):
         stub = _stub_openai_module()
         with patch.dict(sys.modules, {"openai": stub}):
-            from llm_reliability.agents.azure_openai_agent import AzureOpenAIAgent
+            from llm_reliability.agents.azure_openai_agent import \
+                AzureOpenAIAgent
 
             agent = AzureOpenAIAgent(_make_config(agent="AzureOpenAIAgent"))
             agent.initialize()
@@ -244,7 +251,8 @@ class TestAzureOpenAIAgent(BaseAgentTestSetup):
         client_mock = stub.AzureOpenAI.return_value
         client_mock.chat.completions.create.return_value = completion
         with patch.dict(sys.modules, {"openai": stub}):
-            from llm_reliability.agents.azure_openai_agent import AzureOpenAIAgent
+            from llm_reliability.agents.azure_openai_agent import \
+                AzureOpenAIAgent
 
             agent = AzureOpenAIAgent(_make_config(agent="AzureOpenAIAgent"))
             agent.initialize()

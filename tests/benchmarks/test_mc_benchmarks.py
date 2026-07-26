@@ -1,14 +1,10 @@
 import pytest
 
-from llm_reliability.benchmarks.adapters import (
-    ARCChallengeAdapter,
-    BBHAdapter,
-    BoolQAdapter,
-    CommonsenseQAAdapter,
-    GPQAAdapter,
-    MMLUProAdapter,
-    OpenBookQAAdapter,
-)
+from llm_reliability.benchmarks.adapters import (ARCChallengeAdapter,
+                                                 BBHAdapter, BoolQAdapter,
+                                                 CommonsenseQAAdapter,
+                                                 GPQAAdapter, MMLUProAdapter,
+                                                 OpenBookQAAdapter)
 from llm_reliability.configs.config import Configuration
 from llm_reliability.interfaces.agent import Agent
 from llm_reliability.records.evaluation import EvaluationRecord
@@ -157,7 +153,8 @@ def test_bbh_adapter_evaluate_error():
 
 
 def test_boolq_adapter_extraction():
-    from llm_reliability.benchmarks.adapters.boolq_adapter import extract_boolq_answer
+    from llm_reliability.benchmarks.adapters.boolq_adapter import \
+        extract_boolq_answer
 
     assert extract_boolq_answer("True") == "TRUE"
     assert extract_boolq_answer("yes") == "TRUE"

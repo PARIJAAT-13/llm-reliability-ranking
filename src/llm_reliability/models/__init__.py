@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-from llm_reliability.models.discovery import discover_local_models, merge_discovered
+from llm_reliability.models.discovery import (discover_local_models,
+                                              merge_discovered)
 from llm_reliability.models.model_info import ModelInfo
-from llm_reliability.models.model_registry import (
-    DuplicateModelError,
-    ModelNotFoundError,
-    ModelRegistry,
-    ValidationError,
-)
+from llm_reliability.models.model_registry import (DuplicateModelError,
+                                                   ModelNotFoundError,
+                                                   ModelRegistry,
+                                                   ValidationError)
 from llm_reliability.models.ollama_models import SUPPORTED_OLLAMA_MODELS
 from llm_reliability.models.provider_models import SUPPORTED_PROVIDER_MODELS
 

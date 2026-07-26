@@ -1,11 +1,9 @@
 import pytest
 
-from llm_reliability.benchmarks.adapters import (
-    ArenaHardAdapter,
-    BigBenchLiteAdapter,
-    IFEvalAdapter,
-    LiveCodeBenchAdapter,
-)
+from llm_reliability.benchmarks.adapters import (ArenaHardAdapter,
+                                                 BigBenchLiteAdapter,
+                                                 IFEvalAdapter,
+                                                 LiveCodeBenchAdapter)
 from llm_reliability.configs.config import Configuration
 from llm_reliability.interfaces.agent import Agent
 from llm_reliability.records.evaluation import EvaluationRecord
@@ -87,7 +85,8 @@ def test_ifeval_adapter_run_evaluate():
 
 
 def test_ifeval_satisfies_instruction():
-    from llm_reliability.benchmarks.adapters.ifeval_adapter import satisfies_instruction
+    from llm_reliability.benchmarks.adapters.ifeval_adapter import \
+        satisfies_instruction
 
     assert satisfies_instruction("because it is good", "keywords")
     assert not satisfies_instruction("nothing special", "keywords")
@@ -112,9 +111,7 @@ def test_arena_hard_adapter():
 
 def test_arena_hard_quality_check():
     from llm_reliability.benchmarks.adapters.arena_hard_adapter import (
-        check_quality,
-        extract_keywords,
-    )
+        check_quality, extract_keywords)
 
     ref = "Recursion is a programming technique where a function calls itself"
     assert check_quality(ref, ref)
@@ -155,9 +152,7 @@ def test_livecodebench_adapter():
 
 def test_livecodebench_code_extraction():
     from llm_reliability.benchmarks.adapters.livecodebench_adapter import (
-        extract_code,
-        has_syntactic_structure,
-    )
+        extract_code, has_syntactic_structure)
 
     code = extract_code("```python\ndef foo(): pass\n```")
     assert "def foo(): pass" in code
@@ -190,9 +185,7 @@ def test_bigbench_lite_adapter():
 
 def test_bigbench_lite_mc_extraction():
     from llm_reliability.benchmarks.adapters.bigbench_lite_adapter import (
-        check_free_form,
-        extract_mc_answer,
-    )
+        check_free_form, extract_mc_answer)
 
     assert extract_mc_answer("The answer is B") == "B"
     assert extract_mc_answer("A") == "A"

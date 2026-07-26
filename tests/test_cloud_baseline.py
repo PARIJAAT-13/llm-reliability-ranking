@@ -4,12 +4,11 @@ from decimal import Decimal
 
 import pytest
 
-from llm_reliability.cloud_baseline.engine import CLOUD_PROVIDERS, CloudBaselineEngine
-from llm_reliability.cloud_baseline.models import (
-    CloudBaselineComparison,
-    CloudBaselineResult,
-    CloudBaselineSummary,
-)
+from llm_reliability.cloud_baseline.engine import (CLOUD_PROVIDERS,
+                                                   CloudBaselineEngine)
+from llm_reliability.cloud_baseline.models import (CloudBaselineComparison,
+                                                   CloudBaselineResult,
+                                                   CloudBaselineSummary)
 from llm_reliability.cloud_baseline.report import CloudBaselineReportGenerator
 from llm_reliability.configs.config import Configuration
 

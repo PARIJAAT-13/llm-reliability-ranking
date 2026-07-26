@@ -31,19 +31,12 @@ from llm_reliability.interfaces.benchmark import Benchmark
 from llm_reliability.records.evaluation import EvaluationRecord
 from llm_reliability.records.execution import ExecutionRecord
 from llm_reliability.reliability.perturbation.base import (
-    PerturbationRunResult,
-    PerturbationStrategy,
-)
+    PerturbationRunResult, PerturbationStrategy)
 from llm_reliability.reliability.perturbation.strategies import (
-    FormattingPerturbationStrategy,
-    InstructionReorderingPerturbationStrategy,
-    KeyboardNoiseStrategy,
-    PromptWrapperPerturbationStrategy,
-    SynonymSubstitutionPerturbationStrategy,
-    TypoPerturbationStrategy,
-    UnicodeHomoglyphStrategy,
-    WhitespacePerturbationStrategy,
-)
+    FormattingPerturbationStrategy, InstructionReorderingPerturbationStrategy,
+    KeyboardNoiseStrategy, PromptWrapperPerturbationStrategy,
+    SynonymSubstitutionPerturbationStrategy, TypoPerturbationStrategy,
+    UnicodeHomoglyphStrategy, WhitespacePerturbationStrategy)
 
 logger = logging.getLogger(__name__)
 
@@ -265,7 +258,11 @@ class PerturbationManager:
             except Exception as eval_exc:
                 logger.error("Baseline evaluation failed for task '%s': %s", task_id, eval_exc)
                 errors.append(
-                    {"phase": "evaluate_baseline", "task_id": task_id, "error": str(eval_exc)}
+                    {
+                        "phase": "evaluate_baseline",
+                        "task_id": task_id,
+                        "error": str(eval_exc),
+                    }
                 )
         except Exception as exec_exc:
             logger.error("Baseline execution failed for task '%s': %s", task_id, exec_exc)

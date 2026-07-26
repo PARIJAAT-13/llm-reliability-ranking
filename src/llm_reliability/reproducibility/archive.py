@@ -145,10 +145,12 @@ class ArchiveBuilder:
     def _generate_figures(self, summary: Any, figures_dir: pathlib.Path) -> None:
         """Produce all visualisation figures."""
         try:
-            from llm_reliability.visualization.distributions import DistributionPlotter
+            from llm_reliability.visualization.distributions import \
+                DistributionPlotter
             from llm_reliability.visualization.export import FigureExporter
             from llm_reliability.visualization.heatmaps import HeatmapPlotter
-            from llm_reliability.visualization.ranking_plots import RankingPlotter
+            from llm_reliability.visualization.ranking_plots import \
+                RankingPlotter
         except ImportError as exc:
             logger.warning("Visualization imports failed: %s", exc)
             return
@@ -280,7 +282,10 @@ class ArchiveBuilder:
             try:
                 df = tg.agent_summary_table(metrics)
                 TableExporter.save_all(
-                    df, tables_dir / "agent_summary", caption="Agent summary", skip_excel=skip_excel
+                    df,
+                    tables_dir / "agent_summary",
+                    caption="Agent summary",
+                    skip_excel=skip_excel,
                 )
             except Exception as exc:
                 logger.warning("agent_summary table failed: %s", exc)
@@ -301,7 +306,10 @@ class ArchiveBuilder:
             try:
                 df = tg.ranking_table(s_rnks[0], r_rnks[0])
                 TableExporter.save_all(
-                    df, tables_dir / "ranking", caption="Ranking comparison", skip_excel=skip_excel
+                    df,
+                    tables_dir / "ranking",
+                    caption="Ranking comparison",
+                    skip_excel=skip_excel,
                 )
             except Exception as exc:
                 logger.warning("ranking table failed: %s", exc)
@@ -309,9 +317,17 @@ class ArchiveBuilder:
         # Statistical tables
         if stat_report:
             for method_name, stem, caption in [
-                ("hypothesis_test_table", "hypothesis_tests", "Hypothesis test results"),
+                (
+                    "hypothesis_test_table",
+                    "hypothesis_tests",
+                    "Hypothesis test results",
+                ),
                 ("effect_size_table", "effect_sizes", "Effect sizes"),
-                ("confidence_interval_table", "confidence_intervals", "Confidence intervals"),
+                (
+                    "confidence_interval_table",
+                    "confidence_intervals",
+                    "Confidence intervals",
+                ),
                 ("correlation_table", "correlations", "Rank correlations"),
             ]:
                 try:
@@ -335,7 +351,8 @@ class ArchiveBuilder:
     ) -> None:
         """Generate all report formats."""
         try:
-            from llm_reliability.reporting.report_generator import ReportGenerator
+            from llm_reliability.reporting.report_generator import \
+                ReportGenerator
         except ImportError as exc:
             logger.warning("Reporting imports failed: %s", exc)
             return
@@ -358,8 +375,10 @@ class ArchiveBuilder:
 
     def _write_manifest(self, summary: Any, exp_dir: pathlib.Path) -> None:
         try:
-            from llm_reliability.reproducibility.environment import EnvironmentCapture
-            from llm_reliability.reproducibility.manifest import ManifestGenerator
+            from llm_reliability.reproducibility.environment import \
+                EnvironmentCapture
+            from llm_reliability.reproducibility.manifest import \
+                ManifestGenerator
 
             env = EnvironmentCapture.capture()
             gen = ManifestGenerator()
@@ -370,7 +389,8 @@ class ArchiveBuilder:
 
     def _write_environment(self, exp_dir: pathlib.Path) -> None:
         try:
-            from llm_reliability.reproducibility.environment import EnvironmentCapture
+            from llm_reliability.reproducibility.environment import \
+                EnvironmentCapture
 
             env = EnvironmentCapture.capture()
             dest = exp_dir / "environment.json"
@@ -380,7 +400,8 @@ class ArchiveBuilder:
 
     def _write_citation(self, summary: Any, exp_dir: pathlib.Path) -> None:
         try:
-            from llm_reliability.reproducibility.citation import CitationGenerator
+            from llm_reliability.reproducibility.citation import \
+                CitationGenerator
 
             gen = CitationGenerator()
             cff = gen.build(experiment_name=summary.experiment_name)
@@ -390,9 +411,8 @@ class ArchiveBuilder:
 
     def _write_checklist(self, summary: Any, exp_dir: pathlib.Path) -> None:
         try:
-            from llm_reliability.reproducibility.checklist import (
-                ReproducibilityChecklist,
-            )
+            from llm_reliability.reproducibility.checklist import \
+                ReproducibilityChecklist
 
             checker = ReproducibilityChecklist()
             result = checker.run(summary, archive_dir=exp_dir)

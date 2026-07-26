@@ -20,7 +20,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from llm_reliability.benchmarks.adapters.base_adapter import BaseBenchmarkAdapter
+from llm_reliability.benchmarks.adapters.base_adapter import \
+    BaseBenchmarkAdapter
 from llm_reliability.benchmarks.adapters.registry import BenchmarkRegistry
 from llm_reliability.interfaces.agent import Agent
 from llm_reliability.records.evaluation import EvaluationRecord
@@ -80,7 +81,10 @@ class MMLUAdapter(BaseBenchmarkAdapter):
                     "choices": choices,
                     "prompt": prompt,
                     "ground_truth_answer": str(
-                        item.get("ground_truth_answer", item.get("target", item.get("answer", "")))
+                        item.get(
+                            "ground_truth_answer",
+                            item.get("target", item.get("answer", "")),
+                        )
                     )
                     .strip()
                     .upper(),

@@ -3,11 +3,9 @@
 import pytest
 from pydantic import ValidationError
 
-from llm_reliability.utils.hardware_profile import (
-    HardwareProfile,
-    HardwareRegistry,
-    detect_hardware_profile,
-)
+from llm_reliability.utils.hardware_profile import (HardwareProfile,
+                                                    HardwareRegistry,
+                                                    detect_hardware_profile)
 
 
 class TestHardwareProfile:

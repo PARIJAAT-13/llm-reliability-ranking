@@ -7,7 +7,8 @@ import pytest
 from llm_reliability.benchmarks.mock_benchmark import MockBenchmark
 from llm_reliability.configs.config import Configuration
 from llm_reliability.experiments.experiment_models import ExperimentSpec
-from llm_reliability.orchestration.experiment_orchestrator import ExperimentOrchestrator
+from llm_reliability.orchestration.experiment_orchestrator import \
+    ExperimentOrchestrator
 from tests.contracts.test_agent_contract import ValidAgent
 
 

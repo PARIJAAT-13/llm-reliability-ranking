@@ -73,3 +73,6 @@ requirements_lock.txt
 
 # Empty dirs left by refactoring
 experiments/
+
+# Build artifacts
+failure.txt

@@ -20,7 +20,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from llm_reliability.benchmarks.adapters.base_adapter import BaseBenchmarkAdapter
+from llm_reliability.benchmarks.adapters.base_adapter import \
+    BaseBenchmarkAdapter
 from llm_reliability.benchmarks.adapters.registry import BenchmarkRegistry
 from llm_reliability.interfaces.agent import Agent
 from llm_reliability.records.evaluation import EvaluationRecord
@@ -98,7 +99,7 @@ class DROPAdapter(BaseBenchmarkAdapter):
                     "task_id": tid,
                     "passage": passage,
                     "question": question,
-                    "answers": list(answers) if isinstance(answers, Sequence) else [str(answers)],
+                    "answers": (list(answers) if isinstance(answers, Sequence) else [str(answers)]),
                     "prompt": prompt,
                 }
         else:

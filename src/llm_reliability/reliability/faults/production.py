@@ -20,7 +20,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from llm_reliability.reliability.faults.base import FaultInjectionStrategy, FaultTrace
+from llm_reliability.reliability.faults.base import (FaultInjectionStrategy,
+                                                     FaultTrace)
 from llm_reliability.reliability.faults.extensions import RecoveryMetrics
 
 # ======================================================================

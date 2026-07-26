@@ -46,13 +46,11 @@ from typing import Any
 import numpy as np
 from scipy import stats as scipy_stats
 
-from llm_reliability.statistics.extensions import (
-    compute_hedges_g,
-    run_friedman_test,
-    run_kruskal_wallis,
-    run_mannwhitney_u,
-    run_oneway_anova,
-)
+from llm_reliability.statistics.extensions import (compute_hedges_g,
+                                                   run_friedman_test,
+                                                   run_kruskal_wallis,
+                                                   run_mannwhitney_u,
+                                                   run_oneway_anova)
 
 # ---------------------------------------------------------------------------
 # Type aliases

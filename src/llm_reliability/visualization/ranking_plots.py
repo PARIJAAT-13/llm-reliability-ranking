@@ -32,18 +32,15 @@ from __future__ import annotations
 from typing import Any
 
 from llm_reliability.visualization.plotter import BasePlotter
-from llm_reliability.visualization.styles import (
-    COLOR_RELIABILITY,
-    COLOR_SUCCESS,
-    COLOR_WEIGHTED,
-    FIG_HEIGHT_DEFAULT,
-    FIG_WIDTH_DOUBLE,
-    FONT_SIZE_ANNOTATION,
-    FONT_SIZE_LABEL,
-    FONT_SIZE_TICK,
-    FONT_SIZE_TITLE,
-    PALETTE,
-)
+from llm_reliability.visualization.styles import (COLOR_RELIABILITY,
+                                                  COLOR_SUCCESS,
+                                                  COLOR_WEIGHTED,
+                                                  FIG_HEIGHT_DEFAULT,
+                                                  FIG_WIDTH_DOUBLE,
+                                                  FONT_SIZE_ANNOTATION,
+                                                  FONT_SIZE_LABEL,
+                                                  FONT_SIZE_TICK,
+                                                  FONT_SIZE_TITLE, PALETTE)
 
 
 def _ranking_to_lists(ranking: Any) -> tuple[list[str], list[float], list[int]]:
@@ -97,7 +94,12 @@ class RankingPlotter(BasePlotter):
         if not agents:
             fig, ax = self._new_figure(figsize=figsize)
             ax.text(
-                0.5, 0.5, "No rankings available", ha="center", va="center", transform=ax.transAxes
+                0.5,
+                0.5,
+                "No rankings available",
+                ha="center",
+                va="center",
+                transform=ax.transAxes,
             )
             return fig
 
@@ -253,7 +255,14 @@ class RankingPlotter(BasePlotter):
 
         if not common:
             fig, ax = self._new_figure(figsize=figsize)
-            ax.text(0.5, 0.5, "No common agents", ha="center", va="center", transform=ax.transAxes)
+            ax.text(
+                0.5,
+                0.5,
+                "No common agents",
+                ha="center",
+                va="center",
+                transform=ax.transAxes,
+            )
             return fig
 
         s_ranks = [s_map[a] for a in common]
@@ -319,7 +328,12 @@ class RankingPlotter(BasePlotter):
         if not rankings:
             fig, ax = self._new_figure(figsize=figsize)
             ax.text(
-                0.5, 0.5, "No rankings provided", ha="center", va="center", transform=ax.transAxes
+                0.5,
+                0.5,
+                "No rankings provided",
+                ha="center",
+                va="center",
+                transform=ax.transAxes,
             )
             return fig
 
@@ -435,7 +449,13 @@ class RankingPlotter(BasePlotter):
                     alpha=0.8,
                     edgecolor="white",
                 )
-                ax.text(start_offset + 0.5, i, label, va="center", fontsize=FONT_SIZE_ANNOTATION)
+                ax.text(
+                    start_offset + 0.5,
+                    i,
+                    label,
+                    va="center",
+                    fontsize=FONT_SIZE_ANNOTATION,
+                )
             except Exception:
                 continue
 

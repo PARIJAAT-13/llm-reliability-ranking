@@ -8,14 +8,9 @@ from io import StringIO
 
 import pytest
 
-from llm_reliability.logging import (
-    JsonFormatter,
-    LogConfig,
-    LogContext,
-    configure_logging,
-    get_log_context,
-    get_logger,
-)
+from llm_reliability.logging import (JsonFormatter, LogConfig, LogContext,
+                                     configure_logging, get_log_context,
+                                     get_logger)
 from llm_reliability.logging.formatters import ContextFilter
 
 # ---------------------------------------------------------------------------

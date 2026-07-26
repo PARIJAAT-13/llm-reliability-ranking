@@ -147,9 +147,8 @@ class MetricRecord(SerializableModel):
 
         has_faulted = any(ev.fault_injected for ev in evaluations)
         if has_faulted:
-            from llm_reliability.reliability.metrics.isr import (
-                compute_isr as _compute_isr,
-            )
+            from llm_reliability.reliability.metrics.isr import \
+                compute_isr as _compute_isr
 
             isr_result = _compute_isr(evaluations)
             isr_out = isr_result["isr_output"]

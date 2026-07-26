@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-from llm_reliability.cloud_baseline.models import (
-    CloudBaselineComparison,
-    CloudBaselineResult,
-    CloudBaselineSummary,
-)
+from llm_reliability.cloud_baseline.models import (CloudBaselineComparison,
+                                                   CloudBaselineResult,
+                                                   CloudBaselineSummary)
 
 
 class CloudBaselineReportGenerator:

@@ -26,10 +26,8 @@ from typing import Any
 import numpy as np
 from scipy import stats as scipy_stats
 
-from llm_reliability.statistics.result_models import (
-    EffectSizeResult,
-    HypothesisTestResult,
-)
+from llm_reliability.statistics.result_models import (EffectSizeResult,
+                                                      HypothesisTestResult)
 
 # ======================================================================
 # 1. Multiple Comparison Correction
@@ -361,9 +359,24 @@ def run_nemenyi_posthoc(*samples: list[float]) -> list[HypothesisTestResult]:
 
 
 _EFFECT_SIZE_THRESHOLDS: dict[str, list[tuple[float, str]]] = {
-    "cohens_d": [(0.2, "negligible"), (0.5, "small"), (0.8, "medium"), (float("inf"), "large")],
-    "hedges_g": [(0.2, "negligible"), (0.5, "small"), (0.8, "medium"), (float("inf"), "large")],
-    "glasss_delta": [(0.2, "negligible"), (0.5, "small"), (0.8, "medium"), (float("inf"), "large")],
+    "cohens_d": [
+        (0.2, "negligible"),
+        (0.5, "small"),
+        (0.8, "medium"),
+        (float("inf"), "large"),
+    ],
+    "hedges_g": [
+        (0.2, "negligible"),
+        (0.5, "small"),
+        (0.8, "medium"),
+        (float("inf"), "large"),
+    ],
+    "glasss_delta": [
+        (0.2, "negligible"),
+        (0.5, "small"),
+        (0.8, "medium"),
+        (float("inf"), "large"),
+    ],
     "eta_squared": [
         (0.01, "negligible"),
         (0.06, "small"),

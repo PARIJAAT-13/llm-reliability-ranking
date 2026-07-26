@@ -8,7 +8,8 @@ from pathlib import Path
 import pytest
 
 from llm_reliability.benchmarks import BenchmarkPlugin
-from llm_reliability.benchmarks.adapters.base_adapter import BaseBenchmarkAdapter
+from llm_reliability.benchmarks.adapters.base_adapter import \
+    BaseBenchmarkAdapter
 from llm_reliability.benchmarks.adapters.registry import BenchmarkRegistry
 
 # ---------------------------------------------------------------------------
@@ -251,9 +252,8 @@ class TestBackwardCompatibility:
 
     def test_existing_api_get_works(self):
         adapter = BenchmarkRegistry.get("AgentBoard")
-        from llm_reliability.benchmarks.adapters.agentboard_adapter import (
-            AgentBoardAdapter,
-        )
+        from llm_reliability.benchmarks.adapters.agentboard_adapter import \
+            AgentBoardAdapter
 
         assert adapter is AgentBoardAdapter
 
@@ -264,11 +264,9 @@ class TestBackwardCompatibility:
 
     def test_module_imports_still_work(self):
         """Importing adapters directly from the package still works."""
-        from llm_reliability.benchmarks.adapters import (
-            AgentBoardAdapter,
-            ARCAdapter,
-            GAIAAdapter,
-        )
+        from llm_reliability.benchmarks.adapters import (AgentBoardAdapter,
+                                                         ARCAdapter,
+                                                         GAIAAdapter)
 
         assert issubclass(AgentBoardAdapter, BaseBenchmarkAdapter)
         assert issubclass(ARCAdapter, BaseBenchmarkAdapter)

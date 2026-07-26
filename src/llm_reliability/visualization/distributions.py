@@ -32,15 +32,12 @@ from __future__ import annotations
 from typing import Any
 
 from llm_reliability.visualization.plotter import BasePlotter
-from llm_reliability.visualization.styles import (
-    COLOR_RELIABILITY,
-    COLOR_SUCCESS,
-    FIG_HEIGHT_DEFAULT,
-    FIG_WIDTH_DOUBLE,
-    FONT_SIZE_LABEL,
-    FONT_SIZE_TITLE,
-    PALETTE,
-)
+from llm_reliability.visualization.styles import (COLOR_RELIABILITY,
+                                                  COLOR_SUCCESS,
+                                                  FIG_HEIGHT_DEFAULT,
+                                                  FIG_WIDTH_DOUBLE,
+                                                  FONT_SIZE_LABEL,
+                                                  FONT_SIZE_TITLE, PALETTE)
 
 _METRIC_DISPLAY: dict[str, str] = {
     "success_rate": "Success Rate",
@@ -114,7 +111,14 @@ class DistributionPlotter(BasePlotter):
         agents, scores = _extract_scores(metrics, metric)
         if not scores:
             fig, ax = self._new_figure(figsize=figsize)
-            ax.text(0.5, 0.5, "No data available", ha="center", va="center", transform=ax.transAxes)
+            ax.text(
+                0.5,
+                0.5,
+                "No data available",
+                ha="center",
+                va="center",
+                transform=ax.transAxes,
+            )
             return fig
 
         display_name = _METRIC_DISPLAY.get(metric, metric.replace("_", " ").title())
@@ -125,7 +129,13 @@ class DistributionPlotter(BasePlotter):
         arr = np.array(scores)
 
         ax.hist(
-            arr, bins=bins, color=color, alpha=0.7, edgecolor="white", linewidth=0.5, density=True
+            arr,
+            bins=bins,
+            color=color,
+            alpha=0.7,
+            edgecolor="white",
+            linewidth=0.5,
+            density=True,
         )
 
         try:
@@ -188,7 +198,14 @@ class DistributionPlotter(BasePlotter):
 
         if not data:
             fig, ax = self._new_figure(figsize=figsize)
-            ax.text(0.5, 0.5, "No data available", ha="center", va="center", transform=ax.transAxes)
+            ax.text(
+                0.5,
+                0.5,
+                "No data available",
+                ha="center",
+                va="center",
+                transform=ax.transAxes,
+            )
             return fig
 
         labels = list(data.keys())
@@ -245,7 +262,11 @@ class DistributionPlotter(BasePlotter):
         matplotlib.figure.Figure
         """
         if metric_fields is None:
-            metric_fields = ["success_rate", "composite_reliability", "repeated_run_consistency"]
+            metric_fields = [
+                "success_rate",
+                "composite_reliability",
+                "repeated_run_consistency",
+            ]
 
         data: dict[str, list[float]] = {}
         for field in metric_fields:
@@ -255,7 +276,14 @@ class DistributionPlotter(BasePlotter):
 
         if not data:
             fig, ax = self._new_figure(figsize=figsize)
-            ax.text(0.5, 0.5, "No data available", ha="center", va="center", transform=ax.transAxes)
+            ax.text(
+                0.5,
+                0.5,
+                "No data available",
+                ha="center",
+                va="center",
+                transform=ax.transAxes,
+            )
             return fig
 
         try:
@@ -325,14 +353,26 @@ class DistributionPlotter(BasePlotter):
 
         if not metrics:
             fig, ax = self._new_figure(figsize=figsize)
-            ax.text(0.5, 0.5, "No data available", ha="center", va="center", transform=ax.transAxes)
+            ax.text(
+                0.5,
+                0.5,
+                "No data available",
+                ha="center",
+                va="center",
+                transform=ax.transAxes,
+            )
             return fig
 
         fig, ax = self._new_figure(figsize=figsize)
         for i, m in enumerate(metrics):
             color = PALETTE[i % len(PALETTE)]
             ax.scatter(
-                m.success_rate, m.composite_reliability, color=color, s=40, zorder=3, label=m.agent
+                m.success_rate,
+                m.composite_reliability,
+                color=color,
+                s=40,
+                zorder=3,
+                label=m.agent,
             )
             if annotate:
                 ax.annotate(

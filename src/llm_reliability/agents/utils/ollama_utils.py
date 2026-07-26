@@ -128,7 +128,10 @@ def estimate_model_memory(
         req = urllib.request.Request(
             show_url,
             data=payload,
-            headers={"Content-Type": "application/json", "User-Agent": "llm-reliability-ranking"},
+            headers={
+                "Content-Type": "application/json",
+                "User-Agent": "llm-reliability-ranking",
+            },
             method="POST",
         )
         with urllib.request.urlopen(req, timeout=timeout) as resp:
@@ -208,12 +211,18 @@ def unload_ollama_model(
         req = urllib.request.Request(
             gen_url,
             data=payload,
-            headers={"Content-Type": "application/json", "User-Agent": "llm-reliability-ranking"},
+            headers={
+                "Content-Type": "application/json",
+                "User-Agent": "llm-reliability-ranking",
+            },
             method="POST",
         )
         with urllib.request.urlopen(req, timeout=timeout) as resp:
             if resp.status in (200, 204):
-                logger.info("Unloaded Ollama model '%s' from RAM/VRAM (keep_alive=0).", model_name)
+                logger.info(
+                    "Unloaded Ollama model '%s' from RAM/VRAM (keep_alive=0).",
+                    model_name,
+                )
                 return True
     except Exception as exc:  # noqa: BLE001
         logger.warning("Could not automatically unload Ollama model '%s': %s", model_name, exc)

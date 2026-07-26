@@ -49,7 +49,11 @@ class _LlamaCppAdapter(BaseLLMAdapter):
                 "The 'httpx' package is required for LlamaCppAgent. Install via: pip install httpx"
             ) from exc
 
-        logger.info("Initializing LlamaCppAgent (model=%s, url=%s).", self._model, self._base_url)
+        logger.info(
+            "Initializing LlamaCppAgent (model=%s, url=%s).",
+            self._model,
+            self._base_url,
+        )
 
     def generate(self, request: LLMRequest) -> LLMResponse:
         if self._httpx_client is None:
@@ -151,7 +155,11 @@ class LlamaCppAgent(BaseProvider):
     def metadata(self) -> dict[str, Any]:
         base = super().metadata()
         base.update(
-            {"name": "LlamaCppAgent", "provider": "llamacpp", "model": self._adapter._model}
+            {
+                "name": "LlamaCppAgent",
+                "provider": "llamacpp",
+                "model": self._adapter._model,
+            }
         )
         return base
 

@@ -63,7 +63,11 @@ class OpenAICompatRuntime(Runtime):
         return response.choices[0].message.content
 
     def metadata(self) -> dict:
-        return {"runtime": "openai-compat", "model": self._model, "base_url": self._base_url}
+        return {
+            "runtime": "openai-compat",
+            "model": self._model,
+            "base_url": self._base_url,
+        }
 
     def shutdown(self) -> None:
         self._client = None

@@ -292,7 +292,7 @@ Distributed under the **MIT License**. See [LICENSE](LICENSE) for details.
 
 ## Authors
 
-- **Parijaat Srivastava** 
+- **Parijaat Srivastava**
 - **Pooja Mourya**
 
 ---

@@ -4,14 +4,8 @@ import pytest
 
 from llm_reliability.reliability.faults.base import FaultTrace
 from llm_reliability.reliability.faults.extensions import (
-    SEVERITY_PARAMS,
-    FaultInjectionConfig,
-    FaultSchedule,
-    FaultSeverity,
-    FaultSummary,
-    RecoveryMetrics,
-    ScheduledFaultConfig,
-)
+    SEVERITY_PARAMS, FaultInjectionConfig, FaultSchedule, FaultSeverity,
+    FaultSummary, RecoveryMetrics, ScheduledFaultConfig)
 
 # ======================================================================
 # FaultSeverity

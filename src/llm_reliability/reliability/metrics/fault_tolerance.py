@@ -26,9 +26,7 @@ import numpy as np
 from llm_reliability.records.evaluation import EvaluationRecord
 from llm_reliability.records.execution import ExecutionRecord
 from llm_reliability.reliability.metrics.base import (
-    FaultToleranceMetricResult,
-    ReliabilityMetric,
-)
+    FaultToleranceMetricResult, ReliabilityMetric)
 
 logger = logging.getLogger(__name__)
 

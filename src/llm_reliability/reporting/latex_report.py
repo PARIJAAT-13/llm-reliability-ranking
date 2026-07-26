@@ -294,7 +294,10 @@ class LaTeXReportWriter:
                 r"Rank divergence scatter: success rank vs.\ reliability rank.",
             ),
             ("bump_chart.png", "Rank trajectory bump chart across ranking types."),
-            ("scatter_success_vs_reliability.png", r"Success rate vs.\ composite reliability."),
+            (
+                "scatter_success_vs_reliability.png",
+                r"Success rate vs.\ composite reliability.",
+            ),
             ("correlation_heatmap.png", "Correlation coefficient heatmap."),
         ]
         for fname, caption in fig_refs:

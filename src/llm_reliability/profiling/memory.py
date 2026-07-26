@@ -73,7 +73,11 @@ class MemoryProfiler:
         """Capture memory state before execution."""
         self._ram_before = self._get_ram_gb()
         self._vram_before = self._get_vram_gb()
-        logger.debug("Memory before — RAM: %s GB, VRAM: %s GB", self._ram_before, self._vram_before)
+        logger.debug(
+            "Memory before — RAM: %s GB, VRAM: %s GB",
+            self._ram_before,
+            self._vram_before,
+        )
 
     def snapshot_after(self) -> None:
         """Capture memory state after execution and compute peaks."""

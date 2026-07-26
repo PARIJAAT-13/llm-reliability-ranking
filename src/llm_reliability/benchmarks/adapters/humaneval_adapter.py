@@ -19,7 +19,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from llm_reliability.benchmarks.adapters.base_adapter import BaseBenchmarkAdapter
+from llm_reliability.benchmarks.adapters.base_adapter import \
+    BaseBenchmarkAdapter
 from llm_reliability.benchmarks.adapters.registry import BenchmarkRegistry
 from llm_reliability.interfaces.agent import Agent
 from llm_reliability.records.evaluation import EvaluationRecord
@@ -149,7 +150,11 @@ class HumanEvalAdapter(BaseBenchmarkAdapter):
                 success = True
                 score = 1.0
             except Exception as exc:
-                logger.debug("HumanEval execution check failed for %s: %s", execution.task_id, exc)
+                logger.debug(
+                    "HumanEval execution check failed for %s: %s",
+                    execution.task_id,
+                    exc,
+                )
                 # Fallback static check: code contains entry point return / logic
                 success = entry_point in code or "def " in code
                 score = 1.0 if success else 0.0

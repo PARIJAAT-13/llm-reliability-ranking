@@ -20,7 +20,8 @@ import pkgutil
 import sys
 from collections.abc import Callable
 
-from llm_reliability.benchmarks.adapters.base_adapter import BaseBenchmarkAdapter
+from llm_reliability.benchmarks.adapters.base_adapter import \
+    BaseBenchmarkAdapter
 
 
 class BenchmarkRegistry:
@@ -58,7 +59,9 @@ class BenchmarkRegistry:
                 ...
         """
 
-        def _do_register(adapter_cls: type[BaseBenchmarkAdapter]) -> type[BaseBenchmarkAdapter]:
+        def _do_register(
+            adapter_cls: type[BaseBenchmarkAdapter],
+        ) -> type[BaseBenchmarkAdapter]:
             if name in cls._adapters:
                 raise ValueError(f"Adapter '{name}' is already registered.")
             if not issubclass(adapter_cls, BaseBenchmarkAdapter):

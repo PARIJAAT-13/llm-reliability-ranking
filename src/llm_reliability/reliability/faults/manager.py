@@ -30,20 +30,14 @@ from llm_reliability.interfaces.agent import Agent
 from llm_reliability.interfaces.benchmark import Benchmark
 from llm_reliability.records.evaluation import EvaluationRecord
 from llm_reliability.records.execution import ExecutionRecord
-from llm_reliability.reliability.faults.base import (
-    FaultInjectionStrategy,
-    FaultRunResult,
-    FaultTrace,
-    RecoveryStatus,
-)
+from llm_reliability.reliability.faults.base import (FaultInjectionStrategy,
+                                                     FaultRunResult,
+                                                     FaultTrace,
+                                                     RecoveryStatus)
 from llm_reliability.reliability.faults.strategies import (
-    ArtificialTimeoutFaultStrategy,
-    ContextTruncationFaultStrategy,
-    InvalidModelResponseFaultStrategy,
-    NetworkInterruptionFaultStrategy,
-    TemporaryApiFailureFaultStrategy,
-    ToolFailureFaultStrategy,
-)
+    ArtificialTimeoutFaultStrategy, ContextTruncationFaultStrategy,
+    InvalidModelResponseFaultStrategy, NetworkInterruptionFaultStrategy,
+    TemporaryApiFailureFaultStrategy, ToolFailureFaultStrategy)
 
 logger = logging.getLogger(__name__)
 
@@ -201,7 +195,11 @@ class FaultManager:
             except Exception as eval_exc:
                 logger.error("Baseline evaluation failed for task '%s': %s", task_id, eval_exc)
                 errors.append(
-                    {"phase": "evaluate_baseline", "task_id": task_id, "error": str(eval_exc)}
+                    {
+                        "phase": "evaluate_baseline",
+                        "task_id": task_id,
+                        "error": str(eval_exc),
+                    }
                 )
         except Exception as exec_exc:
             logger.error("Baseline execution failed for task '%s': %s", task_id, exec_exc)
@@ -219,7 +217,8 @@ class FaultManager:
             # Probability check
             if rng.random() > self.fault_probability:
                 logger.info(
-                    "Skipping fault '%s' based on probability threshold.", strategy.fault_name
+                    "Skipping fault '%s' based on probability threshold.",
+                    strategy.fault_name,
                 )
                 continue
 
@@ -268,7 +267,11 @@ class FaultManager:
 
                 try:
                     # Apply pre-run injection if applicable
-                    if strategy.injection_point in ("agent_run", "api_call", "tool_call"):
+                    if strategy.injection_point in (
+                        "agent_run",
+                        "api_call",
+                        "tool_call",
+                    ):
                         strategy.inject(agent, seed=strat_seed)
 
                     raw_exec = benchmark.run(agent, active_task)
@@ -294,7 +297,9 @@ class FaultManager:
                 strategy.cleanup()
             except Exception as clean_exc:
                 logger.warning(
-                    "Cleanup failed for strategy '%s': %s", strategy.fault_name, clean_exc
+                    "Cleanup failed for strategy '%s': %s",
+                    strategy.fault_name,
+                    clean_exc,
                 )
 
             # Build final ExecutionRecord with fault_injected=True

@@ -9,10 +9,8 @@ import pytest
 
 from llm_reliability.benchmarks.mock_benchmark import MockBenchmark
 from llm_reliability.configs.config import Configuration
-from llm_reliability.pipeline.experiment_pipeline import (
-    ExperimentPipeline,
-    ExperimentResult,
-)
+from llm_reliability.pipeline.experiment_pipeline import (ExperimentPipeline,
+                                                          ExperimentResult)
 from llm_reliability.records.execution import ExecutionRecord
 from tests.contracts.test_agent_contract import ValidAgent
 from tests.contracts.test_benchmark_contract import DummyAgent

@@ -24,10 +24,8 @@ import numpy as np
 
 from llm_reliability.records.evaluation import EvaluationRecord
 from llm_reliability.records.execution import ExecutionRecord
-from llm_reliability.reliability.metrics.base import (
-    ConsistencyMetricResult,
-    ReliabilityMetric,
-)
+from llm_reliability.reliability.metrics.base import (ConsistencyMetricResult,
+                                                      ReliabilityMetric)
 
 logger = logging.getLogger(__name__)
 
@@ -112,7 +110,8 @@ class RepeatedRunConsistencyMetric(ReliabilityMetric):
         )
 
         logger.info(
-            "Consistency computation complete: score=%.4f.", deterministic_consistency_score
+            "Consistency computation complete: score=%.4f.",
+            deterministic_consistency_score,
         )
 
         return ConsistencyMetricResult(

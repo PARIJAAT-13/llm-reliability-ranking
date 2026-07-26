@@ -37,9 +37,8 @@ def test_registry_all_15_new_exist():
 def test_registry_get_returns_adapter():
     for name in _all_new_benchmarks():
         cls = BenchmarkRegistry.get(name)
-        from llm_reliability.benchmarks.adapters.base_adapter import (
-            BaseBenchmarkAdapter,
-        )
+        from llm_reliability.benchmarks.adapters.base_adapter import \
+            BaseBenchmarkAdapter
 
         assert issubclass(cls, BaseBenchmarkAdapter)
 
