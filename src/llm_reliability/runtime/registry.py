@@ -51,8 +51,8 @@ class RuntimeRegistry:
                 raise TypeError("runtime_cls must be a subclass of Runtime.")
             cls._runtimes[name] = runtime_cls
             if not hasattr(runtime_cls, "_runtime_registry_names"):
-                runtime_cls._runtime_registry_names = []  # type: ignore[attr-defined]
-            runtime_cls._runtime_registry_names.append(name)  # type: ignore[attr-defined]
+                runtime_cls._runtime_registry_names = []
+            runtime_cls._runtime_registry_names.append(name)
             return runtime_cls
 
         if runtime_cls is not None:

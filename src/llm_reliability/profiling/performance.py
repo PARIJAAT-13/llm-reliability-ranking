@@ -38,14 +38,14 @@ class PerformanceProfiler:
 
     def start_experiment(self) -> None:
         """Mark the start of an experiment."""
-        self._experiment_start = time.monotonic()
+        self._experiment_start = time.perf_counter()
 
     @property
     def experiment_elapsed(self) -> float:
         """Return seconds since ``start_experiment()``, or 0."""
         if self._experiment_start is None:
             return 0.0
-        return time.monotonic() - self._experiment_start
+        return time.perf_counter() - self._experiment_start
 
     def record_cache_hit(self) -> None:
         self._num_cache_hits += 1
@@ -103,11 +103,11 @@ class _BenchmarkTimer:
         self._start: float | None = None
 
     def __enter__(self) -> _BenchmarkTimer:
-        self._start = time.monotonic()
+        self._start = time.perf_counter()
         return self
 
     def __exit__(self, *args: Any) -> None:
-        elapsed = time.monotonic() - (self._start or 0)
+        elapsed = time.perf_counter() - (self._start or 0)
         key = (self._benchmark, self._model)
         self._profiler._benchmark_times[key] += elapsed
         self._profiler._benchmark_counts[key] += 1

@@ -344,7 +344,7 @@ class ArchiveBuilder:
             gen.generate(
                 summary,
                 output_dir=reports_dir,
-                formats=formats,
+                formats=formats,  # type: ignore[arg-type]
                 figure_dir=rel_figures,
             )
         except Exception as exc:

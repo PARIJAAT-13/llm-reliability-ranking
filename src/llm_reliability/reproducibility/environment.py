@@ -132,8 +132,8 @@ class EnvironmentCapture(BaseModel):
             import importlib.metadata as meta
 
             for dist in meta.distributions():
-                name = dist.metadata.get("Name", "")
-                version = dist.metadata.get("Version", "")
+                name = dist.metadata["Name"] if "Name" in dist.metadata else ""
+                version = dist.metadata["Version"] if "Version" in dist.metadata else ""
                 if name and version:
                     if include_all or name.lower() in _relevant:
                         packages[name.lower()] = version

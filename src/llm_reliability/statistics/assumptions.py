@@ -27,6 +27,8 @@ def check_normality(differences: Sequence[float]) -> tuple[bool, str | None]:
     diff_arr = np.asarray(differences, dtype=float)
     if len(diff_arr) < 3:
         return False, f"Sample size too small to validate normality (n={len(diff_arr)} < 3)."
+    if np.ptp(diff_arr) == 0:
+        return True, None
 
     # Shapiro-Wilk test for normality
     stat, p_val = shapiro(diff_arr)

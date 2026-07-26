@@ -29,7 +29,7 @@ at zero.  Annotations are formatted to two decimal places.
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal
 
 from llm_reliability.visualization.plotter import BasePlotter
 from llm_reliability.visualization.styles import (
@@ -49,7 +49,7 @@ class HeatmapPlotter(BasePlotter):
         Override default figure size.
     """
 
-    def plot(  # type: ignore[override]
+    def plot(
         self,
         matrix: Any,
         labels: list[str] | None = None,
@@ -208,7 +208,7 @@ class HeatmapPlotter(BasePlotter):
         agent_names: list[str],
         score_matrix: Any,
         title: str = "Pairwise Correlation",
-        method: str = "spearman",
+        method: Literal["pearson", "kendall", "spearman"] = "spearman",
     ) -> Any:
         """Compute and plot a pairwise correlation matrix across agents.
 

@@ -79,7 +79,6 @@ class TestBenchmarkPlugin:
 
 
 class TestDecoratorRegistration:
-
     def test_decorator_registers_adapter(self):
         BenchmarkRegistry._adapters.clear()
 
@@ -113,7 +112,6 @@ class TestDecoratorRegistration:
 
 
 class TestDuplicateRegistration:
-
     def test_duplicate_name_raises(self):
         BenchmarkRegistry._adapters.clear()
         BenchmarkRegistry.register("dup_test", MiniAdapter)
@@ -144,7 +142,6 @@ class TestDuplicateRegistration:
 
 
 class TestDiscovery:
-
     def test_discover_imports_new_module(self):
         """A new module added to the adapters package is discovered."""
         import llm_reliability.benchmarks.adapters as adapters_pkg
@@ -219,7 +216,6 @@ BenchmarkRegistry.register("DiscoveredBench", DiscoveredBench)
 
 
 class TestMultiplePlugins:
-
     def test_multiple_adapters_loaded(self):
         adapters = BenchmarkRegistry.list()
         assert len(adapters) >= 12  # All built-in adapters
@@ -234,7 +230,6 @@ class TestMultiplePlugins:
 
 
 class TestBackwardCompatibility:
-
     def test_existing_adapters_still_discoverable(self):
         """All built-in adapters are registered and retrievable."""
         expected = [

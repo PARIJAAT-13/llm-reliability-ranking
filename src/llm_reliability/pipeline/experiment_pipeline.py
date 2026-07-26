@@ -233,7 +233,9 @@ class ExperimentPipeline:
                             if reason in ("memory", "model_unavailable"):
                                 skipped_reason = reason
                                 skip_error_msg = last_exec.error
-                                self._log_model_skipped(self.config.agent, reason, last_exec.error)
+                                self._log_model_skipped(
+                                    self.config.agent, reason, last_exec.error or ""
+                                )
                                 break
                     if self.errors and self.errors[-1].get("phase") == "run_task":
                         last_err = str(self.errors[-1].get("error", ""))

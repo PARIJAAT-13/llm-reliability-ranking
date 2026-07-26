@@ -67,7 +67,7 @@ class HellaSwagAdapter(BaseBenchmarkAdapter):
                 endings = item.get("endings", item.get("choices", []))
                 prompt = (
                     f"Context: {ctx}\nWhich ending naturally continues the context?\n"
-                    + "\n".join(f"{chr(65+i)}. {end}" for i, end in enumerate(endings))
+                    + "\n".join(f"{chr(65 + i)}. {end}" for i, end in enumerate(endings))
                     + "\nAnswer with letter (A, B, C, D):"
                 )
                 gt = (

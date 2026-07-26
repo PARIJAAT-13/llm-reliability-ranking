@@ -390,7 +390,7 @@ class ExperimentRunner:
                 try:
                     ranking = RankingRecord.from_metrics(
                         metrics_list,
-                        ranking_type=rtype,  # type: ignore[arg-type]
+                        ranking_type=rtype,
                         computed_at=computed_at,
                     )
                     self._rankings.append(ranking)

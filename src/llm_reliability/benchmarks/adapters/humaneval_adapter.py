@@ -142,7 +142,7 @@ class HumanEvalAdapter(BaseBenchmarkAdapter):
             # Safely evaluate syntax or basic functional execution in isolated scope
             full_code = f"{code}\n\n{test_code}\n"
             try:
-                scope = {}
+                scope: dict[str, Any] = {}
                 exec(full_code, scope)
                 success = True
                 score = 1.0

@@ -73,7 +73,7 @@ class ARCAdapter(BaseBenchmarkAdapter):
                 prompt = (
                     f"Question: {question}\nOptions:\n"
                     + "\n".join(
-                        f"{chr(65+i)}. {c if isinstance(c, str) else c.get('text', '')}"
+                        f"{chr(65 + i)}. {c if isinstance(c, str) else c.get('text', '')}"
                         for i, c in enumerate(choices)
                     )
                     + "\nAnswer:"

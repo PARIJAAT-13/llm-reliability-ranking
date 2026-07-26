@@ -195,7 +195,7 @@ class AgentBoardBenchmark(Benchmark):
 
         if not loaded:
             raise ValueError(
-                "AgentBoard dataset is empty — no tasks were loaded from " f"'{dataset_path}'."
+                f"AgentBoard dataset is empty — no tasks were loaded from '{dataset_path}'."
             )
 
         self._tasks = loaded
@@ -490,7 +490,7 @@ class AgentBoardBenchmark(Benchmark):
             value = raw.get(field)
             if not value or not str(value).strip():
                 raise ValueError(
-                    f"Task is missing required non-empty field: {field!r}. " f"Got {value!r}."
+                    f"Task is missing required non-empty field: {field!r}. Got {value!r}."
                 )
 
         # Validate optional progress_rate if present
@@ -521,4 +521,4 @@ class AgentBoardBenchmark(Benchmark):
 # multiple times (e.g. once from adapters/ and once from this file).
 # ---------------------------------------------------------------------------
 if not BenchmarkRegistry.exists("AgentBoard"):
-    BenchmarkRegistry.register("AgentBoard", AgentBoardBenchmark)
+    BenchmarkRegistry.register("AgentBoard", AgentBoardBenchmark)  # type: ignore[arg-type]

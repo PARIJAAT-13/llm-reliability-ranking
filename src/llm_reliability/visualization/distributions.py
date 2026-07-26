@@ -71,7 +71,7 @@ class DistributionPlotter(BasePlotter):
         Override default figure size.
     """
 
-    def plot(self, *args: Any, **kwargs: Any) -> Any:  # type: ignore[override]
+    def plot(self, *args: Any, **kwargs: Any) -> Any:
         """Dispatch to ``plot_score_histogram`` (default plot method)."""
         return self.plot_score_histogram(*args, **kwargs)
 
@@ -211,6 +211,7 @@ class DistributionPlotter(BasePlotter):
         ax.set_title(title, fontsize=FONT_SIZE_TITLE)
         ax.set_ylabel("Score", fontsize=FONT_SIZE_LABEL)
         ax.set_ylim([-0.05, 1.05])
+        ax.set_xticks(range(1, len(labels) + 1))
         ax.set_xticklabels(labels, rotation=15, ha="right")
         fig.tight_layout()
         return fig
@@ -272,16 +273,18 @@ class DistributionPlotter(BasePlotter):
                 data=df,
                 x="Metric",
                 y="Score",
+                hue="Metric",
                 ax=ax,
                 palette=PALETTE[: len(data)],
                 inner="box",
                 linewidth=0.8,
+                legend=False,
             )
             ax.set_title(title, fontsize=FONT_SIZE_TITLE)
             ax.set_xlabel("", fontsize=FONT_SIZE_LABEL)
             ax.set_ylabel("Score", fontsize=FONT_SIZE_LABEL)
             ax.set_ylim([-0.05, 1.05])
-            ax.set_xticklabels(ax.get_xticklabels(), rotation=15, ha="right")
+            ax.tick_params(axis="x", rotation=15)
             fig.tight_layout()
             return fig
 

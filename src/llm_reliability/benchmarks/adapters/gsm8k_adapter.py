@@ -83,10 +83,10 @@ class GSM8KAdapter(BaseBenchmarkAdapter):
             self._tasks = {
                 f"gsm8k_{i}": {
                     "task_id": f"gsm8k_{i}",
-                    "question": f"Natalia sold clips to {i+2} of her friends in April and {i+5} in May. How many clips did she sell in total?",
-                    "prompt": f"Natalia sold clips to {i+2} of her friends in April and {i+5} in May. How many clips did she sell in total?\nOutput: #### {2*i+7}",
+                    "question": f"Natalia sold clips to {i + 2} of her friends in April and {i + 5} in May. How many clips did she sell in total?",
+                    "prompt": f"Natalia sold clips to {i + 2} of her friends in April and {i + 5} in May. How many clips did she sell in total?\nOutput: #### {2 * i + 7}",
                     "ground_truth_answer": str(2 * i + 7),
-                    "raw_answer": f"#### {2*i+7}",
+                    "raw_answer": f"#### {2 * i + 7}",
                 }
                 for i in range(5)
             }

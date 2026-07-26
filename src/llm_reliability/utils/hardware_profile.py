@@ -67,7 +67,7 @@ def detect_hardware_profile(profile_id: str = "Local_System") -> HardwareProfile
         import psutil
 
         logical_cores = psutil.cpu_count(logical=True) or 1
-        physical_cores = psutil.cpu_count(logical=False)
+        physical_cores = psutil.cpu_count(logical=False) or 0
         ram_gb = round(psutil.virtual_memory().total / (1024**3), 2)
     except ImportError:
         logger.warning("psutil not available; hardware detection limited.")

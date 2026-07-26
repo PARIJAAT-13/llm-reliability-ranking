@@ -140,7 +140,7 @@ class MBPPAdapter(BaseBenchmarkAdapter):
             code = extract_python_code(str(agent_output))
             test_script = f"{code}\n\n" + "\n".join(test_list)
             try:
-                scope = {}
+                scope: dict[str, Any] = {}
                 exec(test_script, scope)
                 success = True
                 score = 1.0

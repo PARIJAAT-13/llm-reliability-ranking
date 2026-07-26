@@ -94,8 +94,7 @@ class _LlamaAdapter(BaseLLMAdapter):
             from openai import OpenAI  # noqa: PLC0415
         except ImportError as exc:
             raise ImportError(
-                "The 'openai' package is required for LlamaAgent. "
-                "Install with: pip install openai"
+                "The 'openai' package is required for LlamaAgent. Install with: pip install openai"
             ) from exc
 
         self._client = OpenAI(

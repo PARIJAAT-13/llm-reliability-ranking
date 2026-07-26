@@ -50,7 +50,14 @@ def test_ollama_adapter_initialization(caplog):
     cfg = make_config(agent="ollama", metadata={"model": "qwen2.5:7b"})
     adapter = _OllamaAdapter(cfg)
 
-    with patch("openai.OpenAI") as mock_openai_cls, caplog.at_level("INFO"):
+    with (
+        patch("openai.OpenAI") as mock_openai_cls,
+        patch("llm_reliability.agents.ollama_agent.check_ollama_server", return_value=(True, "OK")),
+        patch("llm_reliability.agents.ollama_agent.list_local_models", return_value=["qwen2.5:7b"]),
+        patch("llm_reliability.agents.ollama_agent.estimate_model_memory", return_value={"size_gb": None}),
+        patch("llm_reliability.agents.ollama_agent.get_available_memory_gb", return_value=32.0),
+        caplog.at_level("INFO"),
+    ):
         mock_client = MagicMock()
         mock_openai_cls.return_value = mock_client
 

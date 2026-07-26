@@ -69,7 +69,7 @@ class MMLUAdapter(BaseBenchmarkAdapter):
                 choices = item.get("choices", item.get("options", []))
                 prompt = (
                     f"{question}\n"
-                    + "\n".join(f"{chr(65+i)}. {choice}" for i, choice in enumerate(choices))
+                    + "\n".join(f"{chr(65 + i)}. {choice}" for i, choice in enumerate(choices))
                     + "\nAnswer with the correct letter (A, B, C, D)."
                 )
                 self._tasks[tid] = {

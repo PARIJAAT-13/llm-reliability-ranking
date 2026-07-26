@@ -7,13 +7,26 @@ name = "llm-reliability-ranking"
 version = "1.0.0"
 description = "Research framework for comparing success-based and reliability-based LLM agent rankings"
 readme = "README.md"
-authors = [{name = "Parijaat", email = "parijaat@antigravity.team"}]
-license = {text = "MIT"}
 requires-python = ">=3.10"
+license = {text = "MIT"}
+keywords = ["LLM", "reliability", "ranking", "evaluation", "benchmark"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
 dependencies = [
     "pydantic>=2.0",
     "scipy>=1.10.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/PARIJAAT-13/llm-reliability-ranking"
+Repository = "https://github.com/PARIJAAT-13/llm-reliability-ranking"
 
 [project.optional-dependencies]
 dev = [
@@ -27,27 +40,13 @@ visualization = [
     "openpyxl>=3.1.0",
     "jinja2>=3.1.0",
 ]
-# Provider SDKs — install only the providers you intend to use
-openai = [
-    "openai>=1.0",
-]
-anthropic = [
-    "anthropic>=0.25.0",
-]
-google = [
-    "google-generativeai>=0.5.0",
-]
-# DeepSeek and Qwen use the OpenAI-compatible API via the openai SDK
-deepseek = [
-    "openai>=1.0",
-]
-qwen = [
-    "openai>=1.0",
-]
-llama = [
-    "huggingface_hub>=0.20.0",
-]
-# Install all provider SDKs at once
+openai = ["openai>=1.0"]
+anthropic = ["anthropic>=0.25.0"]
+google = ["google-generativeai>=0.5.0"]
+deepseek = ["openai>=1.0"]
+qwen = ["openai>=1.0"]
+ollama = []
+llama = ["huggingface_hub>=0.20.0"]
 providers = [
     "openai>=1.0",
     "anthropic>=0.25.0",
@@ -59,21 +58,11 @@ providers = [
 where = ["src"]
 
 [project.scripts]
-llm-reliability = "llm_reliability.cli:main"
-llm-reliability-reproduce = "llm_reliability.reproducibility.reproduce:main"
+llm-reliability = "llm_reliability.orchestration.experiment_orchestrator:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
-
-[tool.black]
-line-length = 100
-target-version = ["py310"]
-extend-exclude = '(^|/)(data|legacy)/'
-
-[tool.isort]
-profile = "black"
-skip_glob = ["data/**", "legacy/**"]
 
 [tool.ruff]
 line-length = 100
@@ -83,25 +72,42 @@ extend-exclude = ["data", "legacy"]
 [tool.ruff.lint]
 select = ["E", "F", "W", "N", "UP"]
 ignore = [
-    "E501",  # line-too-long — black handles formatting
-    "N802",  # function names may contain underscores (not all are snake_case)
-    "N803",  # argument names
-    "N806",  # variable names
-    "N815",  # mixed case vars in class scope
+    "E501",
+    "N802",
+    "N803",
+    "N806",
+    "N815",
 ]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["F401", "F811", "S101", "N814"]
+"scripts/*" = ["E402"]
 "src/llm_reliability/benchmarks/adapters/__init__.py" = ["E402"]
-"src/llm_reliability/runtime/__init__.py" = ["E402"]
-"scripts/run_large_scale_experiment.py" = ["E402"]
-"scripts/run_pilot_experiment.py" = ["E402"]
 
 [tool.mypy]
 python_version = "3.10"
 strict = false
-ignore_missing_imports = true
+ignore_missing_imports = false
 follow_imports = "skip"
 disallow_untyped_defs = false
-check_untyped_defs = false
-warn_unused_ignores = false
+check_untyped_defs = true
+warn_unused_ignores = true
+disable_error_code = ["import-untyped", "import-not-found"]
+
+[[tool.mypy.overrides]]
+module = [
+    "matplotlib.*",
+    "seaborn.*",
+    "numpy.*",
+    "openai.*",
+    "anthropic.*",
+    "google.*",
+    "huggingface_hub.*",
+    "llama_cpp.*",
+    "jinja2.*",
+    "openpyxl.*",
+    "pandas.*",
+    "scipy.*",
+    "yaml.*",
+]
+ignore_missing_imports = true

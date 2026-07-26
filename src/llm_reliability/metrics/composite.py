@@ -73,8 +73,7 @@ def compute_composite(
         unknown = set(weights) - set(available)
         if unknown:
             raise ValueError(
-                f"Unknown metric keys in weights: {unknown}. "
-                f"Available metrics: {set(available)}."
+                f"Unknown metric keys in weights: {unknown}. Available metrics: {set(available)}."
             )
         missing = set(available) - set(weights)
         if missing:

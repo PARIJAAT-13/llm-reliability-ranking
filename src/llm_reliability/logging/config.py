@@ -82,7 +82,7 @@ def configure_logging(config: LogConfig | None = None, force: bool = False) -> N
     root.setLevel(cfg.level)
 
     if cfg.format == "json":
-        formatter = JsonFormatter()
+        formatter: logging.Formatter = JsonFormatter()
     else:
         formatter = logging.Formatter(
             "%(asctime)s | %(levelname)-8s | %(name)s | %(message)s",

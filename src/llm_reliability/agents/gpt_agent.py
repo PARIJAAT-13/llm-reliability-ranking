@@ -249,7 +249,7 @@ class _OpenAIAdapter(BaseLLMAdapter):
         """
         if self._client is None:
             raise RuntimeError(
-                "_OpenAIAdapter.generate() called before initialize(). " "Call initialize() first."
+                "_OpenAIAdapter.generate() called before initialize(). Call initialize() first."
             )
 
         try:
@@ -303,7 +303,7 @@ class _OpenAIAdapter(BaseLLMAdapter):
         choice = completion.choices[0] if completion.choices else None
         if choice is None or not getattr(choice.message, "content", None):
             raise ResponseValidationError(
-                "OpenAI returned an empty or missing completion choice. " f"Response: {completion}"
+                f"OpenAI returned an empty or missing completion choice. Response: {completion}"
             )
 
         text: str = choice.message.content or ""

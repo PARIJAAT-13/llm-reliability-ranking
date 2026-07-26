@@ -88,8 +88,7 @@ class _OllamaAdapter(BaseLLMAdapter):
             from openai import OpenAI  # noqa: PLC0415
         except ImportError as exc:
             raise ImportError(
-                "The 'openai' package is required for OllamaAgent. "
-                "Install with: pip install openai"
+                "The 'openai' package is required for OllamaAgent. Install with: pip install openai"
             ) from exc
 
         # Task 3: Pre-validation server connectivity

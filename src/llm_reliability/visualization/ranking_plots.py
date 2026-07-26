@@ -57,7 +57,7 @@ def _ranking_to_lists(ranking: Any) -> tuple[list[str], list[float], list[int]]:
 class RankingPlotter(BasePlotter):
     """Generate ranking charts from ``RankingRecord`` objects."""
 
-    def plot(self, *args: Any, **kwargs: Any) -> Any:  # type: ignore[override]
+    def plot(self, *args: Any, **kwargs: Any) -> Any:
         """Default: delegate to ``plot_ranking_bar``."""
         return self.plot_ranking_bar(*args, **kwargs)
 
