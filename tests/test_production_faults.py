@@ -141,7 +141,7 @@ def _make_trace(
         fault_name=fault_name,
         injection_point="api_call",
         retry_count=0,
-        recovery_status=status,  # type: ignore[arg-type]
+        recovery_status=status,
         execution_outcome="error" if status == "failed" else "success",
         latency_seconds=latency,
         details={},

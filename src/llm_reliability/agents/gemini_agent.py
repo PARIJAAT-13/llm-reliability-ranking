@@ -43,19 +43,18 @@ from llm_reliability.agents.adapters.exceptions import (
 from llm_reliability.agents.adapters.provider_registry import ProviderRegistry
 from llm_reliability.agents.adapters.request_models import LLMRequest
 from llm_reliability.agents.adapters.response_models import LLMResponse
-from llm_reliability.agents.utils.rate_limiter import RateLimiter
 from llm_reliability.configs.config import Configuration
-from llm_reliability.runtime import Runtime
+from llm_reliability.runtime.provider_base import BaseProvider
 from llm_reliability.runtime.registry import RuntimeRegistry
 
 logger = logging.getLogger(__name__)
+
 DEFAULT_MODEL: str = "gemini-2.5-flash"
 DEFAULT_TEMPERATURE: float = 0.0
 DEFAULT_MAX_TOKENS: int = 1024
 DEFAULT_REQUESTS_PER_SECOND: float = 2.0
-GEMINI_AGENT_VERSION: str = "1.0"
 
-_PROMPT_KEYS: tuple[str, ...] = ("prompt", "question", "problem_statement")
+GEMINI_AGENT_VERSION: str = "1.0"
 
 
 class _GeminiAdapter(BaseLLMAdapter):
@@ -182,28 +181,28 @@ class _GeminiAdapter(BaseLLMAdapter):
             return False
 
 
-class GeminiAgent(Runtime):
+class GeminiAgent(BaseProvider):
     """Google Gemini agent for the LLM Reliability Ranking framework."""
 
+    provider_name: str = "google"
+    default_model: str = "gemini-2.5-flash"
+    default_temperature: float = 0.0
+    default_max_tokens: int = 1024
+    default_requests_per_second: float = 2.0
+    api_key_env: str = "GEMINI_API_KEY"
+
     def __init__(self, config: Configuration) -> None:
-        if config is None:
-            raise ValueError("Configuration must be provided to GeminiAgent.")
-        self._config = config
+        super().__init__(config)
         self._adapter = _GeminiAdapter(config)
-        self._max_retries: int = int(config.metadata.get("max_retries", 3))
-        self._retry_backoff: float = float(config.metadata.get("retry_backoff", 1.0))
-        self._rate_limiter = RateLimiter(
-            requests_per_second=float(
-                config.metadata.get("requests_per_second", DEFAULT_REQUESTS_PER_SECOND)
-            )
-        )
 
     def initialize(self) -> None:
         logger.info("Initialising GeminiAgent.")
         self._adapter.initialize()
+        self._client = getattr(self._adapter, "_client", None)
         logger.info("GeminiAgent ready (model=%s).", self._adapter._model_name)
 
     def reset(self) -> None:
+        super().reset()
         self._adapter._request_logs.clear()
         self._adapter._response_logs.clear()
 
@@ -211,9 +210,9 @@ class GeminiAgent(Runtime):
         prompt = self._extract_prompt(task)
         request = LLMRequest(
             prompt=prompt,
-            temperature=float(self._config.metadata.get("temperature", DEFAULT_TEMPERATURE)),
-            max_tokens=int(self._config.metadata.get("max_tokens", DEFAULT_MAX_TOKENS)),
-            system_prompt=self._config.metadata.get("system_prompt"),
+            temperature=self._temperature,
+            max_tokens=self._max_tokens,
+            system_prompt=self._system_prompt,
         )
         logger.info(
             "GeminiAgent.run: task_id=%r, prompt_len=%d.",
@@ -224,6 +223,7 @@ class GeminiAgent(Runtime):
         response = self._adapter.retry(
             request, max_attempts=self._max_retries, backoff_seconds=self._retry_backoff
         )
+        self._track_cost(response)
         logger.info(
             "GeminiAgent.run complete: task_id=%r, finish=%s.",
             task.get("task_id", "<unknown>"),
@@ -236,27 +236,19 @@ class GeminiAgent(Runtime):
         self._adapter.shutdown()
 
     def metadata(self) -> dict[str, Any]:
-        return {
-            "name": "GeminiAgent",
-            "provider": "google",
-            "model": self._adapter._model_name,
-            "version": GEMINI_AGENT_VERSION,
-            "temperature": self._adapter._temperature,
-            "max_tokens": self._adapter._max_tokens,
-            "seed": self._config.seed,
-            "max_retries": self._max_retries,
-        }
+        base = super().metadata()
+        base.update(
+            {
+                "name": "GeminiAgent",
+                "provider": "google",
+                "model": self._adapter._model_name,
+                "version": GEMINI_AGENT_VERSION,
+            }
+        )
+        return base
 
-    @staticmethod
-    def _extract_prompt(task: dict[str, Any]) -> str:
-        for key in _PROMPT_KEYS:
-            value = task.get(key)
-            if value and str(value).strip():
-                return str(value).strip()
-        fallback = str(task).strip()
-        if not fallback or fallback == "{}":
-            raise ValueError(f"Cannot extract a prompt from task dict: {task!r}.")
-        return fallback
+    def _health_check_impl(self) -> bool:
+        return self._adapter.health_check()
 
 
 if not ProviderRegistry.exists("google"):

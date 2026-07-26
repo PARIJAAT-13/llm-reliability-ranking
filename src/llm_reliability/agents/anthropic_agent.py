@@ -45,9 +45,8 @@ from llm_reliability.agents.adapters.exceptions import (
 from llm_reliability.agents.adapters.provider_registry import ProviderRegistry
 from llm_reliability.agents.adapters.request_models import LLMRequest
 from llm_reliability.agents.adapters.response_models import LLMResponse
-from llm_reliability.agents.utils.rate_limiter import RateLimiter
 from llm_reliability.configs.config import Configuration
-from llm_reliability.runtime import Runtime
+from llm_reliability.runtime.provider_base import BaseProvider
 from llm_reliability.runtime.registry import RuntimeRegistry
 
 logger = logging.getLogger(__name__)
@@ -56,9 +55,8 @@ DEFAULT_MODEL: str = "claude-3-5-sonnet-20241022"
 DEFAULT_TEMPERATURE: float = 0.0
 DEFAULT_MAX_TOKENS: int = 1024
 DEFAULT_REQUESTS_PER_SECOND: float = 2.0
-ANTHROPIC_AGENT_VERSION: str = "1.0"
 
-_PROMPT_KEYS: tuple[str, ...] = ("prompt", "question", "problem_statement")
+ANTHROPIC_AGENT_VERSION: str = "1.0"
 
 
 class _AnthropicAdapter(BaseLLMAdapter):
@@ -183,34 +181,29 @@ class _AnthropicAdapter(BaseLLMAdapter):
             return False
 
 
-class AnthropicAgent(Runtime):
+class AnthropicAgent(BaseProvider):
     """Claude agent for the LLM Reliability Ranking framework."""
 
+    provider_name: str = "anthropic"
+    default_model: str = "claude-3-5-sonnet-20241022"
+    default_temperature: float = 0.0
+    default_max_tokens: int = 1024
+    default_requests_per_second: float = 2.0
+    api_key_env: str = "ANTHROPIC_API_KEY"
+    api_base_env: str = "ANTHROPIC_BASE_URL"
+
     def __init__(self, config: Configuration) -> None:
-        if config is None:
-            raise ValueError("Configuration must be provided to AnthropicAgent.")
-        self._config = config
+        super().__init__(config)
         self._adapter = _AnthropicAdapter(config)
-        self._max_retries: int = int(config.metadata.get("max_retries", 3))
-        self._retry_backoff: float = float(config.metadata.get("retry_backoff", 1.0))
-        self._rate_limiter = RateLimiter(
-            requests_per_second=float(
-                config.metadata.get("requests_per_second", DEFAULT_REQUESTS_PER_SECOND)
-            )
-        )
-        logger.debug(
-            "AnthropicAgent created (model=%s, seed=%d, retries=%d).",
-            config.metadata.get("model", config.llm) or DEFAULT_MODEL,
-            config.seed,
-            self._max_retries,
-        )
 
     def initialize(self) -> None:
         logger.info("Initialising AnthropicAgent.")
         self._adapter.initialize()
+        self._client = getattr(self._adapter, "_client", None)
         logger.info("AnthropicAgent ready (model=%s).", self._adapter._model)
 
     def reset(self) -> None:
+        super().reset()
         self._adapter._request_logs.clear()
         self._adapter._response_logs.clear()
 
@@ -218,10 +211,10 @@ class AnthropicAgent(Runtime):
         prompt = self._extract_prompt(task)
         request = LLMRequest(
             prompt=prompt,
-            temperature=float(self._config.metadata.get("temperature", DEFAULT_TEMPERATURE)),
-            max_tokens=int(self._config.metadata.get("max_tokens", DEFAULT_MAX_TOKENS)),
-            seed=None,  # Anthropic does not support seed parameter
-            system_prompt=self._config.metadata.get("system_prompt"),
+            temperature=self._temperature,
+            max_tokens=self._max_tokens,
+            seed=None,
+            system_prompt=self._system_prompt,
         )
         logger.info(
             "AnthropicAgent.run: task_id=%r, model=%s, prompt_len=%d.",
@@ -233,6 +226,7 @@ class AnthropicAgent(Runtime):
         response = self._adapter.retry(
             request, max_attempts=self._max_retries, backoff_seconds=self._retry_backoff
         )
+        self._track_cost(response)
         logger.info(
             "AnthropicAgent.run complete: task_id=%r, finish=%s.",
             task.get("task_id", "<unknown>"),
@@ -245,31 +239,19 @@ class AnthropicAgent(Runtime):
         self._adapter.shutdown()
 
     def metadata(self) -> dict[str, Any]:
-        return {
-            "name": "AnthropicAgent",
-            "provider": "anthropic",
-            "model": self._adapter._model,
-            "version": ANTHROPIC_AGENT_VERSION,
-            "temperature": self._adapter._temperature,
-            "max_tokens": self._adapter._max_tokens,
-            "seed": self._config.seed,
-            "max_retries": self._max_retries,
-        }
-
-    @staticmethod
-    def _extract_prompt(task: dict[str, Any]) -> str:
-        for key in _PROMPT_KEYS:
-            value = task.get(key)
-            if value and str(value).strip():
-                return str(value).strip()
-        fallback = str(task).strip()
-        if not fallback or fallback == "{}":
-            raise ValueError(f"Cannot extract a prompt from task dict: {task!r}.")
-        logger.warning(
-            "No standard prompt key found in task %r; using str(task).",
-            task.get("task_id", "<unknown>"),
+        base = super().metadata()
+        base.update(
+            {
+                "name": "AnthropicAgent",
+                "provider": "anthropic",
+                "model": self._adapter._model,
+                "version": ANTHROPIC_AGENT_VERSION,
+            }
         )
-        return fallback
+        return base
+
+    def _health_check_impl(self) -> bool:
+        return self._adapter.health_check()
 
 
 if not ProviderRegistry.exists("anthropic"):

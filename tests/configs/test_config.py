@@ -33,7 +33,7 @@ def test_round_trip_via_canonical_json() -> None:
 def test_immutable() -> None:
     cfg = make_configuration()
     with pytest.raises(ValidationError):
-        cfg.seed = 99  # type: ignore[misc]
+        cfg.seed = 99
 
 
 def test_rejects_unknown_fields() -> None:
@@ -47,7 +47,7 @@ def test_rejects_unknown_fields() -> None:
             dataset_version="1.0",
             seed=42,
             repetitions=5,
-            unknown_field=True,  # type: ignore[call-arg]
+            unknown_field=True,
         )
 
 

@@ -1,3 +1,5 @@
+"""Experiment-level caching layer for execution results."""
+
 from __future__ import annotations
 
 import logging

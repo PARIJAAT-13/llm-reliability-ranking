@@ -45,6 +45,7 @@ from llm_reliability.statistics.ranking_divergence import (
     compute_ranking_divergence,
     compute_ranking_overlap,
 )
+from llm_reliability.statistics.report import generate_reliability_statistical_report
 from llm_reliability.statistics.result_models import (
     ConfidenceIntervalResult,
     CorrelationResult,
@@ -87,6 +88,7 @@ __all__ = [
     "ConfidenceIntervalResult",
     "SummaryStatistics",
     "StatisticalReport",
+    "generate_reliability_statistical_report",
     "RankingDivergenceResult",
     "analyze_ranking_divergence",
     "compute_ranking_overlap",

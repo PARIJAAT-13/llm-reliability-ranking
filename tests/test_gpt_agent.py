@@ -17,6 +17,7 @@ or network connection.  The test suite verifies:
 from __future__ import annotations
 
 import sys
+from collections.abc import Generator
 from types import ModuleType
 from typing import Any
 from unittest.mock import MagicMock, patch
@@ -91,21 +92,21 @@ def _stub_openai_module() -> ModuleType:
     class _BadRequestError(_APIError):
         pass
 
-    openai_mock.APIError = _APIError
-    openai_mock.AuthenticationError = _AuthenticationError
-    openai_mock.RateLimitError = _RateLimitError
-    openai_mock.APIConnectionError = _APIConnectionError
-    openai_mock.APITimeoutError = _APITimeoutError
-    openai_mock.BadRequestError = _BadRequestError
+    openai_mock.APIError = _APIError  # type: ignore[attr-defined]
+    openai_mock.AuthenticationError = _AuthenticationError  # type: ignore[attr-defined]
+    openai_mock.RateLimitError = _RateLimitError  # type: ignore[attr-defined]
+    openai_mock.APIConnectionError = _APIConnectionError  # type: ignore[attr-defined]
+    openai_mock.APITimeoutError = _APITimeoutError  # type: ignore[attr-defined]
+    openai_mock.BadRequestError = _BadRequestError  # type: ignore[attr-defined]
 
     # OpenAI() returns a client; client.chat.completions.create() is the call
     client_mock = MagicMock()
-    openai_mock.OpenAI = MagicMock(return_value=client_mock)
+    openai_mock.OpenAI = MagicMock(return_value=client_mock)  # type: ignore[attr-defined]
     return openai_mock
 
 
 @pytest.fixture
-def openai_mod() -> ModuleType:
+def openai_mod() -> Generator[ModuleType, None, None]:
     """Inject a fake openai module for the duration of the test."""
     stub = _stub_openai_module()
     with patch.dict(sys.modules, {"openai": stub}):
@@ -148,7 +149,7 @@ def test_gpt_agent_requires_config(openai_mod):
     from llm_reliability.agents.gpt_agent import GPTAgent
 
     with pytest.raises(ValueError, match="Configuration must be provided"):
-        GPTAgent(None)  # type: ignore[arg-type]
+        GPTAgent(None)
 
 
 # ---------------------------------------------------------------------------

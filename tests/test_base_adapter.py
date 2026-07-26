@@ -16,10 +16,10 @@ class DummyAdapter(BaseBenchmarkAdapter):
         self._tasks = {"task_1": {"task_id": "task_1", "data": 42}}
 
     def run(self, agent: Agent, task: dict) -> ExecutionRecord:
-        return None  # type: ignore
+        return None
 
     def evaluate(self, execution: ExecutionRecord) -> EvaluationRecord:
-        return None  # type: ignore
+        return None
 
 
 @pytest.fixture
@@ -43,13 +43,13 @@ def test_adapter_inheritance(valid_config):
 
 def test_adapter_validate_configuration():
     with pytest.raises(ValueError, match="Configuration must be provided."):
-        DummyAdapter(config=None)  # type: ignore
+        DummyAdapter(config=None)
 
 
 def test_adapter_validate_dataset(valid_config):
     class EmptyAdapter(BaseBenchmarkAdapter):
         def _load_tasks(self) -> None:
-            self._tasks = {}
+            self._tasks: dict[str, dict] = {}
 
         def run(self, agent, task):
             pass

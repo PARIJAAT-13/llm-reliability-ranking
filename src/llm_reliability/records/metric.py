@@ -24,13 +24,15 @@ The composite score averages only available components.
 
 from __future__ import annotations
 
-from typing import TypeVar
+from typing import TYPE_CHECKING, TypeVar
 
 from pydantic import Field, model_validator
 
-from llm_reliability.metrics.isr import compute_isr
 from llm_reliability.records.evaluation import EvaluationRecord
 from llm_reliability.utils.serialization import SerializableModel
+
+if TYPE_CHECKING:
+    pass
 
 
 def _compute_repeated_run_consistency(evaluations: list[EvaluationRecord]) -> float:
@@ -72,6 +74,7 @@ def _compute_composite(
     perturbation: float | None,
     fault_tolerance: float | None,
     isr_composite: float | None = None,
+    cost_efficiency: float | None = None,
 ) -> float:
     """Average available reliability components into a composite score."""
     components = [success_rate, consistency]
@@ -81,6 +84,8 @@ def _compute_composite(
         components.append(fault_tolerance)
     if isr_composite is not None:
         components.append(isr_composite)
+    if cost_efficiency is not None:
+        components.append(cost_efficiency)
     return sum(components) / len(components)
 
 
@@ -101,6 +106,10 @@ class MetricRecord(SerializableModel):
     isr_output: float | None = Field(default=None, ge=0.0, le=1.0)
     isr_behavior: float | None = Field(default=None, ge=0.0, le=1.0)
     isr_composite_val: float | None = Field(default=None, ge=0.0, le=1.0)
+    total_cost_usd: float | None = Field(default=None, ge=0.0)
+    cost_per_success: float | None = Field(default=None, ge=0.0)
+    cost_efficiency_score: float | None = Field(default=None, ge=0.0, le=1.0)
+    cost_weighted_reliability: float | None = Field(default=None, ge=0.0, le=1.0)
     composite_reliability: float = Field(ge=0.0, le=1.0)
     computed_at: str = Field(min_length=1)
 
@@ -138,7 +147,11 @@ class MetricRecord(SerializableModel):
 
         has_faulted = any(ev.fault_injected for ev in evaluations)
         if has_faulted:
-            isr_result = compute_isr(evaluations)
+            from llm_reliability.reliability.metrics.isr import (
+                compute_isr as _compute_isr,
+            )
+
+            isr_result = _compute_isr(evaluations)
             isr_out = isr_result["isr_output"]
             isr_beh = isr_result["isr_behavior"]
             isr_comp = isr_result["isr_composite"]

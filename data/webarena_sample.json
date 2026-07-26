@@ -1,0 +1,42 @@
+[
+  {
+    "task_id": "web_001",
+    "prompt": "Go to the ACME online store and find the price of the wireless mouse. What is the listed price?",
+    "expected_answer": "$29.99",
+    "difficulty": "easy",
+    "task_category": "web_navigation",
+    "metadata": {"source": "ecommerce", "level": 1}
+  },
+  {
+    "task_id": "web_002",
+    "prompt": "Search for 'Python 3.12 release notes' on the web. What is the first heading of the page?",
+    "expected_answer": "Python 3.12",
+    "difficulty": "easy",
+    "task_category": "information_retrieval",
+    "metadata": {"source": "web_search", "level": 1}
+  },
+  {
+    "task_id": "web_003",
+    "prompt": "Log into the admin panel at example.com/admin and retrieve the total number of registered users.",
+    "expected_answer": "1,247",
+    "difficulty": "medium",
+    "task_category": "web_interaction",
+    "metadata": {"source": "admin_panel", "level": 2}
+  },
+  {
+    "task_id": "web_004",
+    "prompt": "Fill out the contact form with name 'Alice', email 'alice@example.com', and submit. What confirmation message appears?",
+    "expected_answer": "Thank you for your message",
+    "difficulty": "medium",
+    "task_category": "form_filling",
+    "metadata": {"source": "contact_form", "level": 2}
+  },
+  {
+    "task_id": "web_005",
+    "prompt": "Navigate to the documentation page for NumPy array operations and find the syntax for np.dot. What does the documentation say the function does?",
+    "expected_answer": "Dot product of two arrays",
+    "difficulty": "hard",
+    "task_category": "documentation_search",
+    "metadata": {"source": "docs_search", "level": 3}
+  }
+]

@@ -63,6 +63,8 @@ import logging
 import pathlib
 from typing import Any
 
+from llm_reliability.reporting.report_generator import ReportFormat
+
 logger = logging.getLogger(__name__)
 
 
@@ -93,7 +95,7 @@ class ArchiveBuilder:
         summary: Any,
         root_dir: str | pathlib.Path = "results",
         skip_excel: bool = True,
-        formats: list[str] | None = None,
+        formats: list[ReportFormat] | None = None,
     ) -> pathlib.Path:
         """Build the complete archive under *root_dir/<experiment_id>*.
 
@@ -329,7 +331,7 @@ class ArchiveBuilder:
         summary: Any,
         reports_dir: pathlib.Path,
         figures_dir: pathlib.Path,
-        formats: list[str] | None = None,
+        formats: list[ReportFormat] | None = None,
     ) -> None:
         """Generate all report formats."""
         try:

@@ -76,7 +76,7 @@ def test_gaia_utils_normalization():
     assert normalize_gaia_answer("Paris.") == "paris"
     assert normalize_gaia_answer(" Paris ") == "paris"
     assert normalize_gaia_answer("PARIS!") == "paris"
-    assert normalize_gaia_answer(None) == ""  # type: ignore
+    assert normalize_gaia_answer(None) == ""
 
 
 def test_gaia_invalid_dataset_schema(tmp_path):

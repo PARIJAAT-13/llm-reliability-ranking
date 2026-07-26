@@ -38,7 +38,7 @@ def test_hash_is_deterministic() -> None:
 def test_immutable() -> None:
     record = _make_execution()
     with pytest.raises(ValidationError):
-        record.status = "failure"  # type: ignore[misc]
+        record.status = "failure"
 
 
 def test_rejects_invalid_configuration_hash_length() -> None:
@@ -58,7 +58,7 @@ def test_rejects_unknown_fields() -> None:
             runtime_seconds=1.0,
             timestamp=TIMESTAMP,
             status="success",
-            extra=True,  # type: ignore[call-arg]
+            extra=True,
         )
 
 

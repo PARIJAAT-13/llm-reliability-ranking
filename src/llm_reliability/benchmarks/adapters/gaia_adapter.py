@@ -33,10 +33,30 @@ logger = logging.getLogger(__name__)
 class GAIAAdapter(BaseBenchmarkAdapter):
     """Adapter for the GAIA benchmark."""
 
+    _GAIA_SYSTEM_PROMPT: str = (
+        "You are solving a GAIA benchmark task.\n"
+        "Return ONLY the final answer.\n"
+        "Do not explain your reasoning.\n"
+        "Do not use markdown.\n"
+        "Output exactly the final answer."
+    )
+
     def validate_configuration(self) -> None:
         super().validate_configuration()
         if not self.config.metadata.get("dataset_path"):
             raise ValueError("Configuration metadata must contain 'dataset_path' for GAIA.")
+
+    @staticmethod
+    def _parse_difficulty(difficulty: str) -> int:
+        try:
+            return int(difficulty)
+        except (ValueError, TypeError):
+            mapping = {"easy": 1, "medium": 2, "hard": 3}
+            return mapping.get(difficulty.strip().lower(), 1)
+
+    def _should_include_level(self, difficulty: str) -> bool:
+        levels = self.config.metadata.get("levels", [1, 2, 3])
+        return self._parse_difficulty(difficulty) in levels
 
     def _load_tasks(self) -> None:
         """Load the GAIA dataset from a local JSON file or HuggingFace hub."""
@@ -62,6 +82,8 @@ class GAIAAdapter(BaseBenchmarkAdapter):
                     raise ValueError(f"Invalid schema: {e}") from e
                 if task_obj.task_id in self._tasks:
                     raise ValueError(f"Duplicate task ID: {task_obj.task_id}")
+                if not self._should_include_level(task_obj.difficulty):
+                    continue
                 self._tasks[task_obj.task_id] = task_obj.model_dump()
         else:
             try:
@@ -81,14 +103,17 @@ class GAIAAdapter(BaseBenchmarkAdapter):
                 raise RuntimeError(f"Missing or invalid dataset: {e}") from e
 
             self._tasks = {}
-            for item in ds.select(range(min(5, len(ds)))):
+            for item in ds:
+                difficulty = str(item.get("Level", item.get("difficulty", "1")))
+                if not self._should_include_level(difficulty):
+                    continue
                 task = {
                     "task_id": item["task_id"],
                     "question": item.get("Question", item.get("question", "")),
                     "ground_truth_answer": item.get(
                         "Final answer", item.get("ground_truth_answer", "")
                     ),
-                    "difficulty": int(item.get("Level", item.get("difficulty", 1))),
+                    "difficulty": difficulty,
                     "file_name": item.get("file_name", ""),
                     "file_path": item.get("file_path", ""),
                     "metadata": item.get("Annotator Metadata", {}),
@@ -103,9 +128,11 @@ class GAIAAdapter(BaseBenchmarkAdapter):
         """Execute a single GAIA task using the provided agent."""
         task_id = task["task_id"]
 
+        enriched = {**task, "system_prompt": self._GAIA_SYSTEM_PROMPT}
+
         start_time = datetime.now(timezone.utc)
         try:
-            agent_output = agent.run(task)
+            agent_output = agent.run(enriched)
             status = "success"
             error = None
         except Exception as e:

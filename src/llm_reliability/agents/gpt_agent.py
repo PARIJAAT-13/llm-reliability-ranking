@@ -120,26 +120,19 @@ from llm_reliability.agents.adapters.exceptions import (
 from llm_reliability.agents.adapters.provider_registry import ProviderRegistry
 from llm_reliability.agents.adapters.request_models import LLMRequest
 from llm_reliability.agents.adapters.response_models import LLMResponse
-from llm_reliability.agents.utils.rate_limiter import RateLimiter
 from llm_reliability.configs.config import Configuration
-from llm_reliability.runtime import Runtime
+from llm_reliability.runtime.provider_base import BaseProvider
 from llm_reliability.runtime.registry import RuntimeRegistry
 
 logger = logging.getLogger(__name__)
-
-# ---------------------------------------------------------------------------
-# Public constants
-# ---------------------------------------------------------------------------
 
 DEFAULT_MODEL: str = "gpt-4.1"
 DEFAULT_TEMPERATURE: float = 0.0
 DEFAULT_MAX_TOKENS: int = 1024
 DEFAULT_TOP_P: float = 1.0
-DEFAULT_REQUESTS_PER_SECOND: float = 3.0  # conservative default; raise in config
-GPT_AGENT_VERSION: str = "1.0"
+DEFAULT_REQUESTS_PER_SECOND: float = 3.0
 
-# Keys tried in order when extracting the prompt from a task dict
-_PROMPT_KEYS: tuple[str, ...] = ("prompt", "question", "problem_statement")
+GPT_AGENT_VERSION: str = "1.0"
 
 
 # ---------------------------------------------------------------------------
@@ -368,147 +361,53 @@ class _OpenAIAdapter(BaseLLMAdapter):
 # ---------------------------------------------------------------------------
 
 
-class GPTAgent(Runtime):
+class GPTAgent(BaseProvider):
     """GPT agent for the LLM Reliability Ranking framework.
 
     Integrates with the existing ``ExperimentRunner`` / ``Benchmark`` pipeline
-    without requiring any changes to framework components.
+    and uses Phase 1 runtime infrastructure for cost tracking, streaming,
+    batching, and failover.
 
     Parameters
     ----------
     config:
-        Framework ``Configuration`` object.  The following ``metadata`` keys
-        are recognised (all optional):
-
-        ``model``              (str)   — OpenAI model identifier.
-                                         Default: ``"gpt-4.1"``.
-        ``temperature``        (float) — Sampling temperature in [0, 2].
-                                         Default: ``0.0``.
-        ``max_tokens``         (int)   — Max tokens to generate.
-                                         Default: ``1024``.
-        ``top_p``              (float) — Nucleus sampling probability.
-                                         Default: ``1.0``.
-        ``system_prompt``      (str)   — Optional system-level instructions.
-        ``max_retries``        (int)   — Max retry attempts on transient errors.
-                                         Default: ``3``.
-        ``retry_backoff``      (float) — Base back-off seconds for retries.
-                                         Default: ``1.0``.
-        ``requests_per_second``(float) — Rate-limit cap.
-                                         Default: ``3.0``.
+        Framework ``Configuration`` object.  See ``BaseProvider`` for supported
+        ``metadata`` keys.
 
     Environment variables
     ---------------------
     ``OPENAI_API_KEY``    Required — OpenAI secret key.
     ``OPENAI_BASE_URL``   Optional — Override API base URL (Azure, proxies).
     ``OPENAI_ORG_ID``     Optional — Organization ID.
-
-    Raises
-    ------
-    ValueError
-        If ``config`` is ``None``.
     """
 
+    provider_name: str = "openai"
+    default_model: str = "gpt-4.1"
+    default_temperature: float = 0.0
+    default_max_tokens: int = 1024
+    default_top_p: float = 1.0
+    default_requests_per_second: float = 3.0
+    api_key_env: str = "OPENAI_API_KEY"
+    api_base_env: str = "OPENAI_BASE_URL"
+
     def __init__(self, config: Configuration) -> None:
-        """Initialise GPTAgent with framework configuration.
-
-        Does NOT import ``openai`` or touch the network — deferred to
-        ``initialize()``.
-        """
-        if config is None:
-            raise ValueError("Configuration must be provided to GPTAgent.")
-
-        self._config = config
+        super().__init__(config)
         self._adapter = _OpenAIAdapter(config)
 
-        self._max_retries: int = int(config.metadata.get("max_retries", 3))
-        self._retry_backoff: float = float(config.metadata.get("retry_backoff", 1.0))
-        self._rate_limiter = RateLimiter(
-            requests_per_second=float(
-                config.metadata.get("requests_per_second", DEFAULT_REQUESTS_PER_SECOND)
-            )
-        )
-
-        logger.debug(
-            "GPTAgent created (model=%s, seed=%d, retries=%d).",
-            config.metadata.get("model", config.llm) or DEFAULT_MODEL,
-            config.seed,
-            self._max_retries,
-        )
-
-    # ------------------------------------------------------------------
-    # Agent interface — mandatory abstract methods
-    # ------------------------------------------------------------------
-
     def initialize(self) -> None:
-        """Authenticate with OpenAI and warm up the SDK client.
-
-        Reads ``OPENAI_API_KEY`` from the environment.
-
-        Raises
-        ------
-        AuthenticationError
-            If ``OPENAI_API_KEY`` is not set.
-        ImportError
-            If the ``openai`` package is not installed.
-        """
         logger.info("Initialising GPTAgent.")
         self._adapter.initialize()
-        logger.info(
-            "GPTAgent ready (model=%s).",
-            self._adapter._model,
-        )
+        self._client = getattr(self._adapter, "_client", None)
+        logger.info("GPTAgent ready (model=%s).", self._adapter._model)
 
     def reset(self) -> None:
-        """Reset per-task state.
-
-        The OpenAI API is stateless between calls; this clears the internal
-        request/response logs accumulated by ``BaseLLMAdapter`` so that each
-        task starts with a clean audit trail.
-        """
+        super().reset()
         self._adapter._request_logs.clear()
         self._adapter._response_logs.clear()
-        logger.debug("GPTAgent state reset.")
 
     def run(self, task: dict[str, Any]) -> Any:
-        """Execute the GPT model on a benchmark task.
-
-        Extracts the prompt from the task dict, constructs an ``LLMRequest``
-        with configuration-driven parameters, calls the OpenAI API through the
-        adapter's retry and rate-limiting infrastructure, and returns the raw
-        model output string.
-
-        Does NOT create an ``ExecutionRecord`` — that is the responsibility of
-        the benchmark's ``run()`` method and the ``ExperimentRunner``.
-
-        Parameters
-        ----------
-        task:
-            Task payload dict as returned by a benchmark adapter's
-            ``get_task()``.  Must contain at least one of: ``prompt``,
-            ``question``, ``problem_statement``.
-
-        Returns
-        -------
-        str
-            Raw text output from the GPT model.
-
-        Raises
-        ------
-        ValueError
-            If no prompt key can be found in the task dict.
-        AuthenticationError, RateLimitError, ProviderConnectionError, ProviderError
-            Propagated from the OpenAI adapter after all retries are exhausted.
-        """
         prompt = self._extract_prompt(task)
-
-        request = LLMRequest(
-            prompt=prompt,
-            temperature=float(self._config.metadata.get("temperature", DEFAULT_TEMPERATURE)),
-            max_tokens=int(self._config.metadata.get("max_tokens", DEFAULT_MAX_TOKENS)),
-            top_p=float(self._config.metadata.get("top_p", DEFAULT_TOP_P)),
-            seed=self._config.seed if self._config.seed is not None else None,
-            system_prompt=self._config.metadata.get("system_prompt"),
-        )
+        request = self._build_request(prompt)
 
         logger.info(
             "GPTAgent.run: task_id=%r, model=%s, prompt_len=%d.",
@@ -517,23 +416,20 @@ class GPTAgent(Runtime):
             len(prompt),
         )
 
-        # Enforce rate limit before issuing the API call
         self._rate_limiter.acquire()
-
-        t0 = time.perf_counter()
         response = self._adapter.retry(
             request,
             max_attempts=self._max_retries,
             backoff_seconds=self._retry_backoff,
         )
-        latency_ms = (time.perf_counter() - t0) * 1000.0
+        self._track_cost(response)
 
         logger.info(
             "GPTAgent.run complete: task_id=%r, finish=%s, latency=%.1fms, "
             "tokens_in=%d, tokens_out=%d.",
             task.get("task_id", "<unknown>"),
             response.finish_reason,
-            latency_ms,
+            response.latency_ms,
             response.tokens_input,
             response.tokens_output,
         )
@@ -541,74 +437,28 @@ class GPTAgent(Runtime):
         return response.text
 
     def shutdown(self) -> None:
-        """Release the OpenAI client and connection pool."""
         logger.info("Shutting down GPTAgent.")
         self._adapter.shutdown()
 
     def metadata(self) -> dict[str, Any]:
-        """Return descriptive metadata for logging and reproducibility.
-
-        Returns
-        -------
-        dict[str, Any]
-            Includes agent name, provider, model, version, and key parameters.
-        """
-        return {
-            "name": "GPTAgent",
-            "provider": "openai",
-            "model": self._adapter._model,
-            "version": GPT_AGENT_VERSION,
-            "temperature": self._adapter._temperature,
-            "max_tokens": self._adapter._max_tokens,
-            "top_p": self._adapter._top_p,
-            "seed": self._config.seed,
-            "max_retries": self._max_retries,
-        }
-
-    # ------------------------------------------------------------------
-    # Private helpers
-    # ------------------------------------------------------------------
-
-    @staticmethod
-    def _extract_prompt(task: dict[str, Any]) -> str:
-        """Extract the user prompt from a benchmark task dict.
-
-        Tries keys in priority order:
-        ``prompt`` → ``question`` → ``problem_statement`` → ``str(task)``
-
-        Parameters
-        ----------
-        task:
-            Task payload dict from a benchmark adapter.
-
-        Returns
-        -------
-        str
-            Non-empty prompt string.
-
-        Raises
-        ------
-        ValueError
-            If the task dict is empty and has no usable prompt.
-        """
-        for key in _PROMPT_KEYS:
-            value = task.get(key)
-            if value and str(value).strip():
-                return str(value).strip()
-
-        # Last resort: use the entire task dict serialised as a string
-        fallback = str(task).strip()
-        if not fallback or fallback == "{}":
-            raise ValueError(
-                f"Cannot extract a prompt from task dict: {task!r}. "
-                f"Task must contain one of: {_PROMPT_KEYS}."
-            )
-
-        logger.warning(
-            "No standard prompt key found in task %r; using str(task) as prompt.",
-            task.get("task_id", "<unknown>"),
+        base = super().metadata()
+        base.update(
+            {
+                "name": "GPTAgent",
+                "provider": "openai",
+                "model": self._adapter._model,
+                "version": GPT_AGENT_VERSION,
+                "temperature": self._adapter._temperature,
+                "max_tokens": self._adapter._max_tokens,
+                "top_p": self._adapter._top_p,
+                "seed": self._config.seed,
+                "max_retries": self._max_retries,
+            }
         )
-        return fallback
+        return base
+
+    def _health_check_impl(self) -> bool:
+        return self._adapter.health_check()
 
 
 # ---------------------------------------------------------------------------

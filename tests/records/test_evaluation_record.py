@@ -156,7 +156,7 @@ def test_rejects_unknown_fields() -> None:
             success=True,
             score=1.0,
             evaluated_at=TIMESTAMP,
-            extra=True,  # type: ignore[call-arg]
+            extra=True,
         )
 
 
@@ -169,4 +169,4 @@ def test_immutable() -> None:
         evaluated_at=TIMESTAMP,
     )
     with pytest.raises(ValidationError):
-        evaluation.success = False  # type: ignore[misc]
+        evaluation.success = False

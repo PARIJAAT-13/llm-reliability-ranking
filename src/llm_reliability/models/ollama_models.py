@@ -1,3 +1,5 @@
+"""Curated list of supported Ollama model configurations."""
+
 from __future__ import annotations
 
 from llm_reliability.models.model_info import ModelInfo

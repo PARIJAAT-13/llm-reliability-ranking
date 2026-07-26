@@ -9,32 +9,54 @@ from llm_reliability.agents.adapters.response_models import LLMResponse
 
 
 class Provider1(BaseLLMAdapter):
-    def initialize(self):
+    def initialize(self) -> None:
         pass
 
-    def generate(self, r: LLMRequest) -> LLMResponse: ...
-    def shutdown(self):
+    def generate(self, r: LLMRequest) -> LLMResponse:
+        return LLMResponse(
+            text="mock",
+            finish_reason="stop",
+            latency_ms=0.0,
+            tokens_input=0,
+            tokens_output=0,
+            model_name="mock",
+            provider="mock",
+            metadata={},
+        )
+
+    def shutdown(self) -> None:
         pass
 
-    def provider_metadata(self):
+    def provider_metadata(self) -> dict:
         return {}
 
-    def health_check(self):
+    def health_check(self) -> bool:
         return True
 
 
 class Provider2(BaseLLMAdapter):
-    def initialize(self):
+    def initialize(self) -> None:
         pass
 
-    def generate(self, r: LLMRequest) -> LLMResponse: ...
-    def shutdown(self):
+    def generate(self, r: LLMRequest) -> LLMResponse:
+        return LLMResponse(
+            text="mock2",
+            finish_reason="stop",
+            latency_ms=0.0,
+            tokens_input=0,
+            tokens_output=0,
+            model_name="mock",
+            provider="mock",
+            metadata={},
+        )
+
+    def shutdown(self) -> None:
         pass
 
-    def provider_metadata(self):
+    def provider_metadata(self) -> dict:
         return {}
 
-    def health_check(self):
+    def health_check(self) -> bool:
         return True
 
 
@@ -63,7 +85,7 @@ def test_registry_duplicate_raises():
 
 def test_registry_invalid_type_raises():
     with pytest.raises(TypeError, match="subclass of BaseLLMAdapter"):
-        ProviderRegistry.register("bad", NotAProvider)  # type: ignore
+        ProviderRegistry.register("bad", NotAProvider)
 
 
 def test_registry_lookup_missing_raises():

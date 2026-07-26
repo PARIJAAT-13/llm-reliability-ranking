@@ -3,6 +3,7 @@
 import json
 import pathlib
 import zipfile
+from typing import Any
 
 import pytest
 
@@ -155,7 +156,7 @@ def _create_valid_archive(tmp_path: pathlib.Path) -> pathlib.Path:
     archive_dir = tmp_path / "archive_contents"
     archive_dir.mkdir()
 
-    manifest = {
+    manifest: dict[str, Any] = {
         "manifest_version": "1.0",
         "experiment_id": "val-test-001",
         "experiment_name": "Validation Test",
@@ -200,7 +201,7 @@ def test_archive_validation_missing_files(tmp_path: pathlib.Path) -> None:
     archive_dir = tmp_path / "archive_contents"
     archive_dir.mkdir()
 
-    manifest = {
+    manifest: dict[str, Any] = {
         "manifest_version": "1.0",
         "experiment_id": "missing-test",
         "experiment_name": "Missing Test",
@@ -235,7 +236,7 @@ def test_archive_validation_corrupted(tmp_path: pathlib.Path) -> None:
     archive_dir = tmp_path / "archive_contents"
     archive_dir.mkdir()
 
-    manifest = {
+    manifest: dict[str, Any] = {
         "manifest_version": "1.0",
         "experiment_id": "corrupt-test",
         "experiment_name": "Corruption Test",

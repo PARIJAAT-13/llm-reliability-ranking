@@ -197,7 +197,7 @@ def test_total_task_count_increased():
 
 def test_adapter_requires_config():
     with pytest.raises(Exception):
-        ReliabilityBenchAdapter(None)  # type: ignore[arg-type]
+        ReliabilityBenchAdapter(None)
 
 
 def test_adapter_initial_state(adapter: ReliabilityBenchAdapter):

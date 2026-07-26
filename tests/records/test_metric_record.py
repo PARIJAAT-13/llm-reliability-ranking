@@ -97,4 +97,4 @@ def test_immutable() -> None:
     ]
     metric = MetricRecord.from_evaluations(evaluations, computed_at=TIMESTAMP)
     with pytest.raises(ValidationError):
-        metric.success_rate = 0.0  # type: ignore[misc]
+        metric.success_rate = 0.0

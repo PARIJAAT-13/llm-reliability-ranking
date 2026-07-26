@@ -81,6 +81,7 @@ def configure_logging(config: LogConfig | None = None, force: bool = False) -> N
         cfg.level = getattr(logging, cfg.level.upper(), logging.INFO)
     root.setLevel(cfg.level)
 
+    formatter: logging.Formatter
     if cfg.format == "json":
         formatter: logging.Formatter = JsonFormatter()
     else:

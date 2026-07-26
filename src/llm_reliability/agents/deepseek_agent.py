@@ -45,21 +45,19 @@ from llm_reliability.agents.adapters.exceptions import (
 from llm_reliability.agents.adapters.provider_registry import ProviderRegistry
 from llm_reliability.agents.adapters.request_models import LLMRequest
 from llm_reliability.agents.adapters.response_models import LLMResponse
-from llm_reliability.agents.utils.rate_limiter import RateLimiter
 from llm_reliability.configs.config import Configuration
-from llm_reliability.runtime import Runtime
+from llm_reliability.runtime.provider_base import BaseProvider
 from llm_reliability.runtime.registry import RuntimeRegistry
 
 logger = logging.getLogger(__name__)
 
-DEEPSEEK_BASE_URL: str = "https://api.deepseek.com/v1"
 DEFAULT_MODEL: str = "deepseek-chat"
 DEFAULT_TEMPERATURE: float = 0.0
 DEFAULT_MAX_TOKENS: int = 1024
 DEFAULT_REQUESTS_PER_SECOND: float = 2.0
-DEEPSEEK_AGENT_VERSION: str = "1.0"
 
-_PROMPT_KEYS: tuple[str, ...] = ("prompt", "question", "problem_statement")
+DEEPSEEK_BASE_URL: str = "https://api.deepseek.com/v1"
+DEEPSEEK_AGENT_VERSION: str = "1.0"
 
 
 class _DeepSeekAdapter(BaseLLMAdapter):
@@ -185,40 +183,34 @@ class _DeepSeekAdapter(BaseLLMAdapter):
             return False
 
 
-class DeepSeekAgent(Runtime):
+class DeepSeekAgent(BaseProvider):
     """DeepSeek agent for the LLM Reliability Ranking framework."""
 
+    provider_name: str = "deepseek"
+    default_model: str = "deepseek-chat"
+    default_temperature: float = 0.0
+    default_max_tokens: int = 1024
+    default_requests_per_second: float = 2.0
+    api_key_env: str = "DEEPSEEK_API_KEY"
+
     def __init__(self, config: Configuration) -> None:
-        if config is None:
-            raise ValueError("Configuration must be provided to DeepSeekAgent.")
-        self._config = config
+        super().__init__(config)
         self._adapter = _DeepSeekAdapter(config)
-        self._max_retries: int = int(config.metadata.get("max_retries", 3))
-        self._retry_backoff: float = float(config.metadata.get("retry_backoff", 1.0))
-        self._rate_limiter = RateLimiter(
-            requests_per_second=float(
-                config.metadata.get("requests_per_second", DEFAULT_REQUESTS_PER_SECOND)
-            )
-        )
 
     def initialize(self) -> None:
         logger.info("Initialising DeepSeekAgent.")
         self._adapter.initialize()
+        self._client = getattr(self._adapter, "_client", None)
         logger.info("DeepSeekAgent ready (model=%s).", self._adapter._model)
 
     def reset(self) -> None:
+        super().reset()
         self._adapter._request_logs.clear()
         self._adapter._response_logs.clear()
 
     def run(self, task: dict[str, Any]) -> Any:
         prompt = self._extract_prompt(task)
-        request = LLMRequest(
-            prompt=prompt,
-            temperature=float(self._config.metadata.get("temperature", DEFAULT_TEMPERATURE)),
-            max_tokens=int(self._config.metadata.get("max_tokens", DEFAULT_MAX_TOKENS)),
-            seed=self._config.seed if self._config.seed is not None else None,
-            system_prompt=self._config.metadata.get("system_prompt"),
-        )
+        request = self._build_request(prompt)
         logger.info(
             "DeepSeekAgent.run: task_id=%r, prompt_len=%d.",
             task.get("task_id", "<unknown>"),
@@ -228,6 +220,7 @@ class DeepSeekAgent(Runtime):
         response = self._adapter.retry(
             request, max_attempts=self._max_retries, backoff_seconds=self._retry_backoff
         )
+        self._track_cost(response)
         logger.info(
             "DeepSeekAgent.run complete: task_id=%r, finish=%s.",
             task.get("task_id", "<unknown>"),
@@ -240,27 +233,19 @@ class DeepSeekAgent(Runtime):
         self._adapter.shutdown()
 
     def metadata(self) -> dict[str, Any]:
-        return {
-            "name": "DeepSeekAgent",
-            "provider": "deepseek",
-            "model": self._adapter._model,
-            "version": DEEPSEEK_AGENT_VERSION,
-            "temperature": self._adapter._temperature,
-            "max_tokens": self._adapter._max_tokens,
-            "seed": self._config.seed,
-            "max_retries": self._max_retries,
-        }
+        base = super().metadata()
+        base.update(
+            {
+                "name": "DeepSeekAgent",
+                "provider": "deepseek",
+                "model": self._adapter._model,
+                "version": DEEPSEEK_AGENT_VERSION,
+            }
+        )
+        return base
 
-    @staticmethod
-    def _extract_prompt(task: dict[str, Any]) -> str:
-        for key in _PROMPT_KEYS:
-            value = task.get(key)
-            if value and str(value).strip():
-                return str(value).strip()
-        fallback = str(task).strip()
-        if not fallback or fallback == "{}":
-            raise ValueError(f"Cannot extract a prompt from task dict: {task!r}.")
-        return fallback
+    def _health_check_impl(self) -> bool:
+        return self._adapter.health_check()
 
 
 if not ProviderRegistry.exists("deepseek"):

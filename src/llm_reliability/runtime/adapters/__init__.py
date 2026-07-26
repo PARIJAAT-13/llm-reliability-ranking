@@ -24,7 +24,7 @@ def _register_all() -> None:
     }
     for name, cls in runtimes.items():
         if not RuntimeRegistry.exists(name):
-            RuntimeRegistry.register(name, cls)
+            RuntimeRegistry.register(name, cls)  # type: ignore[arg-type]
 
 
 _register_all()

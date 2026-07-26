@@ -1,3 +1,5 @@
+"""Pydantic model for LLM model metadata."""
+
 from __future__ import annotations
 
 from typing import Any, Literal
@@ -24,8 +26,8 @@ class ModelInfo(BaseModel):
     ollama_identifier: str = Field(
         min_length=1, description="Ollama pull identifier, e.g. llama3.1:8b"
     )
-    provider: Literal["ollama"] = Field(default="ollama", description="Inference provider")
-    runtime: Literal["ollama"] = Field(default="ollama", description="Runtime name")
+    provider: str = Field(default="ollama", description="Inference provider name")
+    runtime: str = Field(default="ollama", description="Runtime name")
     status: Literal["supported", "experimental", "deprecated"] = Field(
         default="supported", description="Support status"
     )
@@ -33,7 +35,7 @@ class ModelInfo(BaseModel):
 
     @model_validator(mode="after")
     def validate_identifier_format(self) -> ModelInfo:
-        if ":" not in self.ollama_identifier:
+        if ":" not in self.ollama_identifier and self.provider == "ollama":
             raise ValueError(
                 f"ollama_identifier must contain a colon (e.g. 'llama3.1:8b'), got '{self.ollama_identifier}'"
             )

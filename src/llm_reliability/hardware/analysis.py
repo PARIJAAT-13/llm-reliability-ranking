@@ -1,3 +1,5 @@
+"""Hardware performance analysis and profiling utilities."""
+
 from __future__ import annotations
 
 import logging

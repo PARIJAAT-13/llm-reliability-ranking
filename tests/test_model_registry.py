@@ -148,7 +148,7 @@ def test_registry_register_many_with_duplicates():
 
 def test_registry_register_invalid_type():
     with pytest.raises(TypeError, match="Expected ModelInfo"):
-        ModelRegistry.register("not_a_model")  # type: ignore
+        ModelRegistry.register("not_a_model")
 
 
 def test_registry_list_identifiers():

@@ -1,5 +1,7 @@
 """Tests for experiment models (BenchmarkSpec, AgentSpec, ExperimentSpec, ExperimentStatus)."""
 
+from typing import Any
+
 import pytest
 from pydantic import ValidationError
 
@@ -57,7 +59,7 @@ class TestAgentSpec:
 
 
 class TestExperimentSpec:
-    def make_spec(self, **overrides: object) -> ExperimentSpec:
+    def make_spec(self, **overrides: Any) -> ExperimentSpec:
         defaults = {
             "experiment_name": "test-exp",
             "benchmarks": [BenchmarkSpec(name="gaia", dataset_path="data/gaia.json")],

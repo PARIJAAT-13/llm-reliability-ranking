@@ -119,4 +119,4 @@ def test_immutable() -> None:
         computed_at=TIMESTAMP,
     )
     with pytest.raises(ValidationError):
-        ranking.ranking_type = "reliability"  # type: ignore[misc]
+        ranking.ranking_type = "reliability"

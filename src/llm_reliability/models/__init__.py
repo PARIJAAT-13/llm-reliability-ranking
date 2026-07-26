@@ -9,6 +9,7 @@ from llm_reliability.models.model_registry import (
     ValidationError,
 )
 from llm_reliability.models.ollama_models import SUPPORTED_OLLAMA_MODELS
+from llm_reliability.models.provider_models import SUPPORTED_PROVIDER_MODELS
 
 __all__ = [
     "ModelInfo",
@@ -17,6 +18,7 @@ __all__ = [
     "ModelNotFoundError",
     "ValidationError",
     "SUPPORTED_OLLAMA_MODELS",
+    "SUPPORTED_PROVIDER_MODELS",
     "discover_local_models",
     "merge_discovered",
 ]
@@ -25,4 +27,5 @@ __all__ = [
 def populate_registry() -> int:
     ModelRegistry.reset()
     ModelRegistry.register_many(SUPPORTED_OLLAMA_MODELS)
+    ModelRegistry.register_many(SUPPORTED_PROVIDER_MODELS)
     return ModelRegistry.count()

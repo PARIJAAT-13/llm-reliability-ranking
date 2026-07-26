@@ -161,7 +161,7 @@ def _make_trace(
         fault_name=fault_name,
         injection_point="agent_run",
         retry_count=0,
-        recovery_status=recovery_status,  # type: ignore[arg-type]
+        recovery_status=recovery_status,
         execution_outcome="success",
         latency_seconds=latency,
         details={"score": score},

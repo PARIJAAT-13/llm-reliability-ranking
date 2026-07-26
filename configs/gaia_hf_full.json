@@ -1,0 +1,23 @@
+{
+  "experiment_name": "gaia_hf_full",
+  "benchmarks": [
+    {
+      "name": "GAIA",
+      "dataset_path": "gaia-benchmark/GAIA"
+    }
+  ],
+  "agents": [
+    { "name": "agent_llama31_8b", "metadata": { "model": "ollama:llama3.1:8b" } },
+    { "name": "agent_qwen25_7b", "metadata": { "model": "ollama:qwen2.5:7b" } },
+    { "name": "agent_mistral_7b", "metadata": { "model": "ollama:mistral:7b" } },
+    { "name": "agent_gemma2_9b", "metadata": { "model": "ollama:gemma2:9b" } },
+    { "name": "agent_phi3_mini", "metadata": { "model": "ollama:phi3:mini" } },
+    { "name": "agent_tinyllama", "metadata": { "model": "ollama:tinyllama:latest" } }
+  ],
+  "seeds": [42, 100, 2026],
+  "repetitions": 3,
+  "parallel": false,
+  "max_workers": 4,
+  "output_dir": "results/gaia_hf_full",
+  "llm": "ollama"
+}

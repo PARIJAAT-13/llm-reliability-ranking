@@ -324,3 +324,157 @@ class PromptWrapperPerturbationStrategy(PerturbationStrategy):
         new_prompt = wrapper_template.format(prompt=prompt)
 
         return _create_perturbed_task(task, new_prompt, self.name, seed)
+
+
+class TypoPerturbationStrategy(PerturbationStrategy):
+    """Introduce common keyboard typos into task prompts."""
+
+    TYPO_MAP: dict[str, str] = {
+        "a": "s",
+        "s": "a",
+        "d": "f",
+        "f": "g",
+        "h": "j",
+        "j": "k",
+        "k": "l",
+        "l": ";",
+        "q": "w",
+        "w": "e",
+        "e": "r",
+        "r": "t",
+        "y": "u",
+        "u": "i",
+        "i": "o",
+        "o": "p",
+        "z": "x",
+        "x": "c",
+        "c": "v",
+        "v": "b",
+        "n": "m",
+        "m": ",",
+        "b": "n",
+        "g": "h",
+        "t": "y",
+        "p": "[",
+    }
+
+    @property
+    def name(self) -> str:
+        return "typo"
+
+    @property
+    def description(self) -> str:
+        return "Introduce common keyboard typos (adjacent key substitutions)."
+
+    def apply(self, task: dict[str, Any], seed: int | None = None) -> dict[str, Any]:
+        prompt, _ = _extract_prompt(task)
+        if not prompt:
+            return task.copy()
+
+        rng = random.Random(seed if seed is not None else 42)
+        words = prompt.split()
+        if len(words) < 3:
+            return task.copy()
+
+        n_typos = max(1, len(words) // 10)
+        typo_indices = rng.sample(range(len(words)), min(n_typos, len(words)))
+
+        for idx in typo_indices:
+            word = words[idx]
+            if len(word) < 2:
+                continue
+            char_pos = rng.randint(0, len(word) - 1)
+            char = word[char_pos].lower()
+            if char in self.TYPO_MAP:
+                typo_char = self.TYPO_MAP[char]
+                if word[char_pos].isupper():
+                    typo_char = typo_char.upper()
+                words[idx] = word[:char_pos] + typo_char + word[char_pos + 1 :]
+
+        new_prompt = " ".join(words)
+        return _create_perturbed_task(task, new_prompt, self.name, seed)
+
+
+class UnicodeHomoglyphStrategy(PerturbationStrategy):
+    """Replace ASCII characters with visually similar Unicode homoglyphs."""
+
+    HOMOGLYPH_MAP: dict[str, str] = {
+        "a": "а",  # Cyrillic small a
+        "e": "е",  # Cyrillic small e
+        "o": "о",  # Cyrillic small o
+        "c": "с",  # Cyrillic small es
+        "p": "р",  # Cyrillic small er
+        "x": "х",  # Cyrillic small kha
+        "y": "у",  # Cyrillic small u
+        "i": "і",  # Cyrillic Byelorussian i
+        "A": "А",  # Cyrillic capital A
+        "E": "Е",  # Cyrillic capital E
+        "O": "О",  # Cyrillic capital O
+        "C": "С",  # Cyrillic capital Es
+        "P": "Р",  # Cyrillic capital Er
+        "B": "В",  # Cyrillic capital Ve
+        "H": "Н",  # Cyrillic capital En
+        "K": "К",  # Cyrillic capital Ka
+        "M": "М",  # Cyrillic capital Em
+        "T": "Т",  # Cyrillic capital Te
+    }
+
+    @property
+    def name(self) -> str:
+        return "unicode_homoglyph"
+
+    @property
+    def description(self) -> str:
+        return "Replace ASCII letters with visually similar Unicode homoglyphs."
+
+    def apply(self, task: dict[str, Any], seed: int | None = None) -> dict[str, Any]:
+        prompt, _ = _extract_prompt(task)
+        if not prompt:
+            return task.copy()
+
+        rng = random.Random(seed if seed is not None else 42)
+        chars = list(prompt)
+        n_replace = max(1, len(chars) // 15)
+
+        candidates = [i for i, ch in enumerate(chars) if ch in self.HOMOGLYPH_MAP]
+        if not candidates:
+            return task.copy()
+
+        replace_indices = rng.sample(candidates, min(n_replace, len(candidates)))
+        for idx in replace_indices:
+            chars[idx] = self.HOMOGLYPH_MAP[chars[idx]]
+
+        new_prompt = "".join(chars)
+        return _create_perturbed_task(task, new_prompt, self.name, seed)
+
+
+class KeyboardNoiseStrategy(PerturbationStrategy):
+    """Insert random keyboard noise (extra spaces, doubled characters)."""
+
+    @property
+    def name(self) -> str:
+        return "keyboard_noise"
+
+    @property
+    def description(self) -> str:
+        return "Insert random keyboard noise: doubled chars and extra spaces."
+
+    def apply(self, task: dict[str, Any], seed: int | None = None) -> dict[str, Any]:
+        prompt, key = _extract_prompt(task)
+        if not prompt:
+            return task.copy()
+
+        rng = random.Random(seed if seed is not None else 42)
+        chars = list(prompt)
+        n_noise = max(1, len(chars) // 20)
+
+        for _ in range(n_noise):
+            pos = rng.randint(0, len(chars))
+            noise_type = rng.choice(["double", "space"])
+            if noise_type == "double" and pos < len(chars):
+                chars.insert(pos, chars[pos])
+            elif noise_type == "space":
+                chars.insert(pos, " ")
+
+        new_prompt = "".join(chars)
+        return _create_perturbed_task(task, new_prompt, self.name, seed)

@@ -50,20 +50,13 @@ from llm_reliability.agents.adapters.exceptions import (
 from llm_reliability.agents.adapters.provider_registry import ProviderRegistry
 from llm_reliability.agents.adapters.request_models import LLMRequest
 from llm_reliability.agents.adapters.response_models import LLMResponse
-from llm_reliability.agents.utils.rate_limiter import RateLimiter
 from llm_reliability.configs.config import Configuration
-from llm_reliability.runtime import Runtime
+from llm_reliability.runtime.provider_base import BaseProvider
 from llm_reliability.runtime.registry import RuntimeRegistry
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_MODEL: str = "meta-llama/Llama-3.3-70B-Instruct"
-DEFAULT_TEMPERATURE: float = 0.01  # HF serverless requires > 0 for most Llama models
-DEFAULT_MAX_TOKENS: int = 1024
-DEFAULT_REQUESTS_PER_SECOND: float = 1.0  # HF serverless rate limits are conservative
 LLAMA_AGENT_VERSION: str = "1.0"
-
-_PROMPT_KEYS: tuple[str, ...] = ("prompt", "question", "problem_statement")
 
 # Minimum temperature for HF serverless to avoid "greedy not supported" errors
 _MIN_TEMPERATURE: float = 0.01
@@ -83,10 +76,10 @@ class _LlamaAdapter(BaseLLMAdapter):
         self._model = configured_model
         # Accept short names like "llama-3.3-70b" and expand to full HF path
 
-        raw_temp = float(config.metadata.get("temperature", DEFAULT_TEMPERATURE))
+        raw_temp = float(config.metadata.get("temperature", 0.01))
         # Apply minimum temperature floor for HF serverless compatibility
         self._temperature = max(raw_temp, _MIN_TEMPERATURE)
-        self._max_tokens = int(config.metadata.get("max_tokens", DEFAULT_MAX_TOKENS))
+        self._max_tokens = int(config.metadata.get("max_tokens", 1024))
         self._system_prompt: str | None = config.metadata.get("system_prompt")
 
     def initialize(self) -> None:
@@ -189,39 +182,31 @@ class _LlamaAdapter(BaseLLMAdapter):
             return False
 
 
-class LlamaAgent(Runtime):
-    """Meta Llama agent for the LLM Reliability Ranking framework."""
+class LlamaAgent(BaseProvider):
+    provider_name: str = "llama"
+    default_model: str = "meta-llama/Llama-3.3-70B-Instruct"
+    default_temperature: float = 0.01
+    default_max_tokens: int = 1024
+    default_requests_per_second: float = 1.0
 
     def __init__(self, config: Configuration) -> None:
-        if config is None:
-            raise ValueError("Configuration must be provided to LlamaAgent.")
-        self._config = config
+        super().__init__(config)
         self._adapter = _LlamaAdapter(config)
-        self._max_retries: int = int(config.metadata.get("max_retries", 3))
-        self._retry_backoff: float = float(config.metadata.get("retry_backoff", 1.0))
-        self._rate_limiter = RateLimiter(
-            requests_per_second=float(
-                config.metadata.get("requests_per_second", DEFAULT_REQUESTS_PER_SECOND)
-            )
-        )
 
     def initialize(self) -> None:
         logger.info("Initialising LlamaAgent.")
         self._adapter.initialize()
+        self._client = getattr(self._adapter, "_client", None)
         logger.info("LlamaAgent ready (model=%s).", self._adapter._model)
 
     def reset(self) -> None:
+        super().reset()
         self._adapter._request_logs.clear()
         self._adapter._response_logs.clear()
 
     def run(self, task: dict[str, Any]) -> Any:
         prompt = self._extract_prompt(task)
-        request = LLMRequest(
-            prompt=prompt,
-            temperature=float(self._config.metadata.get("temperature", DEFAULT_TEMPERATURE)),
-            max_tokens=int(self._config.metadata.get("max_tokens", DEFAULT_MAX_TOKENS)),
-            system_prompt=self._config.metadata.get("system_prompt"),
-        )
+        request = self._build_request(prompt)
         logger.info(
             "LlamaAgent.run: task_id=%r, prompt_len=%d.",
             task.get("task_id", "<unknown>"),
@@ -231,6 +216,7 @@ class LlamaAgent(Runtime):
         response = self._adapter.retry(
             request, max_attempts=self._max_retries, backoff_seconds=self._retry_backoff
         )
+        self._track_cost(response)
         logger.info(
             "LlamaAgent.run complete: task_id=%r, finish=%s.",
             task.get("task_id", "<unknown>"),
@@ -243,27 +229,19 @@ class LlamaAgent(Runtime):
         self._adapter.shutdown()
 
     def metadata(self) -> dict[str, Any]:
-        return {
-            "name": "LlamaAgent",
-            "provider": "llama",
-            "model": self._adapter._model,
-            "version": LLAMA_AGENT_VERSION,
-            "temperature": self._adapter._temperature,
-            "max_tokens": self._adapter._max_tokens,
-            "seed": self._config.seed,
-            "max_retries": self._max_retries,
-        }
+        base = super().metadata()
+        base.update(
+            {
+                "name": "LlamaAgent",
+                "provider": "llama",
+                "model": self._adapter._model,
+                "version": LLAMA_AGENT_VERSION,
+            }
+        )
+        return base
 
-    @staticmethod
-    def _extract_prompt(task: dict[str, Any]) -> str:
-        for key in _PROMPT_KEYS:
-            value = task.get(key)
-            if value and str(value).strip():
-                return str(value).strip()
-        fallback = str(task).strip()
-        if not fallback or fallback == "{}":
-            raise ValueError(f"Cannot extract a prompt from task dict: {task!r}.")
-        return fallback
+    def _health_check_impl(self) -> bool:
+        return self._adapter.health_check()
 
 
 if not ProviderRegistry.exists("llama"):

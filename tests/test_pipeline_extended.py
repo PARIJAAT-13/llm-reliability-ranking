@@ -8,6 +8,7 @@ from typing import Any
 import pytest
 
 from llm_reliability.configs.config import Configuration
+from llm_reliability.interfaces.benchmark import Benchmark
 from llm_reliability.pipeline.experiment_pipeline import (
     ExperimentPipeline,
     ExperimentResult,
@@ -24,7 +25,7 @@ from tests.conftest import CONFIG_HASH, TIMESTAMP, make_configuration
 # ======================================================================
 
 
-class DummyBenchmark:
+class DummyBenchmark(Benchmark):
     def __init__(self, task_ids: list[str] | None = None) -> None:
         self._task_ids = task_ids or ["task-0", "task-1"]
         self._loaded = False

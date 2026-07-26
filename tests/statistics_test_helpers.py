@@ -21,7 +21,7 @@ def create_mock_ranking(
     rank_map = {agent: idx + 1 for idx, (agent, _) in enumerate(rankings_tuple)}
 
     return RankingRecord(
-        ranking_type=ranking_type,  # type: ignore
+        ranking_type=ranking_type,
         benchmark=benchmark,
         rankings=rankings_tuple,
         rank_map=rank_map,

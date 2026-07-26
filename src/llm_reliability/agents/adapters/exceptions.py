@@ -60,3 +60,45 @@ class OllamaMemoryError(ProviderError):
     """Raised when a model cannot be loaded due to insufficient system RAM or GPU VRAM."""
 
     is_transient: bool = False
+
+
+class TimeoutError(ProviderError):
+    """Raised when a provider request exceeds the configured timeout."""
+
+    is_transient: bool = True
+
+
+class QuotaExceededError(ProviderError):
+    """Raised when the provider account has exceeded its usage quota."""
+
+    is_transient: bool = False
+
+
+class ProviderUnavailableError(ProviderError):
+    """Raised when the provider service is unavailable (e.g., maintenance, overloaded)."""
+
+    is_transient: bool = True
+
+
+class InvalidRequestError(ProviderError):
+    """Raised when the provider rejects the request as invalid (bad parameters, unsupported features)."""
+
+    is_transient: bool = False
+
+
+class NetworkError(ProviderError):
+    """Raised when a network-level failure occurs (DNS, connection reset, SSL issues)."""
+
+    is_transient: bool = True
+
+
+class ContentFilterError(ProviderError):
+    """Raised when the provider's content filter blocks the response."""
+
+    is_transient: bool = False
+
+
+class ContextLengthExceededError(InvalidRequestError):
+    """Raised when the input exceeds the provider's maximum context window."""
+
+    is_transient: bool = False

@@ -54,7 +54,7 @@ def test_registry_duplicate_registration():
 
 def test_registry_invalid_adapter():
     with pytest.raises(TypeError, match="must be a subclass of BaseBenchmarkAdapter"):
-        BenchmarkRegistry.register("invalid", InvalidAdapter)  # type: ignore
+        BenchmarkRegistry.register("invalid", InvalidAdapter)
 
 
 def test_registry_lookup():

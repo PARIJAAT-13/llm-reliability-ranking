@@ -127,7 +127,7 @@ class OllamaRuntime(Runtime):
         return 0
 
     def measure_memory(self) -> dict[str, float]:
-        mem = {}
+        mem: dict[str, Any] = {}
         try:
             avail = get_available_memory_gb()
             if avail:

@@ -62,7 +62,7 @@ class TestBenchmarkPlugin:
     def test_plugin_is_abstract(self):
         """BenchmarkPlugin cannot be instantiated directly."""
         with pytest.raises(TypeError):
-            BenchmarkPlugin()  # type: ignore
+            BenchmarkPlugin()
 
     def test_base_adapter_is_plugin(self):
         """BaseBenchmarkAdapter is a subclass of BenchmarkPlugin."""

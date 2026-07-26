@@ -1,3 +1,5 @@
+"""Central registry for supported LLM model configurations."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -47,8 +49,7 @@ class ModelRegistry:
         if identifier in cls._models:
             existing = cls._models[identifier]
             raise DuplicateModelError(
-                f"Duplicate model identifier '{identifier}': "
-                f"'{existing.name}' already registered."
+                f"Duplicate model identifier '{identifier}': '{existing.name}' already registered."
             )
         cls._models[identifier] = model
 

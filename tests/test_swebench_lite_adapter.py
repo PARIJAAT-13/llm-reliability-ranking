@@ -78,7 +78,7 @@ def test_swebench_execution_and_evaluation(config):
 def test_swebench_utils_normalization():
     assert normalize_patch("patch \n ") == "patch"
     assert normalize_patch("patch\n\n") == "patch"
-    assert normalize_patch(None) == ""  # type: ignore
+    assert normalize_patch(None) == ""
 
 
 def test_swebench_invalid_dataset_schema(tmp_path):

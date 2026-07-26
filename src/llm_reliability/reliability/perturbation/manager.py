@@ -37,8 +37,11 @@ from llm_reliability.reliability.perturbation.base import (
 from llm_reliability.reliability.perturbation.strategies import (
     FormattingPerturbationStrategy,
     InstructionReorderingPerturbationStrategy,
+    KeyboardNoiseStrategy,
     PromptWrapperPerturbationStrategy,
     SynonymSubstitutionPerturbationStrategy,
+    TypoPerturbationStrategy,
+    UnicodeHomoglyphStrategy,
     WhitespacePerturbationStrategy,
 )
 
@@ -88,6 +91,9 @@ class PerturbationManager:
                 InstructionReorderingPerturbationStrategy(),
                 SynonymSubstitutionPerturbationStrategy(),
                 PromptWrapperPerturbationStrategy(),
+                TypoPerturbationStrategy(),
+                UnicodeHomoglyphStrategy(),
+                KeyboardNoiseStrategy(),
             ]
         }
 

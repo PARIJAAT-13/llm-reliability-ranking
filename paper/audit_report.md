@@ -68,8 +68,8 @@ This report presents a technical audit of the repository code (`src/llm_reliabil
 
 ## 3. Code & Implementation Audit Findings
 
-1. **`estimate_model_memory()`**: Verified in `src/llm_reliability/agents/utils/ollama_utils.py` (Line 116).
-2. **`unload_ollama_model()`**: Verified in `src/llm_reliability/agents/utils/ollama_utils.py` (Line 193) with parameter `keep_alive: 0`.
-3. **`OllamaMemoryError`**: Verified in `src/llm_reliability/exceptions.py` with `is_transient = False`.
+1. **`estimate_model_memory()`**: Verified in `src/llm_reliability/agents/utils/ollama_utils.py` (Line 120).
+2. **`unload_ollama_model()`**: Verified in `src/llm_reliability/agents/utils/ollama_utils.py` (Line 200) with parameter `keep_alive: 0`.
+3. **`OllamaMemoryError`**: Verified in `src/llm_reliability/agents/adapters/exceptions.py` with `is_transient = False`.
 4. **`normalize_gaia_answer()`**: Verified in `src/llm_reliability/benchmarks/adapters/gaia_adapter.py`.
 5. **System Prompt Decoupling**: Verified in `src/llm_reliability/experiments/experiment_runner.py` and `src/llm_reliability/agents/ollama_agent.py`.

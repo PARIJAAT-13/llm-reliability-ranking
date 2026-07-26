@@ -338,7 +338,7 @@ def compute_temporal_isr(
     # Linear trend: slope of ISR over window index
     trend_slope = 0.0
     if len(window_isr) >= 2:
-        x = np.arange(len(window_isr), dtype=float)
+        x: np.ndarray = np.arange(len(window_isr), dtype=float)
         y = np.array(window_isr, dtype=float)
         slope, _ = np.polyfit(x, y, 1)
         trend_slope = float(slope)

@@ -9,7 +9,7 @@ from llm_reliability.interfaces import Agent
 
 def test_agent_is_abstract() -> None:
     with pytest.raises(TypeError):
-        Agent()  # type: ignore[abstract]
+        Agent()
 
 
 def test_agent_defines_required_methods() -> None:

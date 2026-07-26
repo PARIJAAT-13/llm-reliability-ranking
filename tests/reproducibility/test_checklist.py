@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any, Optional
 
 from llm_reliability.reproducibility.checklist import (
     CheckItem,
@@ -75,11 +76,11 @@ class TestChecklistResult:
 @dataclass
 class MockSummary:
     experiment_id: str = "exp-123"
-    evaluations: list = None
-    config_snapshot: dict = None
-    metrics: list = None
-    rankings: list = None
-    executions: list = None
+    evaluations: list[Any] | None = None
+    config_snapshot: dict[str, Any] | None = None
+    metrics: list[Any] | None = None
+    rankings: list[Any] | None = None
+    executions: list[Any] | None = None
 
     def __post_init__(self) -> None:
         if self.evaluations is None:

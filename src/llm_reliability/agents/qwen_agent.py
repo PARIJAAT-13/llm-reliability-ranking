@@ -46,21 +46,14 @@ from llm_reliability.agents.adapters.exceptions import (
 from llm_reliability.agents.adapters.provider_registry import ProviderRegistry
 from llm_reliability.agents.adapters.request_models import LLMRequest
 from llm_reliability.agents.adapters.response_models import LLMResponse
-from llm_reliability.agents.utils.rate_limiter import RateLimiter
 from llm_reliability.configs.config import Configuration
-from llm_reliability.runtime import Runtime
+from llm_reliability.runtime.provider_base import BaseProvider
 from llm_reliability.runtime.registry import RuntimeRegistry
 
 logger = logging.getLogger(__name__)
 
 QWEN_BASE_URL: str = "https://dashscope.aliyuncs.com/compatible-mode/v1"
-DEFAULT_MODEL: str = "qwen-2.5-72b-instruct"
-DEFAULT_TEMPERATURE: float = 0.0
-DEFAULT_MAX_TOKENS: int = 1024
-DEFAULT_REQUESTS_PER_SECOND: float = 2.0
 QWEN_AGENT_VERSION: str = "1.0"
-
-_PROMPT_KEYS: tuple[str, ...] = ("prompt", "question", "problem_statement")
 
 
 class _QwenAdapter(BaseLLMAdapter):
@@ -71,11 +64,11 @@ class _QwenAdapter(BaseLLMAdapter):
     def __init__(self, config: Configuration) -> None:
         super().__init__(config)
         self._client = None
-        self._model = config.metadata.get("model", config.llm) or DEFAULT_MODEL
+        self._model = config.metadata.get("model", config.llm) or "qwen-2.5-72b-instruct"
         if self._model and not self._model.startswith("qwen"):
-            self._model = DEFAULT_MODEL
-        self._temperature = float(config.metadata.get("temperature", DEFAULT_TEMPERATURE))
-        self._max_tokens = int(config.metadata.get("max_tokens", DEFAULT_MAX_TOKENS))
+            self._model = "qwen-2.5-72b-instruct"
+        self._temperature = float(config.metadata.get("temperature", 0.0))
+        self._max_tokens = int(config.metadata.get("max_tokens", 1024))
         self._system_prompt: str | None = config.metadata.get("system_prompt")
 
     def initialize(self) -> None:
@@ -186,82 +179,47 @@ class _QwenAdapter(BaseLLMAdapter):
             return False
 
 
-class QwenAgent(Runtime):
-    """Qwen agent for the LLM Reliability Ranking framework."""
+class QwenAgent(BaseProvider):
+    provider_name: str = "qwen"
+    default_model: str = "qwen2.5-72b-instruct"
+    default_temperature: float = 0.0
+    default_max_tokens: int = 1024
+    default_requests_per_second: float = 2.0
+    api_key_env: str = "QWEN_API_KEY"
 
     def __init__(self, config: Configuration) -> None:
-        if config is None:
-            raise ValueError("Configuration must be provided to QwenAgent.")
-        self._config = config
+        super().__init__(config)
         self._adapter = _QwenAdapter(config)
-        self._max_retries: int = int(config.metadata.get("max_retries", 3))
-        self._retry_backoff: float = float(config.metadata.get("retry_backoff", 1.0))
-        self._rate_limiter = RateLimiter(
-            requests_per_second=float(
-                config.metadata.get("requests_per_second", DEFAULT_REQUESTS_PER_SECOND)
-            )
-        )
 
     def initialize(self) -> None:
-        logger.info("Initialising QwenAgent.")
         self._adapter.initialize()
-        logger.info("QwenAgent ready (model=%s).", self._adapter._model)
+        self._client = getattr(self._adapter, "_client", None)
 
     def reset(self) -> None:
+        super().reset()
         self._adapter._request_logs.clear()
         self._adapter._response_logs.clear()
 
     def run(self, task: dict[str, Any]) -> Any:
         prompt = self._extract_prompt(task)
-        request = LLMRequest(
-            prompt=prompt,
-            temperature=float(self._config.metadata.get("temperature", DEFAULT_TEMPERATURE)),
-            max_tokens=int(self._config.metadata.get("max_tokens", DEFAULT_MAX_TOKENS)),
-            seed=self._config.seed if self._config.seed is not None else None,
-            system_prompt=self._config.metadata.get("system_prompt"),
-        )
-        logger.info(
-            "QwenAgent.run: task_id=%r, prompt_len=%d.",
-            task.get("task_id", "<unknown>"),
-            len(prompt),
-        )
+        request = self._build_request(prompt)
         self._rate_limiter.acquire()
         response = self._adapter.retry(
             request, max_attempts=self._max_retries, backoff_seconds=self._retry_backoff
         )
-        logger.info(
-            "QwenAgent.run complete: task_id=%r, finish=%s.",
-            task.get("task_id", "<unknown>"),
-            response.finish_reason,
-        )
+        self._track_cost(response)
         return response.text
 
     def shutdown(self) -> None:
-        logger.info("Shutting down QwenAgent.")
         self._adapter.shutdown()
 
     def metadata(self) -> dict[str, Any]:
-        return {
-            "name": "QwenAgent",
-            "provider": "qwen",
-            "model": self._adapter._model,
-            "version": QWEN_AGENT_VERSION,
-            "temperature": self._adapter._temperature,
-            "max_tokens": self._adapter._max_tokens,
-            "seed": self._config.seed,
-            "max_retries": self._max_retries,
-        }
+        base = super().metadata()
+        base.update({"name": "QwenAgent", "provider": "qwen", "model": self._adapter._model})
+        return base
 
-    @staticmethod
-    def _extract_prompt(task: dict[str, Any]) -> str:
-        for key in _PROMPT_KEYS:
-            value = task.get(key)
-            if value and str(value).strip():
-                return str(value).strip()
-        fallback = str(task).strip()
-        if not fallback or fallback == "{}":
-            raise ValueError(f"Cannot extract a prompt from task dict: {task!r}.")
-        return fallback
+    def _health_check_impl(self) -> bool:
+        return self._adapter.health_check()
 
 
 if not ProviderRegistry.exists("qwen"):

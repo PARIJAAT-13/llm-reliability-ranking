@@ -45,7 +45,7 @@ class BrokenBenchmarkBadOutputs(MockBenchmark):
         return {}  # Invalid task object
 
     def run(self, agent, task) -> ExecutionRecord:
-        return None  # type: ignore # Violates ExecutionRecord return type
+        return None  # Violates ExecutionRecord return type
 
 
 def test_benchmark_implements_interface():
@@ -55,7 +55,7 @@ def test_benchmark_implements_interface():
 
     with pytest.raises(TypeError):
         # Should raise TypeError due to missing abstract methods
-        BrokenBenchmarkNoInterface()
+        BrokenBenchmarkNoInterface()  # type: ignore[abstract]
 
 
 def test_benchmark_deterministic():

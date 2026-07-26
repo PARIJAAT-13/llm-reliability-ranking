@@ -15,9 +15,8 @@ from llm_reliability.agents.adapters.exceptions import ProviderError
 from llm_reliability.agents.adapters.provider_registry import ProviderRegistry
 from llm_reliability.agents.adapters.request_models import LLMRequest
 from llm_reliability.agents.adapters.response_models import LLMResponse
-from llm_reliability.agents.utils.rate_limiter import RateLimiter
 from llm_reliability.configs.config import Configuration
-from llm_reliability.runtime import Runtime
+from llm_reliability.runtime.provider_base import BaseProvider
 from llm_reliability.runtime.registry import RuntimeRegistry
 
 logger = logging.getLogger(__name__)
@@ -25,8 +24,6 @@ logger = logging.getLogger(__name__)
 DEFAULT_BASE_URL: str = "http://127.0.0.1:8000/v1"
 DEFAULT_MODEL: str = "vllm-default"
 VLLM_AGENT_VERSION: str = "1.0.0"
-
-_PROMPT_KEYS: tuple[str, ...] = ("prompt", "question", "problem_statement")
 
 
 class _VLLMAdapter(BaseLLMAdapter):
@@ -105,53 +102,46 @@ class _VLLMAdapter(BaseLLMAdapter):
         return self._client is not None
 
 
-class VLLMAgent(Runtime):
-    """vLLM agent for the LLM Reliability Ranking framework."""
+class VLLMAgent(BaseProvider):
+    provider_name: str = "vllm"
+    default_model: str = "default"
+    default_temperature: float = 0.0
+    default_max_tokens: int = 1024
+    default_requests_per_second: float = 10.0
 
     def __init__(self, config: Configuration) -> None:
-        if config is None:
-            raise ValueError("Configuration must be provided to VLLMAgent.")
-        self._config = config
+        super().__init__(config)
         self._adapter = _VLLMAdapter(config)
-        self._rate_limiter = RateLimiter(requests_per_second=20.0)
 
     def initialize(self) -> None:
         self._adapter.initialize()
+        self._client = getattr(self._adapter, "_client", None)
 
     def reset(self) -> None:
+        super().reset()
         self._adapter._request_logs.clear()
         self._adapter._response_logs.clear()
 
     def run(self, task: dict[str, Any]) -> Any:
         prompt = self._extract_prompt(task)
-        request = LLMRequest(
-            prompt=prompt,
-            temperature=float(self._config.metadata.get("temperature", 0.0)),
-            max_tokens=int(self._config.metadata.get("max_tokens", 1024)),
-            system_prompt=self._config.metadata.get("system_prompt"),
-        )
+        request = self._build_request(prompt)
         self._rate_limiter.acquire()
-        response = self._adapter.retry(request, max_attempts=3, backoff_seconds=1.0)
+        response = self._adapter.retry(
+            request, max_attempts=self._max_retries, backoff_seconds=self._retry_backoff
+        )
+        self._track_cost(response)
         return response.text
 
     def shutdown(self) -> None:
         self._adapter.shutdown()
 
     def metadata(self) -> dict[str, Any]:
-        return {
-            "name": "VLLMAgent",
-            "provider": "vllm",
-            "model": self._adapter._model,
-            "version": VLLM_AGENT_VERSION,
-        }
+        base = super().metadata()
+        base.update({"name": "VLLMAgent", "provider": "vllm", "model": self._adapter._model})
+        return base
 
-    @staticmethod
-    def _extract_prompt(task: dict[str, Any]) -> str:
-        for key in _PROMPT_KEYS:
-            value = task.get(key)
-            if value and str(value).strip():
-                return str(value).strip()
-        return str(task).strip()
+    def _health_check_impl(self) -> bool:
+        return self._adapter.health_check()
 
 
 if not ProviderRegistry.exists("vllm"):

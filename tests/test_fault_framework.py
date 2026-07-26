@@ -1,6 +1,6 @@
 """Tests for the Fault Injection Framework."""
 
-from typing import Any
+from typing import Any, Optional
 
 import pytest
 
@@ -107,7 +107,7 @@ def test_network_interruption_strategy():
         strategy.inject(None)
 
 
-def test_fault_manager_fault_tolerance(sample_task: dict[str, Any] = None):
+def test_fault_manager_fault_tolerance(sample_task: dict[str, Any] | None = None):
     # Setup mock benchmark and agent
     cfg = Configuration(
         experiment_name="fault_test",

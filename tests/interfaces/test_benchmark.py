@@ -9,7 +9,7 @@ from llm_reliability.interfaces import Benchmark
 
 def test_benchmark_is_abstract() -> None:
     with pytest.raises(TypeError):
-        Benchmark()  # type: ignore[abstract]
+        Benchmark()
 
 
 def test_benchmark_defines_required_methods() -> None:

@@ -108,13 +108,13 @@ def test_adapter_implements_interface(config):
 
 def test_adapter_requires_configuration():
     with pytest.raises(ValueError):
-        ConcreteAdapter(None)  # type: ignore
+        ConcreteAdapter(None)
 
 
 def test_validate_request_rejects_wrong_type(config):
     adapter = ConcreteAdapter(config)
     with pytest.raises(RequestValidationError):
-        adapter.validate_request("not a request")  # type: ignore
+        adapter.validate_request("not a request")
 
 
 def test_validate_response_rejects_blank_text(config):
@@ -172,4 +172,4 @@ def test_provider_metadata(config):
 
 def test_abstract_class_cannot_be_instantiated(config):
     with pytest.raises(TypeError):
-        BaseLLMAdapter(config)  # type: ignore
+        BaseLLMAdapter(config)

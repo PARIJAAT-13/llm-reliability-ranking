@@ -54,12 +54,11 @@ To integrate a new LLM agent or framework wrapper (e.g., AutoGen, LangChain, Cre
 
 1. Inherit from `llm_reliability.interfaces.agent.Agent`.
 2. Implement `name` and `solve_task`.
-3. Register with `AgentRegistry`.
+3. Wire into the experiment pipeline via configuration.
 
 ```python
 from llm_reliability.interfaces.agent import Agent, AgentResponse
 from llm_reliability.interfaces.benchmark import Task
-from llm_reliability.agents.registry import AgentRegistry
 
 class MyCustomAgent(Agent):
     def __init__(self, model_name: str = "gpt-4o"):
@@ -78,8 +77,6 @@ class MyCustomAgent(Agent):
             runtime_seconds=0.45,
             metadata={"model": self._model_name},
         )
-
-AgentRegistry.register("my_custom_agent", MyCustomAgent)
 ```
 
 ---
@@ -144,5 +141,5 @@ print(f"Mean Rank Displacement: {divergence.mean_displacement:.2f}")
 
 - Always specify an explicit `seed` in your `Configuration`.
 - Store canonical JSON exports of `ExecutionRecord` and `EvaluationRecord` alongside experiment artifacts.
-- Use `SystemInfoTracker` to capture python version, package dependencies, git commit hash, and CUDA driver versions for publication appendices.
+- Use `EnvironmentCapture` (from `llm_reliability.reproducibility.environment`) to capture python version, package dependencies, git commit hash, and CUDA driver versions for publication appendices.
 - Avoid modifying task definitions directly in benchmark adapters; use `PerturbationManager` to apply reproducible transformations.

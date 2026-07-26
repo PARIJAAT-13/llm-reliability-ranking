@@ -1,3 +1,5 @@
+"""Model discovery and detection for local and remote runtimes."""
+
 from __future__ import annotations
 
 import json

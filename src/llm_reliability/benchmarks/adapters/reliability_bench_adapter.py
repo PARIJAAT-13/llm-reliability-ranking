@@ -68,7 +68,7 @@ RELIABILITY_BENCH_TASKS: list[dict[str, Any]] = [
         "domain": "logical_deduction",
         "difficulty": 0.3,
         "prompt": (
-            "All humans are mortal. Socrates is human. " "Is Socrates mortal? Answer 'yes' or 'no'."
+            "All humans are mortal. Socrates is human. Is Socrates mortal? Answer 'yes' or 'no'."
         ),
         "reference_answer": "yes",
         "scoring_rubric": "exact_match",
@@ -154,9 +154,7 @@ RELIABILITY_BENCH_TASKS: list[dict[str, Any]] = [
         "category": "knowledge",
         "domain": "temporal_reasoning",
         "difficulty": 0.5,
-        "prompt": (
-            "In which year did the Berlin Wall fall? " "Answer with just the year (4 digits)."
-        ),
+        "prompt": ("In which year did the Berlin Wall fall? Answer with just the year (4 digits)."),
         "reference_answer": "1989",
         "scoring_rubric": "numeric_match",
         "fault_types": ["timeout", "api_failure", "invalid_response"],
@@ -272,8 +270,7 @@ RELIABILITY_BENCH_TASKS: list[dict[str, Any]] = [
         "domain": "negation_handling",
         "difficulty": 0.6,
         "prompt": (
-            "Do NOT mention the color blue. Do NOT mention animals. "
-            "Describe your favorite season."
+            "Do NOT mention the color blue. Do NOT mention animals. Describe your favorite season."
         ),
         "reference_answer": "avoid_blue_animals",
         "scoring_rubric": "negation_compliance",
@@ -440,7 +437,7 @@ RELIABILITY_BENCH_TASKS: list[dict[str, Any]] = [
         "category": "robustness_probe",
         "domain": "adversarial_typos",
         "difficulty": 0.5,
-        "prompt": ("Whht is the captil of Fraance? " "Answer with just the city name."),
+        "prompt": ("Whht is the captil of Fraance? Answer with just the city name."),
         "reference_answer": "Paris",
         "scoring_rubric": "exact_match",
         "fault_types": ["timeout", "api_failure", "invalid_response"],

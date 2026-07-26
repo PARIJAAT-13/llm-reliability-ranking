@@ -33,7 +33,7 @@ def make_bench_config(benchmark_name: str) -> Configuration:
     )
 
 
-def test_registry_contains_all_12_benchmarks():
+def test_registry_contains_all_13_benchmarks():
     expected = [
         "AgentBoard",
         "ARC",
@@ -44,6 +44,7 @@ def test_registry_contains_all_12_benchmarks():
         "MBPP",
         "MMLU",
         "PIQA",
+        "ReliabilityBench",
         "SWEBenchLite",
         "TruthfulQA",
         "Winogrande",

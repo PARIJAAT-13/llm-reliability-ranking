@@ -1,0 +1,24 @@
+{
+  "experiment_name": "cloud_api_baselines",
+  "benchmarks": [
+    {
+      "name": "GAIA",
+      "dataset_path": "data/gaia_sample.json"
+    },
+    {
+      "name": "WebArena",
+      "dataset_path": "data/webarena_sample.json"
+    }
+  ],
+  "agents": [
+    { "name": "agent_gpt4o", "metadata": { "model": "gpt-4o" } },
+    { "name": "agent_claude35", "metadata": { "model": "claude-3-5-sonnet" } },
+    { "name": "agent_gemini15", "metadata": { "model": "gemini-1.5-pro" } }
+  ],
+  "seeds": [42, 100, 2026],
+  "repetitions": 3,
+  "parallel": false,
+  "max_workers": 3,
+  "output_dir": "results/cloud_baselines",
+  "llm": "openai"
+}

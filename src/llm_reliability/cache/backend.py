@@ -1,3 +1,5 @@
+"""Abstract cache backend interface and implementations."""
+
 from __future__ import annotations
 
 import logging

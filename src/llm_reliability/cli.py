@@ -74,14 +74,13 @@ def _resume_experiment(args: argparse.Namespace) -> None:
     from llm_reliability.experiments.experiment_models import ExperimentSpec
 
     spec = ExperimentSpec.from_canonical_json(spec_path.read_text(encoding="utf-8"))
+    spec = spec.model_copy(update={"output_dir": str(output_dir)})
     cache = ExperimentCache(enabled=True)
 
     def agent_factory(aspec, config):
         return AgentFactory.create(aspec.name, config)
 
-    runner = ExperimentRunner(
-        spec, agent_factory=agent_factory, cache=cache, output_dir=str(output_dir)
-    )
+    runner = ExperimentRunner(spec, agent_factory=agent_factory, cache=cache)
     status = runner.resume()
     print(
         f"Resume complete: {status.state} — {status.completed_runs} completed, "
@@ -130,9 +129,9 @@ def _compare_experiments(args: argparse.Namespace) -> None:
         return
 
     for name, summary in summaries:
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print(f"  {name}")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
         rel = summary.get("reliability", {})
         sr = summary.get("success_rate", {})
         print(f"  Mean Reliability:  {rel.get('mean', 'N/A')}")

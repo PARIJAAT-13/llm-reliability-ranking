@@ -1,5 +1,7 @@
 """Tests for RuntimeRegistry — registration, discovery, lookup."""
 
+from collections.abc import Generator
+
 import pytest
 
 from llm_reliability.runtime.interface import Runtime
@@ -41,7 +43,7 @@ class _OtherRuntime(Runtime):
 
 
 @pytest.fixture(autouse=True)
-def clean_registry() -> None:
+def clean_registry() -> Generator[None, None, None]:
     RuntimeRegistry._runtimes.clear()
     RuntimeRegistry._initialised = True
     RuntimeRegistry._discovered_module_names.clear()
@@ -63,7 +65,7 @@ class TestRuntimeRegistry:
 
     def test_register_non_runtime_raises(self):
         with pytest.raises(TypeError, match="must be a subclass"):
-            RuntimeRegistry.register("bad", object)  # type: ignore
+            RuntimeRegistry.register("bad", object)
 
     def test_get_runtime(self):
         RuntimeRegistry.register("test_rt", _TestRuntime)

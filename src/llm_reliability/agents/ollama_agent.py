@@ -47,9 +47,8 @@ from llm_reliability.agents.utils.ollama_utils import (
     normalize_ollama_url,
     unload_ollama_model,
 )
-from llm_reliability.agents.utils.rate_limiter import RateLimiter
 from llm_reliability.configs.config import Configuration
-from llm_reliability.runtime import Runtime
+from llm_reliability.runtime.provider_base import BaseProvider
 from llm_reliability.runtime.registry import RuntimeRegistry
 
 logger = logging.getLogger(__name__)
@@ -58,10 +57,7 @@ DEFAULT_MODEL: str = "llama3.1:8b"
 DEFAULT_BASE_URL: str = "http://127.0.0.1:11434/v1"
 DEFAULT_TEMPERATURE: float = 0.0
 DEFAULT_MAX_TOKENS: int = 1024
-DEFAULT_REQUESTS_PER_SECOND: float = 10.0
 OLLAMA_AGENT_VERSION: str = "1.1.0"
-
-_PROMPT_KEYS: tuple[str, ...] = ("prompt", "question", "problem_statement")
 
 
 class _OllamaAdapter(BaseLLMAdapter):
@@ -233,39 +229,31 @@ class _OllamaAdapter(BaseLLMAdapter):
         return server_ok
 
 
-class OllamaAgent(Runtime):
-    """Generic Ollama agent for the LLM Reliability Ranking framework."""
+class OllamaAgent(BaseProvider):
+    provider_name: str = "ollama"
+    default_model: str = "llama3.1:8b"
+    default_temperature: float = 0.0
+    default_max_tokens: int = 1024
+    default_requests_per_second: float = 10.0
 
     def __init__(self, config: Configuration) -> None:
-        if config is None:
-            raise ValueError("Configuration must be provided to OllamaAgent.")
-        self._config = config
+        super().__init__(config)
         self._adapter = _OllamaAdapter(config)
-        self._max_retries: int = int(config.metadata.get("max_retries", 3))
-        self._retry_backoff: float = float(config.metadata.get("retry_backoff", 1.0))
-        self._rate_limiter = RateLimiter(
-            requests_per_second=float(
-                config.metadata.get("requests_per_second", DEFAULT_REQUESTS_PER_SECOND)
-            )
-        )
 
     def initialize(self) -> None:
         logger.info("Initializing OllamaAgent")
         self._adapter.initialize()
+        self._client = getattr(self._adapter, "_client", None)
         logger.info("OllamaAgent ready (model=%s).", self._adapter._model)
 
     def reset(self) -> None:
+        super().reset()
         self._adapter._request_logs.clear()
         self._adapter._response_logs.clear()
 
     def run(self, task: dict[str, Any]) -> Any:
         prompt = self._extract_prompt(task)
-        request = LLMRequest(
-            prompt=prompt,
-            temperature=float(self._config.metadata.get("temperature", DEFAULT_TEMPERATURE)),
-            max_tokens=int(self._config.metadata.get("max_tokens", DEFAULT_MAX_TOKENS)),
-            system_prompt=self._config.metadata.get("system_prompt"),
-        )
+        request = self._build_request(prompt)
         logger.info(
             "OllamaAgent.run: task_id=%r, prompt_len=%d.",
             task.get("task_id", "<unknown>"),
@@ -275,6 +263,7 @@ class OllamaAgent(Runtime):
         response = self._adapter.retry(
             request, max_attempts=self._max_retries, backoff_seconds=self._retry_backoff
         )
+        self._track_cost(response)
         logger.info(
             "OllamaAgent.run complete: task_id=%r, finish=%s.",
             task.get("task_id", "<unknown>"),
@@ -287,27 +276,19 @@ class OllamaAgent(Runtime):
         self._adapter.shutdown()
 
     def metadata(self) -> dict[str, Any]:
-        return {
-            "name": "OllamaAgent",
-            "provider": "ollama",
-            "model": self._adapter._model,
-            "version": OLLAMA_AGENT_VERSION,
-            "temperature": self._adapter._temperature,
-            "max_tokens": self._adapter._max_tokens,
-            "seed": self._config.seed,
-            "max_retries": self._max_retries,
-        }
+        base = super().metadata()
+        base.update(
+            {
+                "name": "OllamaAgent",
+                "provider": "ollama",
+                "model": self._adapter._model,
+                "version": OLLAMA_AGENT_VERSION,
+            }
+        )
+        return base
 
-    @staticmethod
-    def _extract_prompt(task: dict[str, Any]) -> str:
-        for key in _PROMPT_KEYS:
-            value = task.get(key)
-            if value and str(value).strip():
-                return str(value).strip()
-        fallback = str(task).strip()
-        if not fallback or fallback == "{}":
-            raise ValueError(f"Cannot extract a prompt from task dict: {task!r}.")
-        return fallback
+    def _health_check_impl(self) -> bool:
+        return self._adapter.health_check()
 
 
 if not ProviderRegistry.exists("ollama"):
