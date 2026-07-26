@@ -277,7 +277,7 @@ If you use this framework or its empirical results in your research:
   author = {Parijaat Srivastava and Pooja Mourya},
   title = {LLM Reliability Ranking Framework: Benchmarking Local Open-Weights Language Models Under Hardware Memory Constraints},
   url = {https://github.com/PARIJAAT-13/llm-reliability-ranking},
-  version = {1.0.0},
+  version = {2.0.0},
   year = {2026}
 }
 ```
