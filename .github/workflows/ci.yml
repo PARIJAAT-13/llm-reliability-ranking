@@ -13,16 +13,18 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
       - run: pip install -e ".[dev,visualization]"
-      - run: pip install ruff black isort mypy pytest pytest-cov pre-commit
+      - run: pip install ruff black isort mypy pytest pytest-cov pip-audit
       - run: ruff check .
       - run: black --check .
       - run: isort --check-only .
       - run: mypy src/
+      - run: pip-audit
       - run: pytest tests/ --cov=src --cov-report=xml --cov-report=term
-      - run: pre-commit run --all-files
       - uses: codecov/codecov-action@v5
